@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRMS Software - Sign In</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-image: url('https://img.freepik.com/free-photo/abstract-dark-blue-futuristic-digital-grid-background_53876-104051.jpg?w=900&t=st=1707286119~exp=1707286719~hmac=10f9144de2c08ad4a9254595203516883ab21e034b178805194b9708cb298379');
+            /* background-image: url('https://img.freepik.com/premium-photo/abstract-background-with-connecting-dots-lines-network-connection-structure-3d-rendering_697329-30.jpg?w=1060'); */
+            /* background-image: url('https://img.freepik.com/free-vector/network-mesh-wire-digital-technology-background_1017-27428.jpg?w=1060&t=st=1707286089~exp=1707286689~hmac=e5726bf7b20248d82d92e3b9f9b5445a07f7a6dfe94b5b319fb51464ec5e69e2'); */
+            /* background-image: url('https://img.freepik.com/free-vector/background-realistic-abstract-technology-particle_23-2148431735.jpg?w=900&t=st=1707286027~exp=1707286627~hmac=d4c404cfe0312f7072532c651da20890305376d91ed80500a97faca7a736d4b1'); */
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            animation: fadeIn 1s ease;
+        }
+
+        .form-outline input[type="text"],
+        .form-outline input[type="password"] {
+            color: #fff;
+            border-color: #fff;
+            background-color: transparent;
+            border-radius: 25px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            box-shadow: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-outline input[type="text"]::placeholder,
+        .form-outline input[type="password"]::placeholder {
+            color: #ccc;
+        }
+
+        .form-outline input[type="text"]:focus,
+        .form-outline input[type="password"]:focus {
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-primary {
+            background-color: #ff6b6b;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #ff5a5a;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <div class="card-body">
+            <h2 class="fw-bold text-center mb-5">HRMS Software - Sign In</h2>
+            <form>
+                <div class="form-outline">
+                    <input type="text" id="user_name" class="form-control" placeholder="Username">
+                </div>
+                <div class="form-outline">
+                    <input type="password" id="user_password" class="form-control" placeholder="Password">
+                </div>
+                <button type="button" id="loginUser" class="btn btn-primary btn-block mt-4">Sign In</button>
+                <div class="mt-3" id="message"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("loginUser").addEventListener('click', function(){
+            const user_name = document.getElementById('user_name').value;
+            const user_password = document.getElementById('user_password').value;
+
+            $.ajax({
+                method: 'POST',
+                url: 'http://127.0.0.1:8000/login/authenticate/',
+                data: {
+                    'username': user_name,
+                    'password': user_password
+                },
+                success: function(res){
+                    console.log('res: ', res);
+                    document.getElementById('message').innerHTML = '<div class="alert alert-success">Login Successful! Redirecting...</div>';
+                    setTimeout(function(){
+                        window.location.href = "http://localhost:8000/dashboard/";
+                    }, 2000);
+                }, 
+                error: function(error){
+                    console.log('error: ', error);
+                    document.getElementById('message').innerHTML = '<div class="alert alert-danger">Error: Incorrect username or password!</div>';
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

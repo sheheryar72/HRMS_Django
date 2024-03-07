@@ -1,0 +1,64 @@
+
+.form-container {
+    max-width: 500px;
+    margin-top: 20px;
+    margin-left: 50px;
+    margin-right: 50px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #454d55;
+  }
+  .form-control {
+    background-color: #343a40;
+    color: #fff;
+    border: none;
+  }
+
+  .btn-dark {
+    background-color: #343a40;
+    border-color: #343a40;
+  }
+
+  .btn-dark:hover {
+    background-color: #23272b;
+    border-color: #1d2124;
+  }
+
+  #InserRowID td {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    font-size: 0.75rem; 
+    line-height: 3; 
+  } 
+  #GridID_length label {
+    color: black;
+  }
+  #GridID_filter label {
+    color: black;
+  }
+  #InserRowID tr {
+    font-size: 0.8rem;
+  }
+  #myForm input {
+    font-size: 12px;
+  }
+  #myForm button{
+    padding-top: 4px;
+    padding-bottom: 4x;
+    font-size: 13px;
+  }
+  /* .table {
+    background-color: #343a40;
+    color: #fff;
+    border: none;
+  }
+
+  .table th,
+  .table td {
+    border: none !important;
+  } */
+  label{
+    font-weight: 600;
+    font-size: 12px !important;
+    color:#fff;
+  }

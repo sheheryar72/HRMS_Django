@@ -1,0 +1,65 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/city.css' %}">
+
+<style>
+  .form-control[readonly] {
+    background-color: #343a40;
+    color: #FFF ;
+    opacity: 1;
+}
+</style>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="form-container">
+        <form id="myForm">
+          <div id="alertMessage"></div>
+          <div class="form-group row align-items-center">
+            <label for="id" class="col-sm-3 col-form-label col-form-label-sm">ID</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control form-control-sm" id="CT_ID" placeholder="ID" readonly>
+            </div>
+          </div>
+          <div class="form-group row align-items-center">
+            <label for="name" class="col-sm-3 col-form-label col-form-label-sm">Name</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control form-control-sm" id="CT_Descr" placeholder="Description">
+            </div>
+          </div>
+          <div class="text-center">
+            <button type="button" id="insertFormData" class="btn btn-dark mr-2">Create</button>
+            <button type="button" id="updateFormData" class="btn btn-dark mr-2 d-none">Update</button>
+            <button type="button" id="CancelFormData" class="btn btn-dark">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="container mt-3">
+  <table id="GridID" class="table table-dark table-hover table-sm table-bordered" style="font-size: 0.8rem;">
+      <thead class="" style="background-color: black;">
+        <tr>
+          <th style="width: 5%;">S. No</th>
+          <th style="width: 10%;">City ID</th>
+          <th style="width: 65%;">City Name</th>
+          <th style="width: 7%;">Action</th>
+        </tr>
+      </thead>
+      <tbody id="InserRowID">
+      </tbody>
+    </table>
+  </div>
+  
+<!-- <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script> -->
+<script src="{% static 'js/city.js' %}"></script>
+
+
+{% endblock %}

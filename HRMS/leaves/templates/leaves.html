@@ -1,0 +1,98 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/leaves.css' %}">
+
+<style>
+  .form-control[readonly] {
+    background-color: #343a40;
+    color: #FFF ;
+    opacity: 1;
+}
+</style>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-8"> <!-- Increased form width -->
+      <div class="form-container">
+        <form id="myForm">
+          <div id="alertMessage"></div>
+          <!-- First row -->
+          <div class="form-group row align-items-center">
+            <label for="input1" class="col-sm-2 col-form-label">Leave ID</label> 
+            <div class="col-sm-3">
+              <input type="number" class="form-control" id="Leave_ID" placeholder="Leave ID" readonly>
+            </div>
+            <label for="input5" class="col-sm-2 col-form-label">Financial Year</label> 
+            <div class="col-sm-5">
+                <select class="form-control form-control-sm" id="FYID">
+                </select>
+            </div>
+          </div>
+          <div class="form-group row align-items-center">
+            <label for="input5" class="col-sm-2 col-form-label">Employee</label> 
+            <div class="col-sm-10">
+                <select class="form-control form-control-sm" id="Emp_ID">
+                </select>
+            </div>
+          </div>
+          <div class="form-group row align-items-center">
+            <label for="input5" class="col-sm-2 col-form-label">Earned Leave Opening</label> 
+            <div class="col-sm-4">
+              <input type="number" class="form-control" id="EL_OP" placeholder="EL_OP">
+            </div>
+            <label for="input6" class="col-sm-2 col-form-label">CL</label> 
+            <div class="col-sm-4">
+              <input type="number" class="form-control" id="CL" placeholder="CL">
+            </div>
+          </div>
+          <div class="form-group row align-items-center">
+            <label for="input5" class="col-sm-2 col-form-label">SL</label> 
+            <div class="col-sm-4">
+              <input type="number" class="form-control" id="SL" placeholder="SL">
+            </div>
+            <label for="input6" class="col-sm-2 col-form-label">EL</label> 
+            <div class="col-sm-4">
+              <input type="number" class="form-control" id="EL" placeholder="EL">
+            </div>
+          </div>
+          <div class="text-center">
+            <button type="button" id="insertFormData" class="btn btn-dark mr-2">Create</button>
+            <button type="button" id="updateFormData" class="btn btn-dark mr-2 d-none">Update</button>
+            <button type="button" id="CancelFormData" class="btn btn-dark">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>  
+
+<div class="container mt-3">
+  <table id="GridID" class="table table-dark table-hover table-sm table-bordered" style="font-size: 0.8rem;">
+      <thead class="" style="background-color: black;">
+        <tr>
+          <th style="width: 6%;">S. No</th>
+          <th style="width: 10%;">Leave ID</th>
+          <th style="width: 10%;">Fin ID</th>
+          <th style="width: 15%;">Fin Year</th>
+          <th style="width: 10%;">Emp ID</th>
+          <th style="width: 10%;">HR Emp ID</th>
+          <th style="width: 30%;">Emp Name</th>
+          <th style="width: 10%;">EL Opening</th>
+          <th style="width: 10%;">Casual</th>
+          <th style="width: 65%;">Sick</th>
+          <th style="width: 65%;">Earned</th>
+          <th style="width: 7%;">Action</th>
+        </tr>
+      </thead>
+      <tbody id="InserRowID">
+      </tbody>
+    </table>
+  </div>
+  
+<script src="{% static 'js/leaves.js' %}"></script>
+
+
+{% endblock %}

@@ -1,0 +1,332 @@
+const BASE_URL = 'http://localhost:8000/leaves/api/';
+var table;
+const INSERT_BUTTON_ID = 'insertFormData';
+const UPDATE_BUTTON_ID = 'updateFormData';
+const CANCEL_BUTTON_ID = 'CancelFormData';
+
+function initializeDataTable() {
+    table = $('#GridID').DataTable({
+        destroy: true,
+        duplicate: false,
+        ordering: false,
+        scrollY: '330px',
+        scrollCollapse: true,
+        pageLength: 5,
+        'columnDefs': [
+            {
+                "targets": 1,
+                "className": "text-left",
+            },
+            {
+                "targets": 2,
+                "className": "text-left",
+            }
+        ],
+        lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]
+    });
+}
+
+// Handle click on table row
+function handleTableRowClick() {
+    const rowData = table.row($(this).closest('tr')).data();
+    const Leave_ID = rowData[1];
+    const FYID = rowData[2];
+    const Emp_ID = rowData[4];
+    const EL_OP = rowData[7];
+    const CL = rowData[8];
+    const SL = rowData[9];
+    const EL = rowData[10];
+    $('#Leave_ID').val(Leave_ID);
+    $('#FYID').val(FYID);
+    $('#Emp_ID').val(Emp_ID);
+    $('#EL_OP').val(EL_OP);
+    $('#CL').val(CL);
+    $('#SL').val(SL);
+    $('#EL').val(EL);
+    document.getElementById("updateFormData").classList.remove("d-none");
+    document.getElementById("insertFormData").classList.add("d-none");
+}
+
+// Handle click on delete button in table row
+function handleDeleteButtonClick() {
+    //alert()
+    const rowData = table.row($(this).closest('tr')).data();
+    const Leave_ID = rowData[1];
+    console.log('Leave_ID: ', Leave_ID)
+    if (confirm("Are you sure you want to delete this Leave?")) {
+        deleteLeave(Leave_ID).then(success => {
+            if (success) {
+                displaySuccessMessage('Leave deleted successfully!');
+                fillTableGrid(); // Reload table after deletion
+            } else {
+                displayErrorMessage('Failed to delete Leave. Please try again.');
+            }
+        });
+    }
+}
+
+function handleCancelClick() {
+    document.getElementById("Leave_ID").value = '';
+    document.getElementById("FYID").selectedIndex = 0;
+    document.getElementById("Emp_ID").selectedIndex = 0;
+    document.getElementById("EL_OP").value = 0;
+    document.getElementById("CL").value = 0;
+    document.getElementById("SL").value = 0;
+    document.getElementById("EL").value = 0;
+}
+
+async function getAll(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error('Failed to fetch Leave');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching Leave:', error);
+        return null;
+    }
+}
+
+async function getAll(url) {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error('Failed to fetch Leave');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Error fetching Leave:', error);
+        return null;
+    }
+}
+
+function fillEmployeeDropDown() {
+    getAll(`http://localhost:8000/employee/api/getall`).then((data) => {
+        let temp = '';
+        console.log('fillEmployeeDropDown: ', data)
+        data.forEach(element => {
+            temp += `<option value="${element.Emp_ID}">${element.Emp_Name} - ${element.HR_Emp_ID}</option>`;
+        });
+        document.getElementById("Emp_ID").innerHTML = temp;
+    });
+}
+
+function fillFinYearDropDown() {
+    getAll(`http://localhost:8000/payrollperiod/api/getall`).then((data) => {
+        let temp = '';
+        console.log('fillEmployeeDropDown: ', data)
+        data.forEach(element => {
+            temp += `<option value="${element.FYID}">${element.FinYear}</option>`;
+        });
+        document.getElementById("FYID").innerHTML = temp;
+    });
+}
+
+async function getLeaveById(id) {
+    try {
+        const response = await fetch(`${BASE_URL}${id}/`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch Leave');
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(`Error fetching Leave with ID ${id}:`, error);
+        return null;
+    }
+}
+
+async function createLeave(data) {
+    try {
+        const response = await fetch(`${BASE_URL}add`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to create Leave');
+        }
+        //const data = await response.json();
+        displaySuccessMessage('Leave Added successfully!');
+        fillTableGrid();
+        //return data;
+    } catch (error) {
+        console.error('Error creating Leave:', error);
+        displayErrorMessage('Failed to create Leave. Please try again.');
+        return null;
+    }
+}
+
+async function updateLeave(id, data) {
+    try {
+        const response = await fetch(`${BASE_URL}update/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update Leave');
+        }
+        //const data = await response.json();
+        displaySuccessMessage('Leave updated successfully!');
+        fillTableGrid();
+        //return data;
+    } catch (error) {
+        console.error('Error updating Leave:', error);
+        displayErrorMessage('Failed to update Leave. Please try again.');
+        return null;
+    }
+}
+
+async function deleteLeave(id) {
+    try {
+        const response = await fetch(`${BASE_URL}delete/${id}`, {
+            method: 'DELETE',
+        });
+        if (!response.ok) {
+            throw new Error('Failed to delete Leave');
+        }
+        return true;
+    } catch (error) {
+        console.error(`Error deleting Leave with ID ${id}:`, error);
+        return false;
+    }
+}
+
+function fillTableGrid() {
+    getAll(`${BASE_URL}getall`).then((data) => {
+        console.log("response: ", data);
+        var counter = 1;
+        table.clear().draw();
+
+        for (var i = 0; i < data.length; i++) {
+            var actionButton = createActionButton(); // Create action button element
+            var row = [counter, data[i].Leaves_ID, data[i].FYID, data[i].FinYear, data[i].Emp_ID, data[i].HR_Emp_ID
+                , data[i].Emp_Name, data[i].EL_OP, data[i].CL, data[i].SL, data[i].EL, actionButton.outerHTML];
+            table.row.add(row).draw(false);
+            counter++;
+        }
+    });
+}
+
+// Function to create action button element
+function createActionButton() {
+    var dropdown = document.createElement("div");
+    dropdown.classList.add("dropdown");
+
+    var button = document.createElement("button");
+    button.classList.add("btn", "btn-dark", "dropdown-toggle");
+    button.setAttribute("type", "button");
+    button.setAttribute("id", "dropdownMenuButton1");
+    button.setAttribute("data-toggle", "dropdown");
+    button.setAttribute("aria-haspopup", "true");
+    button.setAttribute("aria-expanded", "false");
+    button.innerHTML = '<i class="fas fa-ellipsis-v"></i>';
+
+    var dropdownMenu = document.createElement("div");
+    dropdownMenu.classList.add("dropdown-menu");
+    dropdownMenu.setAttribute("aria-labelledby", "dropdownMenuButton1");
+
+    var editLink = document.createElement("a");
+    editLink.classList.add("dropdown-item");
+    editLink.classList.add("roweditclass");
+    editLink.href = "#";
+    editLink.innerText = "Edit";
+
+    var deleteLink = document.createElement("a");
+    deleteLink.classList.add("dropdown-item");
+    deleteLink.classList.add("rowdeleteclass");
+    deleteLink.href = "#";
+    deleteLink.innerText = "Delete";
+
+    dropdownMenu.appendChild(editLink);
+    dropdownMenu.appendChild(deleteLink);
+
+    dropdown.appendChild(button);
+    dropdown.appendChild(dropdownMenu);
+
+    return dropdown;
+}
+
+function handleInsertClick() {
+    const Leave_ID = document.getElementById("Leave_ID").value;
+    const FYID = document.getElementById("FYID").value;
+    const Emp_ID = document.getElementById("Emp_ID").value;
+    const EL_OP = document.getElementById("EL_OP").value;
+    const CL = document.getElementById("CL").value;
+    const SL = document.getElementById("SL").value;
+    const EL = document.getElementById("EL").value;
+
+    const data = {
+        Leaves_ID: Number(Leave_ID),
+        FYID: Number(FYID),
+        Emp_ID: Number(Emp_ID),
+        EL_OP: Number(EL_OP),
+        CL: Number(CL),
+        SL: Number(SL),
+        EL: Number(EL)
+    }
+    createLeave(data);
+}
+
+function handleUpdateClick() {
+    const Leave_ID = document.getElementById("Leave_ID").value;
+    const FYID = document.getElementById("FYID").value;
+    const Emp_ID = document.getElementById("Emp_ID").value;
+    const EL_OP = document.getElementById("EL_OP").value;
+    const CL = document.getElementById("CL").value;
+    const SL = document.getElementById("SL").value;
+    const EL = document.getElementById("EL").value;
+
+    const data = {
+        Leaves_ID: Number(Leave_ID),
+        FYID: Number(FYID),
+        Emp_ID: Number(Emp_ID),
+        EL_OP: Number(EL_OP),
+        CL: Number(CL),
+        SL: Number(SL),
+        EL: Number(EL)
+    }
+    updateLeave(Leave_ID, data);
+    fillTableGrid();
+}
+
+function displaySuccessMessage(message) {
+    const alertContainer = document.createElement('div');
+    alertContainer.classList.add('alert', 'alert-success', 'mt-3');
+    alertContainer.textContent = message;
+    document.getElementById('alertMessage').appendChild(alertContainer);
+    setTimeout(() => {
+        alertContainer.remove();
+    }, 2000); // Remove the message after 3 seconds
+}
+
+function displayErrorMessage(message) {
+    const alertContainer = document.createElement('div');
+    alertContainer.classList.add('alert', 'alert-danger', 'mt-3');
+    alertContainer.textContent = message;
+    document.getElementById('alertMessage').appendChild(alertContainer);
+    setTimeout(() => {
+        alertContainer.remove();
+    }, 2000); // Remove the message after 3 seconds
+}
+
+$(document).ready(function () {
+    initializeDataTable();
+    // $('#GridID tbody').on('click', 'tr', handleTableRowClick);
+    $('#GridID tbody').on('click', '.roweditclass', handleTableRowClick);
+    $('#GridID tbody').on('click', '.rowdeleteclass', handleDeleteButtonClick); // Attach delete button click handler
+    document.getElementById(INSERT_BUTTON_ID).addEventListener('click', handleInsertClick);
+    document.getElementById(UPDATE_BUTTON_ID).addEventListener('click', handleUpdateClick);
+    document.getElementById(CANCEL_BUTTON_ID).addEventListener('click', handleCancelClick);
+    fillEmployeeDropDown()
+    fillFinYearDropDown()
+    fillTableGrid()
+});

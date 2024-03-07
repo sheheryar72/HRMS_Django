@@ -1,0 +1,95 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/payrollperiod.css' %}">
+
+<style>
+  .form-control[readonly] {
+    background-color: #343a40;
+    color: #FFF ;
+    opacity: 1;
+}
+</style>
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      <div class="form-container">
+        <form id="myForm">
+          <div id="alertMessage"></div>
+          <div class="form-group row align-items-center">
+            <label for="FYID" class="col-sm-3 col-form-label col-form-label-sm">Fin Year ID</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control form-control-sm" id="FYID" placeholder="Fin Year ID" readonly>
+            </div>
+          </div>
+          <div class="form-group row align-items-center">
+            <label for="FINYear" class="col-sm-3 col-form-label col-form-label-sm">Fin Year</label>
+            <div class="col-sm-9">
+              <input type="text" class="form-control form-control-sm" id="FINYear" placeholder="20XX-20XX" maxlength="9">
+            </div>
+          </div>
+          <div class="form-group row align-items-center"> <!-- New form group for dropdown -->
+            <label for="FYStatus" class="col-sm-3 col-form-label col-form-label-sm">Fin Year Status</label>
+            <div class="col-sm-9">
+              <select class="form-control form-control-sm" id="FYStatus">
+                <option value="1">Active</option>
+                <option value="0">Deactive</option>
+              </select>
+            </div>
+          </div>
+          <div class="text-center">
+            <button type="button" id="insertFormData" class="btn btn-dark mr-2">Create</button>
+            <button type="button" id="updateFormData" class="btn btn-dark mr-2 d-none">Update</button>
+            <button type="button" id="CancelFormData" class="btn btn-dark">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="container mt-3">
+  <table id="GridID" class="table table-dark table-hover table-sm table-bordered" style="font-size: 0.8rem;">
+      <thead class="" style="background-color: black;">
+        <tr>
+          <th style="width: 5%;">S. No</th>
+          <th style="width: 10%;">Fin Year ID</th>
+          <th style="width: 65%;">Financial Year</th>
+          <th style="width: 10%;">Status</th>
+          <th style="width: 7%;">Action</th>
+        </tr>
+      </thead>
+      <tbody id="InserRowID">
+      </tbody>
+    </table>
+  </div>
+  
+  <div class="container mt-2">
+    <table id="GridID2" class="table table-dark table-hover table-sm table-bordered" style="font-size: 0.8rem;">
+        <thead class="" style="background-color: black;">
+          <tr>
+            <th style="width: 7%;">S. No</th>
+            <th style="width: 9%;">Period ID</th>
+            <th style="width: 15%;">Financial Year ID</th>
+            <th style="width: 10%;">Month ID</th>
+            <th style="width: 10%;">Month No</th>
+            <th style="width: 10%;">Month Name</th>
+            <th style="width: 10%;">M.S Name</th>
+            <th style="width: 10%;">Period Status</th>
+            <th style="width: 7%;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="InserRowID2">
+        </tbody>
+      </table>
+    </div>
+    
+
+<!-- <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script> -->
+<script src="{% static 'js/payrollperiod.js' %}"></script>
+
+{% endblock %}

@@ -111,6 +111,7 @@ function handleCancelClick() {
     document.getElementById("No_of_Children").value = '';
     document.getElementById("GrossSalary").value = '';
     document.getElementById("Remarks").value = '';
+    document.getElementById("HR_Emp_ID").value = '';
     document.getElementById("Emp_ID").selectedIndex = 0;
     document.getElementById("DSG_ID").selectedIndex = 0;
     document.getElementById("Dept_ID").selectedIndex = 0;
@@ -118,6 +119,7 @@ function handleCancelClick() {
     document.getElementById("Emp_Category").selectedIndex = 0;
     document.getElementById("Marital_Status").selectedIndex = 0;
     document.getElementById("updateFormData").classList.add("d-none");
+    document.getElementById("saveNewBtnId").classList.add("d-none");
     document.getElementById("insertFormData").classList.remove("d-none");
 
     document.getElementById("InserRowID1").innerHTML = "";
@@ -161,28 +163,28 @@ async function createDesignation(departmentData) {
     }
 }
 
-async function updateDesignation(id, departmentData) {
-    try {
-        const response = await fetch(`${BASE_URL}update/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(departmentData),
-        });
-        if (!response.ok) {
-            throw new Error('Failed to update Grade');
-        }
-        //const data = await response.json();
-        displaySuccessMessage('Grade updated successfully!');
-        fillTableGrid();
-        //return data;
-    } catch (error) {
-        console.error('Error updating Grade:', error);
-        displayErrorMessage('Failed to update Grade. Please try again.');
-        return null;
-    }
-}
+// async function updateDesignation(id, departmentData) {
+//     try {
+//         const response = await fetch(`${BASE_URL}update/${id}`, {
+//             method: 'PUT',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify(departmentData),
+//         });
+//         if (!response.ok) {
+//             throw new Error('Failed to update Grade');
+//         }
+//         //const data = await response.json();
+//         displaySuccessMessage('Grade updated successfully!');
+//         fillTableGrid();
+//         //return data;
+//     } catch (error) {
+//         console.error('Error updating Grade:', error);
+//         displayErrorMessage('Failed to update Grade. Please try again.');
+//         return null;
+//     }
+// }
 
 async function deleteDesignation(id) {
     try {
@@ -238,17 +240,17 @@ function createActionButton() {
     return dropdown;
 }
 
-function handleInsertClick() {
-    const Grade_ID = document.getElementById("Grade_ID").value;
-    const Grade_Descr = document.getElementById("Grade_Descr").value;
+// function handleInsertClick() {
+//     const Grade_ID = document.getElementById("Grade_ID").value;
+//     const Grade_Descr = document.getElementById("Grade_Descr").value;
 
-    const departmentData = {
-        Grade_ID: Grade_ID,
-        Grade_Descr: Grade_Descr
-    }
-    createDesignation(departmentData);
+//     const departmentData = {
+//         Grade_ID: Grade_ID,
+//         Grade_Descr: Grade_Descr
+//     }
+//     createDesignation(departmentData);
 
-}
+// }
 
 
 function handleInsertClick() {
@@ -256,6 +258,7 @@ function handleInsertClick() {
     const Emp_Up_ID = Number(document.getElementById("Emp_Up_ID").value);
     const Emp_Up_Date = document.getElementById("Emp_Up_Date").value;
     const Emp_ID = Number(document.getElementById("Emp_ID").value);
+    const HR_Emp_ID = Number(document.getElementById("HR_Emp_ID").value);
     const Emp_Category = document.getElementById("Emp_Category").value;
     const Dsg_ID = Number(document.getElementById("DSG_ID").value);
     const Dept_ID = Number(document.getElementById("Dept_ID").value);
@@ -292,6 +295,7 @@ function handleInsertClick() {
         Emp_Up_ID: Emp_Up_ID,
         Emp_Up_Date: Emp_Up_Date,
         Emp_ID: Emp_ID,
+        HR_Emp_ID: HR_Emp_ID,
         Emp_Category: Emp_Category,
         Dsg_ID: Dsg_ID,
         Dept_ID: Dept_ID,
@@ -300,10 +304,11 @@ function handleInsertClick() {
         No_of_Children: No_of_Children,
         Remarks: Remarks,
         GrossSalary: grossSalary,
+        Co_ID: 1
     }
 
     //debugger
-    if (Emp_ID != 0 && Dsg_ID != 0 && Dept_ID != 0 && Grade_ID != 0 && dataArray.length != 0 && grossSalary != 0) {
+    if (Emp_ID != 0 && Dsg_ID != 0 && Dept_ID != 0 && Grade_ID != 0 && dataArray.length != 0) {
 
         $.post({
             url: API_URL + 'salaryupdate/addsalarymaster/',
@@ -333,15 +338,85 @@ function handleInsertClick() {
 }
 
 function handleUpdateClick() {
-    const Grade_ID = document.getElementById("Grade_ID").value;
-    const Grade_Descr = document.getElementById("Grade_Descr").value;
 
-    const departmentData = {
+    const Emp_Up_ID = Number(document.getElementById("Emp_Up_ID").value);
+    const Emp_Up_Date = document.getElementById("Emp_Up_Date").value;
+    const Emp_ID = Number(document.getElementById("Emp_ID").value);
+    const HR_Emp_ID = Number(document.getElementById("HR_Emp_ID").value);
+    const Emp_Category = document.getElementById("Emp_Category").value;
+    const Dsg_ID = Number(document.getElementById("DSG_ID").value);
+    const Dept_ID = Number(document.getElementById("Dept_ID").value);
+    const Grade_ID = Number(document.getElementById("Grade_ID").value);
+    const Marital_Status = document.getElementById("Marital_Status").value;
+    const No_of_Children = Number(document.getElementById("No_of_Children").value);
+    const Remarks = document.getElementById("Remarks").value;
+    const Element_Descr = document.getElementById("Element_Descr").value;
+    const grossSalary = Number(document.getElementById("GrossSalary").value);
+
+    let dataArray = [];
+
+    $("#bmGridID1 tbody tr").each(function () {
+        var rowData = {};
+        rowData.Element_ID = Number($(this).find("td:eq(1) input").attr("id"));
+        rowData.Element_Category = $(this).find("td:eq(2) input").val();
+        rowData.Amount = Number($(this).find("td:eq(3) input").val());
+        rowData.Element_Type = "Allowance";
+        if (rowData.Amount != 0)
+            dataArray.push(rowData);
+    });
+
+    $("#bmGridID2 tbody tr").each(function () {
+        var rowData = {};
+        rowData.Element_ID = Number($(this).find("td:eq(1) input").attr("id"));
+        rowData.Element_Category = $(this).find("td:eq(2) input").val();
+        rowData.Amount = Number($(this).find("td:eq(3) input").val());
+        rowData.Element_Type = "Deduction";
+        if (rowData.Amount != 0)
+            dataArray.push(rowData);
+    });
+
+    let masterData = {
+        Emp_Up_ID: Emp_Up_ID,
+        Emp_Up_Date: Emp_Up_Date,
+        Emp_ID: Emp_ID,
+        HR_Emp_ID: HR_Emp_ID,
+        Emp_Category: Emp_Category,
+        Dsg_ID: Dsg_ID,
+        Dept_ID: Dept_ID,
         Grade_ID: Grade_ID,
-        Grade_Descr: Grade_Descr
+        Marital_Status: Marital_Status,
+        No_of_Children: No_of_Children,
+        Remarks: Remarks,
+        GrossSalary: grossSalary,
+        Co_ID: 1
     }
-    updateDesignation(Grade_ID, departmentData);
-    // fillTableGrid();
+    // alert('update salary')
+    // alert(Emp_Up_ID)
+    debugger
+    if (Emp_Up_ID != 0 && Emp_ID != 0 && Dsg_ID != 0 && Dept_ID != 0 && Grade_ID != 0 && dataArray.length != 0) {
+
+        $.post({
+            // url: API_URL + `salaryupdate/updatesalary/${Emp_Up_ID}/`,
+            url: API_URL + `salaryupdate/updatesalary/${Emp_Up_ID}`,
+            contentType: 'application/json',
+            data: JSON.stringify({
+                masterData: masterData,
+                detailList: dataArray
+            }),
+            dataType: 'json',
+            headers: {
+            },
+            success: function (response) {
+                displaySuccessMessage("Salary Successfully Updated")
+            },
+            error: function (error) {
+                displayErrorMessage("Fail to Update Salary")
+                console.log(error);
+            }
+        });
+    } else {
+        displayErrorMessage("Please Fill Correct Data")
+    }
 }
 
 document.getElementById("Emp_ID").addEventListener("change", function () {
@@ -349,13 +424,14 @@ document.getElementById("Emp_ID").addEventListener("change", function () {
 })
 
 function mapEmployeeDate(empID) {
-    
+
     console.log('listofEmployeeNotInSalUpdate: ', listofEmployeeNotInSalUpdate);
     const singleEmpData = listofEmployeeNotInSalUpdate.find(item => item.Emp_ID == empID);
     console.log('singleEmpData: ', singleEmpData);
     //debugger
     if (singleEmpData != null && singleEmpData != 0) {
         document.getElementById("Emp_ID").value = singleEmpData.Emp_ID;
+        document.getElementById("HR_Emp_ID").value = singleEmpData.HR_Emp_ID;
         document.getElementById("Emp_Category").value = '';
         document.getElementById("DSG_ID").value = singleEmpData.Joining_Dsg_ID;
         document.getElementById("Dept_ID").value = singleEmpData.Joining_Dept_ID;
@@ -391,12 +467,9 @@ function mapEmployeeDate(empID) {
         }
 
     })
-    .catch((error) => {
-        console.log("Error")
-    })
-
-    
-
+        .catch((error) => {
+            console.log("Error")
+        })
 }
 
 async function getAllDataFromDB(url, name) {
@@ -430,9 +503,46 @@ document.getElementById("elementGridIconId").addEventListener("click", function 
     fillPayrollElementTableGrid(Emp_ID_, Emp_Up_ID_);
 });
 
+document.getElementById("calculateGrossSalary").addEventListener('click', function () {
+
+    const grossSalary = Number(document.getElementById("GrossSalary").value);
+
+    var totalRows = Number($('#InserRowID1 tr').length);
+
+    if (grossSalary != 0 && totalRows != 0) {
+        $("#bmGridID1 tbody tr").each(function () {
+            const elementID = Number($(this).find("td:eq(1) input").attr("id"));
+            if (elementID == 1) {
+                const amount = (grossSalary / 100) * 58.5;
+                $(this).find("td:eq(3) input").val(amount);
+            }
+            if (elementID == 2) {
+                const amount = (grossSalary / 100) * 6.5;
+                $(this).find("td:eq(3) input").val(amount);
+            }
+            if (elementID == 5) {
+                const amount = (grossSalary / 100) * 29;
+                $(this).find("td:eq(3) input").val(amount);
+            }
+            if (elementID == 6) {
+                const amount = (grossSalary / 100) * 6;
+                $(this).find("td:eq(3) input").val(amount);
+            }
+        });
+
+        $("#bmGridID2 tbody tr").each(function () {
+            const elementID = Number($(this).find("td:eq(1) input").attr("id"));
+            if (elementID == 17) {
+                $(this).find("td:eq(3) input").val(130);
+            }
+        });
+    }
+
+});
+
 async function fillPayrollElementTableGrid(empID, empUpID) {
     try {
-        const response = await fetch(`${API_URL}salaryupdate/payrollelement/${empID}/${empUpID}/`, {
+        const response = await fetch(`${API_URL}salaryupdate/payrollelement/${empUpID}/${empID}/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -512,16 +622,23 @@ function handleTableRowClick3() {
     GetAll_Salary_update_BYID(Emp_Up_ID, Emp_ID);
 
     $("#orangeModalSubscription4").modal('hide');
+
+    document.getElementById("insertFormData").classList.add("d-none");
+    document.getElementById("saveNewBtnId").classList.remove("d-none");
+    document.getElementById("updateFormData").classList.remove("d-none");
 }
 
 function GetAll_Salary_update_BYID(emp_up_Id, empId) {
-
+    console.log("emp_up_Id: ", emp_up_Id)
+    console.log("empId: ", empId)
     getAllDataFromDB(`${API_URL}salaryupdate/getallmasterbyid/${emp_up_Id}/${empId}/`, 'Salary Master').then((data) => {
         console.log("response: ", data);
 
         document.getElementById("Emp_Up_ID").value = data[0].Emp_Up_ID;
+        document.getElementById("Emp_Up_ID2").value = data[0].Emp_Up_ID;
         document.getElementById("Emp_Up_Date").value = moment(data[0].Emp_Up_Date).format("YYYY-MM-DD");
         document.getElementById("Emp_ID").value = data[0].Emp_ID;
+        document.getElementById("HR_Emp_ID").value = data[0].HR_Emp_ID;
         // document.getElementById("Emp_Name").value = data[0].Emp_Name;
         // document.getElementById("Emp_Category").value = "";
         document.getElementById("DSG_ID").value = data[0].Dsg_ID;
@@ -537,14 +654,14 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
         for (var i = 0; i < data.length; i++) {
             if (data[i].Element_Type == 'Allowance') {
 
-                allowanceRow += `<tr><td>${counter}</td>
+                allowanceRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
                         <td><input type="text" value="${data[i].Element_Category}" readonly /></td>
                         <td><input type="text" value="${data[i].Amount}" /></td></tr>`;
                 totalAllowance += data[i].Amount;
             }
             if (data[i].Element_Type == 'Deduction') {
-                deductionRow += `<tr><td>${counter}</td>
+                deductionRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
                         <td><input type="text" value="${data[i].Element_Category}" readonly /></td>
                         <td><input type="text" value="${data[i].Amount}" /></td></tr>`;
@@ -552,8 +669,8 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
             }
             counter++;
         }
-        console.log("allowanceRow: ", allowanceRow)
-        console.log("deductionRow: ", deductionRow)
+        // console.log("allowanceRow: ", allowanceRow)
+        // console.log("deductionRow: ", deductionRow)
         document.getElementById("InserRowID1").innerHTML = allowanceRow;
         document.getElementById("InserRowID2").innerHTML = deductionRow;
 
@@ -586,7 +703,6 @@ function displayErrorMessage(message) {
     }, 2000); // Remove the message after 3 seconds
 }
 
-
 function handleTableRowClick2() {
 
     const ElemenT_ID = $(this).find('td')[0].innerHTML;
@@ -598,14 +714,14 @@ function handleTableRowClick2() {
 
     if (ElemenT_TYPE == "Allowance") {
         document.getElementById("InserRowID1").innerHTML +=
-            `<tr><td></td>
+            `<tr>
                             <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                             <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
                             <td><input type="text" value="" /></td></tr>`;
     }
     if (ElemenT_TYPE == "Deduction") {
         document.getElementById("InserRowID2").innerHTML +=
-            `<tr><td></td>
+            `<tr>
                             <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                             <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
                             <td><input type="text" value="" /></td></tr>`;
@@ -632,8 +748,9 @@ $(document).ready(function () {
 
     // $('#GridID tbody').on('click', 'tr', handleTableRowClick);
     $('#GridID tbody').on('click', '.roweditclass', handleTableRowClick);
-    $('#GridID tbody').on('click', '.rowdeleteclass', handleDeleteButtonClick); // Attach delete button click handler
+    $('#GridID tbody').on('click', '.rowdeleteclass', handleDeleteButtonClick); 
     document.getElementById(INSERT_BUTTON_ID).addEventListener('click', handleInsertClick);
+    document.getElementById(SAVE_NEW_BUTTON_ID).addEventListener('click', handleInsertClick);
     document.getElementById(UPDATE_BUTTON_ID).addEventListener('click', handleUpdateClick);
     document.getElementById(CANCEL_BUTTON_ID).addEventListener('click', handleCancelClick);
     // fillTableGrid()

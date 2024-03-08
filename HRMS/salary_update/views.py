@@ -9,6 +9,7 @@ from employee.serializers import HR_Employees_Serializer
 from django.db.models import Subquery
 from rest_framework import status
 from payroll_element.models import HR_Payroll_Elements, HR_Payroll_Elements_Serializer
+import pdb
 
 def salaryupdate_view(request):
     return render(request, 'salaryupdate.html')
@@ -36,20 +37,69 @@ def getll_emp_notin_salaryupdate(request):
 @api_view(['POST'])
 def add_salary_update(request):
         try:
-            # print("add_salary_update data: ", request.data)
+            # print("add_salary_update data: ", request.data)   
+            # pdb.set_trace()
+            print("add_salary_update")
             print("masterData data: ", request.data.get("masterData", {}))
             print("detailList data: ", request.data.get('detailList', []))
-            master_serializer = HR_Emp_Sal_Update_Mstr_Serializer(request.data.get("masterData", {}))
+            master_serializer = HR_Emp_Sal_Update_Mstr_Serializer(data=request.data.get("masterData", {}))
             if master_serializer.is_valid():
                 master_serializer.save()
+                print("master saved")
+                print("master_serializer: ", master_serializer.data)
+                print("master_serializer.data.Emp_Up_ID: ", master_serializer.data['Emp_Up_ID'])
                 detailList = request.data.get('detailList', [])
                 for detail_data in detailList:
-                    detail_data.Emp_Up_ID = master_serializer.data.Emp_Up_ID
-                    detail_serializer = HR_Emp_Sal_Update_Dtl_Serializer(detail_data)
+                    detail_data['Emp_Up_ID'] = master_serializer.data['Emp_Up_ID']
+                    detail_data['Emp_ID'] = master_serializer.data['Emp_ID']
+                    detail_serializer = HR_Emp_Sal_Update_Dtl_Serializer(data=detail_data)
                     if detail_serializer.is_valid():
                         detail_serializer.save()
-                    return Response(detail_serializer.errors, status=status.HTTP_404_NOT_FOUND)
-            return Response(master_serializer.errors, status=status.HTTP_404_NOT_FOUND)
+                        print("detail saved")
+                    else:
+                        return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(master_serializer.data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['POST'])
+def update_salary_update(request, empupid):
+        try:
+            print("update salary")
+            print("empupid: ", empupid)
+            print("masterData data: ", request.data.get("masterData", {}))
+            print("detailList data: ", request.data.get('detailList', []))
+            master_querysery = HR_Emp_Sal_Update_Mstr.objects.get(pk=empupid)
+            detail_queryset = HR_Emp_Sal_Update_Mstr.objects.get(Emp_Up_ID=empupid)
+            if master_querysery is None:
+                Response({'error': 'no salary found'}, status=status.HTTP_404_NOT_FOUND)
+            
+            if master_querysery and detail_queryset is not None:
+                HR_Emp_Sal_Update_Mstr.objects.filter(Emp_Up_ID=empupid).delete()
+                HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID=empupid).delete()
+
+            master_serializer = HR_Emp_Sal_Update_Mstr_Serializer(data=request.data.get("masterData", {}))
+            # master_serializer = HR_Emp_Sal_Update_Mstr_Serializer(master_querysery, data=request.data.get("masterData", {}), partial=True)
+            if master_serializer.is_valid():
+                master_serializer.save()
+                print("master updated")
+                print("master_serializer: ", master_serializer.data)
+                print("master_serializer.data.Emp_Up_ID: ", master_serializer.data['Emp_Up_ID'])
+                detailList = request.data.get('detailList', [])
+
+                for detail_data in detailList:
+                    detail_data['Emp_Up_ID'] = master_serializer.data['Emp_Up_ID']
+                    detail_data['Emp_ID'] = master_serializer.data['Emp_ID']
+        
+                    # detail_queryset = HR_Emp_Sal_Update_Dtl.objects.get(Emp_ID=empupid)
+
+                    detail_serializer = HR_Emp_Sal_Update_Dtl_Serializer(data=detail_data)
+                    if detail_serializer.is_valid():
+                        detail_serializer.save()
+                        print("detail updated")
+                    else:
+                        return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(master_serializer.data, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -80,7 +130,7 @@ def update_salary_Update(request, pk):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
-def getall_payroll_element_notin_su(request, empID, empUpID):
+def getall_payroll_element_notin_su(request, empUpID, empID):
     try:
         print('empID: ', empID)
         print('empUpID: ', empUpID)
@@ -94,14 +144,15 @@ def getall_payroll_element_notin_su(request, empID, empUpID):
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
-def getall_master_byid(request, empID, empUpID):
+def getall_master_byid(request, empUpID, empID):
     try:
         if not empID or not empUpID:
             return Response({'error': 'Employee ID or Update ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
-
+        print("up is: ", empUpID)
+        print("empID: ", empID)
         detail_queryset = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID=empUpID, Emp_ID=empID)
         datas = []
-
+        
         for data in detail_queryset:
             print('data: ', data)
             item = {
@@ -129,7 +180,7 @@ def getall_master_byid(request, empID, empUpID):
                 "No_of_Children": data.Emp_Up_ID.No_of_Children
             }
             datas.append(item)
-
+        print("DAtas: ", datas)
         return Response(datas, status=status.HTTP_200_OK)
     except HR_Emp_Sal_Update_Dtl.DoesNotExist:
         return Response({'error': 'Salary not found'}, status=status.HTTP_404_NOT_FOUND)

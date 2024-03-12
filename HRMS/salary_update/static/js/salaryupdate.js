@@ -273,9 +273,9 @@ function handleInsertClick() {
 
     $("#bmGridID1 tbody tr").each(function () {
         var rowData = {};
-        rowData.Element_ID = Number($(this).find("td:eq(1) input").attr("id"));
-        rowData.Element_Category = $(this).find("td:eq(2) input").val();
-        rowData.Amount = Number($(this).find("td:eq(3) input").val());
+        rowData.Element_ID = Number($(this).find("td:eq(0) input").attr("id"));
+        rowData.Element_Category = $(this).find("td:eq(1) input").val();
+        rowData.Amount = Number($(this).find("td:eq(2) input").val());
         rowData.Element_Type = "Allowance";
         if (rowData.Amount != 0)
             dataArray.push(rowData);
@@ -283,9 +283,9 @@ function handleInsertClick() {
 
     $("#bmGridID2 tbody tr").each(function () {
         var rowData = {};
-        rowData.Element_ID = Number($(this).find("td:eq(1) input").attr("id"));
-        rowData.Element_Category = $(this).find("td:eq(2) input").val();
-        rowData.Amount = Number($(this).find("td:eq(3) input").val());
+        rowData.Element_ID = Number($(this).find("td:eq(0) input").attr("id"));
+        rowData.Element_Category = $(this).find("td:eq(1) input").val();
+        rowData.Amount = Number($(this).find("td:eq(2) input").val());
         rowData.Element_Type = "Deduction";
         if (rowData.Amount != 0)
             dataArray.push(rowData);
@@ -357,9 +357,9 @@ function handleUpdateClick() {
 
     $("#bmGridID1 tbody tr").each(function () {
         var rowData = {};
-        rowData.Element_ID = Number($(this).find("td:eq(1) input").attr("id"));
-        rowData.Element_Category = $(this).find("td:eq(2) input").val();
-        rowData.Amount = Number($(this).find("td:eq(3) input").val());
+        rowData.Element_ID = Number($(this).find("td:eq(0) input").attr("id"));
+        rowData.Element_Category = $(this).find("td:eq(1) input").val();
+        rowData.Amount = Number($(this).find("td:eq(2) input").val());
         rowData.Element_Type = "Allowance";
         if (rowData.Amount != 0)
             dataArray.push(rowData);
@@ -367,9 +367,9 @@ function handleUpdateClick() {
 
     $("#bmGridID2 tbody tr").each(function () {
         var rowData = {};
-        rowData.Element_ID = Number($(this).find("td:eq(1) input").attr("id"));
-        rowData.Element_Category = $(this).find("td:eq(2) input").val();
-        rowData.Amount = Number($(this).find("td:eq(3) input").val());
+        rowData.Element_ID = Number($(this).find("td:eq(0) input").attr("id"));
+        rowData.Element_Category = $(this).find("td:eq(1) input").val();
+        rowData.Amount = Number($(this).find("td:eq(2) input").val());
         rowData.Element_Type = "Deduction";
         if (rowData.Amount != 0)
             dataArray.push(rowData);
@@ -451,14 +451,14 @@ function mapEmployeeDate(empID) {
             if (listofPayrollElement[i].Element_Category == "Fixed") {
                 if (listofPayrollElement[i].Element_Type == "Allowance") {
                     document.getElementById("InserRowID1").innerHTML +=
-                        `<tr><td>${counter++}</td>
+                        `<tr>
                                 <td><input type="text" id="${listofPayrollElement[i].Element_ID}" value="${listofPayrollElement[i].Element_Name}" readonly /></td>
                                 <td><input type="text" value="${listofPayrollElement[i].Element_Category}" readonly /></td>
                                 <td><input type="number" value=""  /></td></tr>`;
                 }
                 if (listofPayrollElement[i].Element_Type == "Deduction") {
                     document.getElementById("InserRowID2").innerHTML +=
-                        `<tr><td>${counter++}</td>
+                        `<tr>
                                 <td><input type="text" id="${listofPayrollElement[i].Element_ID}" value="${listofPayrollElement[i].Element_Name}" readonly /></td>
                                 <td><input type="text" value="${listofPayrollElement[i].Element_Category}" readonly /></td>
                                 <td><input type="number" value="" /></td></tr>`;
@@ -506,34 +506,38 @@ document.getElementById("elementGridIconId").addEventListener("click", function 
 document.getElementById("calculateGrossSalary").addEventListener('click', function () {
 
     const grossSalary = Number(document.getElementById("GrossSalary").value);
-
+    // debugger
     var totalRows = Number($('#InserRowID1 tr').length);
 
+    // alert('totalRows: ', totalRows)
     if (grossSalary != 0 && totalRows != 0) {
         $("#bmGridID1 tbody tr").each(function () {
-            const elementID = Number($(this).find("td:eq(1) input").attr("id"));
+            const elementID = Number($(this).find("td:eq(0) input").attr("id"));
             if (elementID == 1) {
                 const amount = (grossSalary / 100) * 58.5;
-                $(this).find("td:eq(3) input").val(amount);
+                $(this).find("td:eq(2) input").val(amount);
             }
             if (elementID == 2) {
                 const amount = (grossSalary / 100) * 6.5;
-                $(this).find("td:eq(3) input").val(amount);
+
+                $(this).find("td:eq(2) input").val(amount);
             }
             if (elementID == 5) {
                 const amount = (grossSalary / 100) * 29;
-                $(this).find("td:eq(3) input").val(amount);
+
+                $(this).find("td:eq(2) input").val(amount);
             }
             if (elementID == 6) {
                 const amount = (grossSalary / 100) * 6;
-                $(this).find("td:eq(3) input").val(amount);
+
+                $(this).find("td:eq(2) input").val(amount);
             }
         });
 
         $("#bmGridID2 tbody tr").each(function () {
-            const elementID = Number($(this).find("td:eq(1) input").attr("id"));
+            const elementID = Number($(this).find("td:eq(0) input").attr("id"));
             if (elementID == 17) {
-                $(this).find("td:eq(3) input").val(130);
+                $(this).find("td:eq(2) input").val(130);
             }
         });
     }
@@ -653,7 +657,6 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
 
         for (var i = 0; i < data.length; i++) {
             if (data[i].Element_Type == 'Allowance') {
-
                 allowanceRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
                         <td><input type="text" value="${data[i].Element_Category}" readonly /></td>
@@ -713,18 +716,20 @@ function handleTableRowClick2() {
     document.getElementById("Element_Descr").value = ElemenT_NAME;
 
     if (ElemenT_TYPE == "Allowance") {
-        document.getElementById("InserRowID1").innerHTML +=
+        var temp =
             `<tr>
                             <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                             <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
                             <td><input type="text" value="" /></td></tr>`;
+                            $("#InserRowID1").append(temp);
     }
     if (ElemenT_TYPE == "Deduction") {
-        document.getElementById("InserRowID2").innerHTML +=
+        var temp =
             `<tr>
                             <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                             <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
                             <td><input type="text" value="" /></td></tr>`;
+        $("#InserRowID2").append(temp);
     }
 
     $("#orangeModalSubscription3").modal('hide');
@@ -748,7 +753,7 @@ $(document).ready(function () {
 
     // $('#GridID tbody').on('click', 'tr', handleTableRowClick);
     $('#GridID tbody').on('click', '.roweditclass', handleTableRowClick);
-    $('#GridID tbody').on('click', '.rowdeleteclass', handleDeleteButtonClick); 
+    $('#GridID tbody').on('click', '.rowdeleteclass', handleDeleteButtonClick);
     document.getElementById(INSERT_BUTTON_ID).addEventListener('click', handleInsertClick);
     document.getElementById(SAVE_NEW_BUTTON_ID).addEventListener('click', handleInsertClick);
     document.getElementById(UPDATE_BUTTON_ID).addEventListener('click', handleUpdateClick);

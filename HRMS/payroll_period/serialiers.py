@@ -12,10 +12,12 @@ class HR_PAYROLL_MONTH_Serializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class HR_PAYROLL_PERIOD_Serializer(serializers.ModelSerializer): 
-    FinYear = HR_FinYearMstrSerializer()
-    payrollmonth = HR_PAYROLL_MONTH_Serializer()
+    # FinYear = HR_FinYearMstrSerializer()
+    # payrollmonth = HR_PAYROLL_MONTH_Serializer()
     class Meta:
         model = HR_PAYROLL_PERIOD
         fields = "__all__"
+        depth = 1
+
 
 

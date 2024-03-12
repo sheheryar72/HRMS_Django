@@ -66,6 +66,7 @@ function handleCancelClick() {
     document.getElementById("Working_Dept_ID").selectedIndex = 0;
     document.getElementById("singleSelection").selectedIndex = 0;
     document.getElementById("InserRowID").innerHTML = '';
+    table2.clear().draw();
     document.getElementById('singleSelection').disabled = false; 
     // document.getElementById('singleSelection').style.backgroundColor = '##343a40'; 
     document.getElementById('singleSelection').style.backgroundColor = '#fff'; 
@@ -217,7 +218,7 @@ function getWDAByID(W_ID) {
                 let uniqueValuesSet = new Set(elementList);
                 let uniqueArray = Array.from(uniqueValuesSet);
 
-                document.getElementById("Working_Dept_ID").value = response[0].W_All_Ded_ID;
+                // document.getElementById("Working_Dept_ID").value = response[0].W_All_Ded_ID;
                 //document.getElementById("singleSelection").selectedIndex = response[0].w_All_Ded_Dept_ID;
 
                 console.log('elementList: ', elementList)
@@ -394,11 +395,11 @@ function GetAllWDAByID(W_Dept_ID) {
     }
 }
 
-document.getElementById("Working_Dept_ID").addEventListener("change", function () {
+document.getElementById("Working_Dept_ID").addEventListener("click", function () {
     // alert('this: ', this.value)
     console.log('this.value: ', this.value);
     document.getElementById("singleSelection").value = this.value;
-    document.getElementById('singleSelection').disabled = true; 
+    document.getElementById('singleSelection').disabled = true;     
     document.getElementById("singleSelection").style.backgroundColor = "#343a40";
     document.getElementById('singleSelection').style.color = '#fff'; 
 
@@ -428,7 +429,6 @@ function displayErrorMessage(message) {
         alertContainer.remove();
     }, 2000); 
 }
-
 
 $(document).ready(function () {
     initializeDataTable();

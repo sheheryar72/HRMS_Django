@@ -33,8 +33,8 @@ class HR_PAYROLL_PERIOD(models.Model):
     # FYID = models.IntegerField()
     # MNTH_ID = models.IntegerField()
     PERIOD_STATUS = models.BooleanField()
-    payrollmonth = models.ForeignKey(HR_PAYROLL_MONTH, to_field='MNTH_ID',  db_column='MNTH_ID', on_delete=models.CASCADE)
-    FinYear = models.ForeignKey(HR_FinYearMstr, to_field='FYID',  db_column='FYID', on_delete=models.CASCADE)
+    MNTH_ID = models.ForeignKey(HR_PAYROLL_MONTH, to_field='MNTH_ID',  db_column='MNTH_ID', on_delete=models.CASCADE)
+    FYID = models.ForeignKey(HR_FinYearMstr, to_field='FYID',  db_column='FYID', on_delete=models.CASCADE)
 
     class Meta:
         managed = False

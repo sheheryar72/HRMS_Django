@@ -189,23 +189,23 @@
 //     });
 // };
 
-function onClickFunc(formID, formDescr) {
-    const message = 'formID: ' + formID + '\n' + 'formDescr: ' + formDescr;
-    alert(message);
-    console.log("onClickFunc: ", message)
-    if (formID === 1) {
-        window.location.href = 'employees_profile.html';
-    } else if (formID === 2) {
-        window.location.href = 'designation.html';
-    } else if (formID === 3) {
-        window.location.href = 'department.html';
-    } else if (formID === 68) {
-        window.location.href = '/city/city/';
-    } else if (formID === 83) {
-        alert("formId: ", formID)
-        window.location.href = 'salaryupdate.html';
-    }
-}
+// function onClickFunc(formID, formDescr) {
+//     const message = 'formID: ' + formID + '\n' + 'formDescr: ' + formDescr;
+//     alert(message);
+//     console.log("onClickFunc: ", message)
+//     if (formID === 1) {
+//         window.location.href = 'employees_profile.html';
+//     } else if (formID === 2) {
+//         window.location.href = 'designation.html';
+//     } else if (formID === 3) {
+//         window.location.href = 'department.html';
+//     } else if (formID === 68) {
+//         window.location.href = '/city/city/';
+//     } else if (formID === 83) {
+//         alert("formId: ", formID)
+//         window.location.href = 'salaryupdate.html';
+//     }
+// }
 
 window.onload = function () {
     $(document).ready(function () {

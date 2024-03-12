@@ -216,7 +216,9 @@ function onClickFunc(formID, formDescr) {
     } else if (formID === 78) {
         // window.open('/grade/';
         window.open('/payrollelemenet/')
-    }  else if (formID === 84) {
+    }  else if (formID === 83) {
+        window.open('/salaryupdate/')
+    }   else if (formID === 84) {
         window.open('/wda/')
     } 
 }

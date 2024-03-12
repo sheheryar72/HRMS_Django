@@ -79,13 +79,14 @@ function handleFinPeriodMonthTableRowClick() {
 function handlePeriodMonthTableRowClick() {
     const rowData = table2.row($(this).closest('tr')).data();
     console.log('rowData: ', rowData);
-    const PERIOD_ID = rowData[0];
+    const PERIOD_ID = rowData[1];
+    const FINID = rowData[2];
     console.log('PERIOD_ID: ', PERIOD_ID);
     if (confirm("Are you sure you want to Active this Period Month?")) {
         updatePeriodMonth(PERIOD_ID).then(success => {
             if (success) {
                 displaySuccessMessage('Period Month activated successfully!');
-                fillTable2Grid(1); 
+                fillTable2Grid(FINID); 
             } else {
                 displayErrorMessage('Failed to activate Period Month. Please try again.');
             }
@@ -159,11 +160,24 @@ function handleInsertClick(){
     }
 
     if (Number(FINYear.substring(2, 4)) + 1 != Number(FINYear.substring(7))) {
-        ddisplayErrorMessage('Please Add correct financial year')
+        displayErrorMessage('Please Add correct financial year')
         return;
-    }else{
-        createFinancialYear(formData);
-    }    
+    }
+
+    let checkFinYearExist = false;
+    $("#InserRowID tr").each(function(){
+        grid_finyear = $(this).find("td:eq(2)").text();
+        
+        if (FINYear == grid_finyear){
+            checkFinYearExist = true
+        }
+    })
+
+    if (checkFinYearExist){
+        displayErrorMessage('financial year alreay Exist')
+        return
+    }  
+    createFinancialYear(formData);
 }
 
 function handleUpdateClick(){
@@ -280,6 +294,11 @@ async function createFinancialYear(formData) {
         displaySuccessMessage('Financial Year created successfully!');
         fillTableGrid();
         fillTable2Grid(obj.data.FYID)
+
+        // console.log('obj.data.FYID: ', obj.data.FYID)
+        // if (obj.data.FYID != '' || obj.data.FYID != undefined){
+        //     fillTable2Grid(obj.data.FYID)
+        // }
         //return data;
     } catch (error) {
         console.error('Error creating Financial Year:', error);
@@ -368,10 +387,15 @@ function fillTable2Grid(id = current_finyear.FYID) {
         table2.clear().draw();
         for (var i = 0; i < data.length; i++) {
             var actionButton = '<button class="action-btn btn-success rowperiodmonthclass">Active</button>';
-            var row = [counter, data[i].PERIOD_ID, data[i].FinYear.FYID, data[i].payrollmonth.MNTH_ID,
-            data[i].payrollmonth.MNTH_NO, data[i].payrollmonth.MNTH_NAME, data[i].payrollmonth.MNTH_SHORT_NAME, data[i].PERIOD_STATUS ? 'Active' : 'In-Active',
-            // data[i].FianYear.FYID == current_finyear.FYID ? actionButton : ''
+        //     var row = [counter, data[i].ID, data[i].FYID, data[i].FinYear, data[i].MNTH_ID,
+        //     data[i].MNTH_NO, data[i].MNTH_NAME, data[i].MNTH_SHORT_NAME, data[i].PERIOD_STATUS ? 'Active' : 'In-Active',
+        //     // data[i].FianYear.FYID == current_finyear.FYID ? actionButton : ''
+        // actionButton];
+
+            var row = [counter, data[i].ID, data[i].FYID.FYID, data[i].FYID.FinYear, data[i].MNTH_ID.MNTH_ID,
+            data[i].MNTH_ID.MNTH_NO, data[i].MNTH_ID.MNTH_NAME, data[i].MNTH_ID.MNTH_SHORT_NAME, data[i].PERIOD_STATUS ? 'Active' : 'In-Active',
         actionButton];
+
             table2.row.add(row).draw(false);
             counter++;
         }

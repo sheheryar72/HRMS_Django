@@ -29,22 +29,27 @@ function initializeDataTable() {
 // Handle click on table row
 function handleTableRowClick() {
     const rowData = table.row($(this).closest('tr')).data();
-    const Leave_ID = rowData[1];
-    const FYID = rowData[2];
-    const Emp_ID = rowData[4];
-    const EL_OP = rowData[7];
-    const CL = rowData[8];
-    const SL = rowData[9];
-    const EL = rowData[10];
-    $('#Leave_ID').val(Leave_ID);
-    $('#FYID').val(FYID);
-    $('#Emp_ID').val(Emp_ID);
-    $('#EL_OP').val(EL_OP);
-    $('#CL').val(CL);
-    $('#SL').val(SL);
-    $('#EL').val(EL);
-    document.getElementById("updateFormData").classList.remove("d-none");
-    document.getElementById("insertFormData").classList.add("d-none");
+    const Loan_ID = rowData[1];
+
+    getLeaveById(Loan_ID).then((singleLoanData) => {
+        console.log("singleLoanData: ", singleLoanData)
+        document.getElementById("FYID").value = singleLoanData.FYID;
+        document.getElementById("Loan_ID").value = singleLoanData.Loan_ID;
+        document.getElementById("Emp_ID").value = singleLoanData.Emp_ID;
+        document.getElementById("Loan_Date").value = moment(singleLoanData.Loan_Date).format("YYYY-MM-DD");
+        document.getElementById("Loan_Type").value = singleLoanData.Loan_Type;
+        document.getElementById("Previous_Ded_Amount").value = Number(singleLoanData.Previous_Ded_Amount);
+        document.getElementById("Loan_Amount").value = Number(singleLoanData.Loan_Amount);
+        document.getElementById("Deducted_Amt").value = 0;
+        document.getElementById("Loan_Bal_Amt").value = (Number(singleLoanData.Loan_Bal_Amt) - Number(singleLoanData.Previous_Ded_Amount));
+        document.getElementById("Remarks").value = singleLoanData.Remarks;
+        document.getElementById("Loan_Ded_NoofMnth").value = Number(singleLoanData.Loan_Ded_NoofMnth);
+        document.getElementById("Loan_Ded_Amt").value = Number(singleLoanData.Loan_Ded_Amt);
+        document.getElementById("loanStatus").value = singleLoanData.Loan_Status ? 1 : 0;
+
+        document.getElementById("updateFormData").classList.remove("d-none");
+        document.getElementById("insertFormData").classList.add("d-none");
+    });
 }
 
 // Handle click on delete button in table row
@@ -66,13 +71,22 @@ function handleDeleteButtonClick() {
 }
 
 function handleCancelClick() {
-    document.getElementById("Leave_ID").value = '';
+    document.getElementById("Loan_ID").value = '';
+    document.getElementById("Loan_Date").value = '';
     document.getElementById("FYID").selectedIndex = 0;
     document.getElementById("Emp_ID").selectedIndex = 0;
-    document.getElementById("EL_OP").value = 0;
-    document.getElementById("CL").value = 0;
-    document.getElementById("SL").value = 0;
-    document.getElementById("EL").value = 0;
+    document.getElementById("Loan_Type").selectedIndex = 0;
+    document.getElementById("loanStatus").selectedIndex = 0;
+    document.getElementById("Remarks").value = "";
+    document.getElementById("Previous_Ded_Amount").value = 0;
+    document.getElementById("Loan_Amount").value = 0;
+    document.getElementById("Loan_Ded_NoofMnth").value = 0;
+    document.getElementById("Deducted_Amt").value = 0;
+    document.getElementById("Loan_Ded_Amt").value = 0;
+    document.getElementById("Loan_Bal_Amt").value = 0;
+
+    document.getElementById(INSERT_BUTTON_ID).classList.remove('d-none');
+    document.getElementById(UPDATE_BUTTON_ID).classList.add('d-none');
 }
 
 async function getAll(url) {
@@ -113,7 +127,7 @@ function fillFinYearDropDown() {
 
 async function getLeaveById(id) {
     try {
-        const response = await fetch(`${BASE_URL}${id}/`);
+        const response = await fetch(`${BASE_URL}getbyid/${id}`);
         if (!response.ok) {
             throw new Error('Failed to fetch Leave');
         }
@@ -194,8 +208,8 @@ function fillTableGrid() {
 
         for (var i = 0; i < data.length; i++) {
             var actionButton = createActionButton(); // Create action button element
-            var row = [counter, data[i].Loan_ID, data[i].Loan_Type, data[i].Emp_Name, data[i].Loan_Amount, 
-            data[i].Loan_Status ? 'Active' : 'In-Active', actionButton.outerHTML];
+            var row = [counter, data[i].Loan_ID, data[i].Loan_Type, data[i].Emp_Name, data[i].Loan_Amount,
+                data[i].Loan_Status ? 'Active' : 'In-Active', actionButton.outerHTML];
             table.row.add(row).draw(false);
             counter++;
         }
@@ -266,7 +280,7 @@ function handleInsertClick() {
         Loan_Ded_Amt: Number(Loan_Ded_Amt),
         Emp_ID: Number(Emp_ID),
         FYID: Number(FYID),
-        loan_Status: Number(loanStatus),
+        Loan_Status: (loanStatus),
         Remarks: Remarks
     }
     createLeave(data);
@@ -297,7 +311,7 @@ function handleUpdateClick() {
         Loan_Ded_Amt: Number(Loan_Ded_Amt),
         Emp_ID: Number(Emp_ID),
         FYID: Number(FYID),
-        loan_Status: Number(loanStatus),
+        Loan_Status: Number(loanStatus),
         Remarks: Remarks
     }
     updateLeave(Loan_ID, data);

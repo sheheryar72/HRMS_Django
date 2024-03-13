@@ -41,7 +41,7 @@ function handleTableRowClick() {
         document.getElementById("Previous_Ded_Amount").value = Number(singleLoanData.Previous_Ded_Amount);
         document.getElementById("Loan_Amount").value = Number(singleLoanData.Loan_Amount);
         document.getElementById("Deducted_Amt").value = 0;
-        document.getElementById("Loan_Bal_Amt").value = (Number(singleLoanData.Loan_Bal_Amt) - Number(singleLoanData.Previous_Ded_Amount));
+        document.getElementById("Loan_Bal_Amt").value = (Number(singleLoanData.Loan_Amount) - Number(singleLoanData.Previous_Ded_Amount));
         document.getElementById("Remarks").value = singleLoanData.Remarks;
         document.getElementById("Loan_Ded_NoofMnth").value = Number(singleLoanData.Loan_Ded_NoofMnth);
         document.getElementById("Loan_Ded_Amt").value = Number(singleLoanData.Loan_Ded_Amt);

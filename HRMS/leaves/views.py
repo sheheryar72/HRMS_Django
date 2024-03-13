@@ -17,7 +17,7 @@ def leaves_view(request):
 @api_view(['GET'])
 def getall(request):
     try:
-        leavess = HR_Leaves.objects.all()
+        leavess = HR_Leaves.objects.all().select_related('FYID', 'Emp_ID')
         # serializer = HR_Leaves_Serializer(leavess, many=True)
         data = []
         for item in leavess:
@@ -26,12 +26,14 @@ def getall(request):
                 'FYID': item.FYID.FYID,
                 'FinYear': item.FYID.FinYear,
                 'Emp_ID': item.Emp_ID.Emp_ID,
+                'Joining_Date': item.Emp_ID.Joining_Date,
                 'Emp_Name': item.Emp_ID.Emp_Name,
                 'HR_Emp_ID': item.Emp_ID.HR_Emp_ID,
                 'EL_OP': item.EL_OP,
                 'CL': item.CL,
                 'SL': item.SL,
-                'EL': item.EL
+                'EL': item.EL,
+                'EGL': item.EGL
             }
             data.append(leaves_data)
 
@@ -95,7 +97,7 @@ def update_leaves(request, id):
         except Exception as e:
             return Response({'error': str(e)}, status.HTTP_404_NOT_FOUND)
         data = request.data
-        serializer = HR_Leaves_Serializer(leaves, data=data)
+        serializer = HR_Leaves_Serializer(leaves, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)

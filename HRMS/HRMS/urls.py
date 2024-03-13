@@ -50,7 +50,7 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls')),
     path('payrollperiod/', include('payroll_period.urls')),
     path('administration/', include('administration.urls')),
-    path('payrollelement/', include('payroll_element.urls')),
+    path('payroll_element/', include('payroll_element.urls')),
     path('leaves/', include('leaves.urls')),
     path('loan/', include('loan.urls')),
     path('wda/', include('working_dept_assignment.urls')),

@@ -36,6 +36,8 @@ function handleTableRowClick() {
     const CL = rowData[8];
     const SL = rowData[9];
     const EL = rowData[10];
+    const EGL = rowData[11];
+    const Joining_Date = rowData[12];
     $('#Leave_ID').val(Leave_ID);
     $('#FYID').val(FYID);
     $('#Emp_ID').val(Emp_ID);
@@ -43,6 +45,9 @@ function handleTableRowClick() {
     $('#CL').val(CL);
     $('#SL').val(SL);
     $('#EL').val(EL);
+    $('#EL').val(EL);
+    $('#EGL').val(EGL);
+    document.getElementById('Joining_Date').value = moment(Joining_Date).format("YYYY-MM-DD");
     document.getElementById("updateFormData").classList.remove("d-none");
     document.getElementById("insertFormData").classList.add("d-none");
 }
@@ -73,6 +78,8 @@ function handleCancelClick() {
     document.getElementById("CL").value = 0;
     document.getElementById("SL").value = 0;
     document.getElementById("EL").value = 0;
+    document.getElementById("EGL").value = 0;
+    document.getElementById("Joining_Date").value = '';
 }
 
 async function getAll(url) {
@@ -132,7 +139,7 @@ async function getLeaveById(id) {
             throw new Error('Failed to fetch Leave');
         }
         const data = await response.json();
-        return data;
+        return data;4
     } catch (error) {
         console.error(`Error fetching Leave with ID ${id}:`, error);
         return null;
@@ -209,7 +216,7 @@ function fillTableGrid() {
         for (var i = 0; i < data.length; i++) {
             var actionButton = createActionButton(); // Create action button element
             var row = [counter, data[i].Leaves_ID, data[i].FYID, data[i].FinYear, data[i].Emp_ID, data[i].HR_Emp_ID
-                , data[i].Emp_Name, data[i].EL_OP, data[i].CL, data[i].SL, data[i].EL, actionButton.outerHTML];
+                , data[i].Emp_Name, data[i].EL_OP, data[i].CL, data[i].SL, data[i].EL, data[i].EGL, moment(data[i].Emp_ID.Joining_Date).format("YYYY-MM-DD"), actionButton.outerHTML];
             table.row.add(row).draw(false);
             counter++;
         }
@@ -263,6 +270,7 @@ function handleInsertClick() {
     const CL = document.getElementById("CL").value;
     const SL = document.getElementById("SL").value;
     const EL = document.getElementById("EL").value;
+    const EGL = document.getElementById("EGL").value;
 
     const data = {
         Leaves_ID: Number(Leave_ID),
@@ -271,7 +279,8 @@ function handleInsertClick() {
         EL_OP: Number(EL_OP),
         CL: Number(CL),
         SL: Number(SL),
-        EL: Number(EL)
+        EL: Number(EL),
+        EGL: Number(EGL)
     }
     createLeave(data);
 }
@@ -284,6 +293,7 @@ function handleUpdateClick() {
     const CL = document.getElementById("CL").value;
     const SL = document.getElementById("SL").value;
     const EL = document.getElementById("EL").value;
+    const EGL = document.getElementById("EGL").value;
 
     const data = {
         Leaves_ID: Number(Leave_ID),
@@ -292,7 +302,8 @@ function handleUpdateClick() {
         EL_OP: Number(EL_OP),
         CL: Number(CL),
         SL: Number(SL),
-        EL: Number(EL)
+        EL: Number(EL),
+        EGL: Number(EGL)
     }
     updateLeave(Leave_ID, data);
     fillTableGrid();

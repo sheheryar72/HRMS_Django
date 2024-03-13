@@ -15,6 +15,7 @@ class HR_Leaves_Serializer(serializers.ModelSerializer):
     class Meta:
         model = HR_Leaves
         fields = '__all__'
+        # depth = 1
 
 
 

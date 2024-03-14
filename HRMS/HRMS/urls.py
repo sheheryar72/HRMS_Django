@@ -48,7 +48,7 @@ urlpatterns = [
     path('employee/', include('employee.urls')),
     path('login/', include('hr_login.urls')),
     path('dashboard/', include('dashboard.urls')),
-    path('payrollperiod/', include('payroll_period.urls')),
+    path('payroll_period/', include('payroll_period.urls')),
     path('administration/', include('administration.urls')),
     path('payroll_element/', include('payroll_element.urls')),
     path('leaves/', include('leaves.urls')),

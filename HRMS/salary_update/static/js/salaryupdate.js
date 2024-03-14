@@ -439,7 +439,7 @@ function mapEmployeeDate(empID) {
         document.getElementById("Marital_Status").value = singleEmpData.Marital_Status;
     }
 
-    getAllDataFromDB(`${API_URL}payrollelement/api/getall/`, "Payroll Element").then((data) => {
+    getAllDataFromDB(`${API_URL}payroll_element/api/getall/`, "Payroll Element").then((data) => {
         console.log("Data: ", data)
         listofPayrollElement = data;
 
@@ -579,7 +579,6 @@ function fillDepartmentTableGrid() {
         document.getElementById("Dept_ID").innerHTML = temp;
     });
 }
-
 
 function fillDesignationTableGrid() {
     getAllDataFromDB(`${API_URL}designation/api/getall`, 'Designation').then((data) => {

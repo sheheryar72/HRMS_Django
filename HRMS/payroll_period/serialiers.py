@@ -17,7 +17,7 @@ class HR_PAYROLL_PERIOD_Serializer(serializers.ModelSerializer):
     class Meta:
         model = HR_PAYROLL_PERIOD
         fields = "__all__"
-        depth = 1
+        # depth = 1
 
 
 

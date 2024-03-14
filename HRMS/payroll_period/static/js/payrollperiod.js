@@ -57,16 +57,17 @@ function handleDeleteButtonClick() {
     const rowData = table.row($(this).closest('tr')).data();
     const FYID = rowData[1];
     console.log('FYID: ', FYID)
-    if (confirm("Are you sure you want to delete this Financial Year?")) {
-        deleteFinancialYear(FYID).then(success => {
-            if (success) {
-                displaySuccessMessage('Financial Year deleted successfully!');
-                fillTableGrid(); 
-            } else {
-                displayErrorMessage('Failed to delete Financial Year. Please try again.');
-            }
-        });
-    }
+    alert("Sorry you can not delete Finantial Year time Time!")
+    // if (confirm("Are you sure you want to delete this Financial Year?")) {
+    //     deleteFinancialYear(FYID).then(success => {
+    //         if (success) {
+    //             displaySuccessMessage('Financial Year deleted successfully!');
+    //             fillTableGrid(); 
+    //         } else {
+    //             displayErrorMessage('Failed to delete Financial Year. Please try again.');
+    //         }
+    //     });
+    // }
 }
 
 function handleFinPeriodMonthTableRowClick() {
@@ -82,6 +83,7 @@ function handlePeriodMonthTableRowClick() {
     const PERIOD_ID = rowData[1];
     const FINID = rowData[2];
     console.log('PERIOD_ID: ', PERIOD_ID);
+    // alert("Sorry you can not delete Finantial year this time!")
     if (confirm("Are you sure you want to Active this Period Month?")) {
         updatePeriodMonth(PERIOD_ID).then(success => {
             if (success) {
@@ -289,11 +291,14 @@ async function createFinancialYear(formData) {
             throw new Error('Failed to create Financial Year');
         }
         const obj = await response.json();
-        current_finyear = obj.data;
-        console.log('created data: ', obj)
         displaySuccessMessage('Financial Year created successfully!');
+        console.log('created data: ', obj)
         fillTableGrid();
-        fillTable2Grid(obj.data.FYID)
+        debugger
+        if (obj.data.FYStatus){
+            current_finyear = obj.data;
+            fillTable2Grid(obj.data.FYID)
+        }
 
         // console.log('obj.data.FYID: ', obj.data.FYID)
         // if (obj.data.FYID != '' || obj.data.FYID != undefined){
@@ -317,6 +322,7 @@ async function updateFinancialYear(id, departmentData) {
             body: JSON.stringify(departmentData),
         });
         const obj = await response.json();
+        debugger
         current_finyear = obj.data;
         if (!response.ok) {
             throw new Error('Failed to update Financial Year');
@@ -375,7 +381,10 @@ function fillTableGrid() {
             table.row.add(row).draw(false);
             counter++;
         }
-         fillTable2Grid(current_finyear.FYID);
+        debugger
+        if(current_finyear != undefined){
+            fillTable2Grid(current_finyear.FYID);
+        }
     });
 }
 
@@ -392,8 +401,8 @@ function fillTable2Grid(id = current_finyear.FYID) {
         //     // data[i].FianYear.FYID == current_finyear.FYID ? actionButton : ''
         // actionButton];
 
-            var row = [counter, data[i].ID, data[i].FYID.FYID, data[i].FYID.FinYear, data[i].MNTH_ID.MNTH_ID,
-            data[i].MNTH_ID.MNTH_NO, data[i].MNTH_ID.MNTH_NAME, data[i].MNTH_ID.MNTH_SHORT_NAME, data[i].PERIOD_STATUS ? 'Active' : 'In-Active',
+            var row = [counter, data[i].ID, data[i].FYID, data[i].FinYear, data[i].MNTH_ID,
+            data[i].MNTH_NO, data[i].MNTH_NAME, data[i].MNTH_SHORT_NAME, data[i].PERIOD_STATUS ? 'Active' : 'In-Active',
         actionButton];
 
             table2.row.add(row).draw(false);

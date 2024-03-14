@@ -189,14 +189,31 @@ def delete_finYear(request, id):
 @api_view(['GET'])
 def get_allpayrollperiod(request, id):
     try:
+        print('id:  ', id)
         print('get_allpayrollperiod get_allpayrollperiod')
         queryData = HR_PAYROLL_PERIOD.objects.filter(FYID=id).select_related('FYID', 'MNTH_ID')
         
         print("get_allpayrollperiod: queryData: ", queryData)
-        
-        data_list = HR_PAYROLL_PERIOD_Serializer(queryData, many=True)
 
-        return Response(data=data_list.data, status=status.HTTP_200_OK)
+        data_list = []
+
+        for item in queryData:
+            single_pp = {
+                'ID': item.ID,
+                'FYID': item.FYID.FYID,
+                'FinYear': item.FYID.FinYear,
+                'PERIOD_ID': item.PERIOD_ID,
+                'PERIOD_STATUS': item.PERIOD_STATUS,
+                'MNTH_ID': item.MNTH_ID.MNTH_ID,
+                'MNTH_NO': item.MNTH_ID.MNTH_NO,
+                'MNTH_NAME': item.MNTH_ID.MNTH_NAME,
+                'MNTH_SHORT_NAME': item.MNTH_ID.MNTH_SHORT_NAME
+            }
+            data_list.append(single_pp)
+
+        # data_list = HR_PAYROLL_PERIOD_Serializer(queryData, many=True)
+
+        return Response(data=data_list, status=status.HTTP_200_OK)
     except ObjectDoesNotExist:
         raise NotFound(detail='Payroll periods not found')
     except Exception as e:

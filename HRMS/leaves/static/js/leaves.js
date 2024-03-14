@@ -32,12 +32,12 @@ function handleTableRowClick() {
     const Leave_ID = rowData[1];
     const FYID = rowData[2];
     const Emp_ID = rowData[4];
-    const EL_OP = rowData[7];
-    const CL = rowData[8];
-    const SL = rowData[9];
-    const EL = rowData[10];
-    const EGL = rowData[11];
-    const Joining_Date = rowData[12];
+    const EL_OP = rowData[8];
+    const CL = rowData[9];
+    const SL = rowData[10];
+    const EL = rowData[11];
+    const EGL = rowData[12];
+    const Joining_Date = rowData[7];
     $('#Leave_ID').val(Leave_ID);
     $('#FYID').val(FYID);
     $('#Emp_ID').val(Emp_ID);
@@ -216,7 +216,8 @@ function fillTableGrid() {
         for (var i = 0; i < data.length; i++) {
             var actionButton = createActionButton(); // Create action button element
             var row = [counter, data[i].Leaves_ID, data[i].FYID, data[i].FinYear, data[i].Emp_ID, data[i].HR_Emp_ID
-                , data[i].Emp_Name, data[i].EL_OP, data[i].CL, data[i].SL, data[i].EL, data[i].EGL, moment(data[i].Emp_ID.Joining_Date).format("YYYY-MM-DD"), actionButton.outerHTML];
+                , data[i].Emp_Name, moment(data[i].Emp_ID.Joining_Date).format("YYYY-MM-DD"), data[i].EL_OP, data[i].CL, data[i].SL, data[i].EL, data[i].EGL
+                , data[i].EL_OP + data[i].CL + data[i].SL + data[i].EL + data[i].EGL, actionButton.outerHTML];
             table.row.add(row).draw(false);
             counter++;
         }

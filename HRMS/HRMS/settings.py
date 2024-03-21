@@ -61,6 +61,7 @@ EXTERNAL_APPS = [
     'dashboard',
     'administration',
     'working_dept_assignment',
+    'monthly_all_ded',
 ]
 
 INSTALLED_APPS += EXTERNAL_APPS
@@ -79,7 +80,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8000',
-    "http://localhost:8000",  # Add your frontend origin here
+    # "http://localhost:8000",  # Add your frontend origin here
     "http://*",
     "https://*",
 ]
@@ -123,7 +124,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 
-
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
@@ -133,7 +133,7 @@ MEDIA_URL = '/media/'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-
+    
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',

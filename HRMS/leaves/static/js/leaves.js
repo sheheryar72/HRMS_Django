@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8000/leaves/api/';
+const BASE_URL = '/leaves/api/';
 var table;
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';
@@ -7,7 +7,7 @@ const CANCEL_BUTTON_ID = 'CancelFormData';
 function initializeDataTable() {
     table = $('#GridID').DataTable({
         destroy: true,
-        duplicate: false,
+        duplicate: false,   
         ordering: false,
         scrollY: '330px',
         scrollCollapse: true,
@@ -17,9 +17,9 @@ function initializeDataTable() {
                 "targets": 1,
                 "className": "text-left",
             },
-            {
+            {   
                 "targets": 2,
-                "className": "text-left",
+                "className": "text-left",   
             }
         ],
         lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]
@@ -111,7 +111,7 @@ async function getAll(url) {
 }
 
 function fillEmployeeDropDown() {
-    getAll(`http://localhost:8000/employee/api/getall`).then((data) => {
+    getAll(`/employee/api/getall`).then((data) => {
         let temp = '';
         console.log('fillEmployeeDropDown: ', data)
         data.forEach(element => {
@@ -122,7 +122,7 @@ function fillEmployeeDropDown() {
 }
 
 function fillFinYearDropDown() {
-    getAll(`http://localhost:8000/payrollperiod/api/getall`).then((data) => {
+    getAll(`/payroll_period/api/getall`).then((data) => {
         let temp = '';
         console.log('fillEmployeeDropDown: ', data)
         data.forEach(element => {

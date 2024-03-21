@@ -1,4 +1,4 @@
-const BASE_URL = 'http://127.0.0.1:8000/payrollelement/api/';
+const BASE_URL = 'http://127.0.0.1:8000/payroll_element/api/';
 var table;
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';

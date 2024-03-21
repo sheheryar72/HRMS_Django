@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8000/grade/api/';
+const BASE_URL = '/grade/api/';
 var table;
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';

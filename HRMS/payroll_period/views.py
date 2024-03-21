@@ -102,7 +102,6 @@ def add_payroll_period(finid):
         payroll_period.append(data)
     return payroll_period
 
-
 @api_view(['PUT'])
 def update_finYear(request, id):
     try:

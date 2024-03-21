@@ -71,7 +71,7 @@ def authenticate_user(request):
 
         if user is not None and user[2] == username and user[3] == password:  # Assuming User_Password is at index 3 in the result
             # Authentication successful
-            return JsonResponse({'message': 'Login successful!'})
+            return JsonResponse({'data': user[0], 'message': 'Login successful!'})
         else:
             return JsonResponse({'error': 'Invalid username or password.'}, status=400)
 

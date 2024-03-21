@@ -53,10 +53,13 @@
         text-overflow: ellipsis;
     }
 
-    .ElementGridClass td input {
-        width: "-webkit-fill-available" !important;
+    tbody#InserRowID1 input {
+        width: -webkit-fill-available;
     }
 
+    tbody#InserRowID2 input {
+        width: -webkit-fill-available;
+    }
 </style>
 
 <div class="container">
@@ -213,7 +216,7 @@
         <div class="container mt-3">
             <table id="bmGridID1" class="table table-dark table-hover table-sm table-bordered"
                 style="font-size: 0.8rem;">
-                <thead class="ElementGridClass" style="background-color: black;">
+                <thead style="background-color: black;">
                     <tr>
                         <!-- <th style="width: 6%;">S. No</th> -->
                         <th style="width: 25%;">Allowance</th>
@@ -222,7 +225,7 @@
                         <!-- <th style="width: 7%;">Action</th> -->
                     </tr>
                 </thead>
-                <tbody id="InserRowID1">
+                <tbody id="InserRowID1" class="ElementGridClass">
                 </tbody>
             </table>
         </div>
@@ -233,7 +236,7 @@
         <div class="container mt-3">
             <table id="bmGridID2" class="table table-dark table-hover table-sm table-bordered"
                 style="font-size: 0.8rem;">
-                <thead class="ElementGridClass" style="background-color: black;">
+                <thead style="background-color: black;">
                     <tr>
                         <!-- <th style="width: 6%;">S. No</th> -->
                         <th style="width: 25%;">Allowance</th>
@@ -242,7 +245,7 @@
                         <!-- <th style="width: 7%;">Action</th> -->
                     </tr>
                 </thead>
-                <tbody id="InserRowID2">
+                <tbody id="InserRowID2" class="ElementGridClass">
                 </tbody>
             </table>
         </div>

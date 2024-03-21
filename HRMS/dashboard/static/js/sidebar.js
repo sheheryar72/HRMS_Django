@@ -1,6 +1,6 @@
 // window.onload = function () {
 //     $(document).ready(function () {
-//         fetch(`http://localhost:8000/userform/api/dashboard/?user_id=2`)
+//         fetch(`/userform/api/dashboard/?user_id=2`)
 //             .then((response) => {
 //                 console.log('response status: ', response.status);
 //                 if (!response.ok) {
@@ -66,7 +66,7 @@
 
 // window.onload = function () {
 //     $(document).ready(function () {
-//         fetch(`http://localhost:8000/userform/api/dashboard/?user_id=2`)
+//         fetch(`/userform/api/dashboard/?user_id=2`)
 //             .then((response) => {
 //                 if (!response.ok) {
 //                     throw new Error('Network response was not ok');
@@ -124,7 +124,7 @@
 
 // window.onload = function () {
 //     $(document).ready(function () {
-//         fetch(`http://localhost:8000/userform/api/dashboard/?user_id=2`)
+//         fetch(`/userform/api/dashboard/?user_id=2`)
 //             .then((response) => {
 //                 if (!response.ok) {
 //                     throw new Error('Network response was not ok');
@@ -192,40 +192,37 @@
 function onClickFunc(formID, formDescr) {
     const message = 'formID: ' + formID + '\n' + 'formDescr: ' + formDescr;
     // alert(message);
-    if (formID === 73) {
+    if (formID === 5) {
         window.open('/designation/')
-    } else if (formID === 74) {
+    } else if (formID === 6) {
         window.open('/department/')
-    } else if (formID === 68) {
+    } else if (formID === 4) {
         window.open('/city/')
-    } else if (formID === 54) {
+    } else if (formID === 3) {
         window.open('/employee/')
-    } else if (formID === 74) {
+    } else if (formID === 11) {
         window.open('/grade/')
-    } else if (formID === 81) {
+    } else if (formID === 10) {
         window.open('/loan/');
-    } else if (formID === 80) {
+    } else if (formID === 9) {
         window.open('/leaves/')
-    } else if (formID === 77) { 
-        window.open('/payrollperiod/')
-    } else if (formID === 79) {
+    } else if (formID === 7) { 
+        window.open('/payroll_period/')
+    } else if (formID === 8) {
         window.open('/payroll_element/')
-    } else if (formID === 82) {
-        // window.open('/grade/';
-        window.open('/grade/')
-    } else if (formID === 78) {
-        // window.open('/grade/';
-        window.open('/payrollelemenet/')
-    }  else if (formID === 83) {
+    } else if (formID === 12) {
         window.open('/salaryupdate/')
-    }   else if (formID === 84) {
+    }   else if (formID === 13) {
         window.open('/wda/')
+    }    else if (formID === 15) {
+        window.open('/monthly_all_ded/')
     } 
 }
 
 window.onload = function () {
     $(document).ready(function () {
-        fetch(`http://localhost:8000/dashboard/api/userform/?user_id=2`)
+        const User_ID = localStorage.getItem('User_ID')
+        fetch(`/dashboard/api/userform/?user_id=${User_ID}`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');

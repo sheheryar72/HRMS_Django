@@ -114,16 +114,17 @@
 
             $.ajax({
                 method: 'POST',
-                url: 'http://127.0.0.1:8000/login/authenticate/',
+                url: '/login/authenticate/',
                 data: {
                     'username': user_name,
                     'password': user_password
                 },
                 success: function(res){
                     console.log('res: ', res);
+                    localStorage.setItem('User_ID', res.data)
                     document.getElementById('message').innerHTML = '<div class="alert alert-success">Login Successful! Redirecting...</div>';
                     setTimeout(function(){
-                        window.location.href = "http://localhost:8000/dashboard/";
+                        window.location.href = "/dashboard/";
                     }, 2000);
                 }, 
                 error: function(error){

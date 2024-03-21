@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8000/employee/api/';
+const BASE_URL = '/employee/api/';
 var table;
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';
@@ -363,7 +363,7 @@ function displayErrorMessage(message) {
 
 async function getAllDataFromDB(url) {
     try {
-        const response = await fetch(`http://localhost:8000/${url}`);
+        const response = await fetch(`/${url}`);
         if (!response.ok) {
             throw new Error('Failed to fetch data');
         }

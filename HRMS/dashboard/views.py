@@ -17,10 +17,14 @@ def get_all_usermenuforms(request):
         # print('user_id: ', user_id)
         with connection.cursor() as cursor:
             # cursor.execute("EXEC HR_GetUserMenuAndForms @User_ID=%s", [user_id])
-            cursor.execute("EXEC [ERP_ADMIN].[dbo].HR_GetUserMenuAndForms @User_ID=%s", [user_id])
+            # cursor.execute("EXEC [ERP_ADMIN].[dbo].HR_GetUserMenuAndForms @User_ID=%s", [user_id])
+            print('user_id user_id: ', user_id)
+            cursor.execute("EXEC GetUserMenuAndForms @User_ID=%s", [user_id])
+            print('columns columns')
             columns = [col[0] for col in cursor.description]
             # print('columns: ', columns)
             rows = cursor.fetchall()
+            print('rows: ', rows)
             data = [dict(zip(columns, row)) for row in rows]
             # print('data: ', data)
             print('form data: ', data)

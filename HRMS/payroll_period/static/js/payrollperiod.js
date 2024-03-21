@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8000/payrollperiod/api/';
+const BASE_URL = '/payroll_period/api/';
 var table, table2, current_finyear = {};
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';

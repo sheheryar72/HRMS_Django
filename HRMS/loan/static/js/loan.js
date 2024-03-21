@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:8000/loan/api/';
+const BASE_URL = '/loan/api/';
 var table;
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';
@@ -104,7 +104,7 @@ async function getAll(url) {
 }
 
 function fillEmployeeDropDown() {
-    getAll(`http://localhost:8000/employee/api/getall`).then((data) => {
+    getAll(`/employee/api/getall`).then((data) => {
         let temp = '';
         console.log('fillEmployeeDropDown: ', data)
         data.forEach(element => {
@@ -115,9 +115,9 @@ function fillEmployeeDropDown() {
 }
 
 function fillFinYearDropDown() {
-    getAll(`http://localhost:8000/payrollperiod/api/getall`).then((data) => {
+    getAll(`/payroll_period/api/getall`).then((data) => {
         let temp = '';
-        console.log('fillEmployeeDropDown: ', data)
+        console.log('Fill payroll period dropdown: ', data)
         data.forEach(element => {
             temp += `<option value="${element.FYID}">${element.FinYear}</option>`;
         });

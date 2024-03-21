@@ -12,7 +12,7 @@
             max-width: 250px;
             background: #343a40;
             color: #ffffff;
-            transition: all 0.3s;
+            /* transition: all 0.3s; */
         }
 
         #sidebar.active {
@@ -51,18 +51,19 @@
             font-size: 13px;
             display: block;
             color: #d1d8e0;
-            transition: all 0.3s;
+            background: #3f6c94;
+            /* transition: all 0.3s; */
         }
 
         #sidebar ul li a:hover {
-            background: #454d55;
+            background: #000;
             color: #ffffff;
         }
 
-        #sidebar ul li.active > a,
+        #sidebar ul li.active>a,
         #sidebar ul li a[aria-expanded="true"] {
             color: #ffffff;
-            background: #6c757d;
+            background: #125087;
         }
 
         #content {
@@ -100,6 +101,6 @@
             cursor: pointer;
         }
 
-        .list-unstyled li{
+        .list-unstyled li {
             cursor: pointer;
         }

@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:8000/';
+const API_URL = '/';
 var table, tabl2;
 const INSERT_BUTTON_ID = 'insertFormData';
 const SAVE_NEW_BUTTON_ID = 'saveNewBtnId';
@@ -650,6 +650,7 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
         document.getElementById("Marital_Status").value = data[0].Marital_Status;
         document.getElementById("No_of_Children").value = data[0].No_of_Children;
         document.getElementById("Remarks").value = data[0].Remarks;
+        document.getElementById("GrossSalary").value = data[0].GrossSalary;
 
         let allowanceRow = '', deductionRow = '';
         let counter = 1, totalAllowance = 0, totalDeduction = 0;
@@ -759,3 +760,5 @@ $(document).ready(function () {
     document.getElementById(CANCEL_BUTTON_ID).addEventListener('click', handleCancelClick);
     // fillTableGrid()
 });
+
+

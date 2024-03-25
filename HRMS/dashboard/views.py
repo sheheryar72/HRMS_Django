@@ -20,14 +20,14 @@ def get_all_usermenuforms(request):
             # cursor.execute("EXEC [ERP_ADMIN].[dbo].HR_GetUserMenuAndForms @User_ID=%s", [user_id])
             print('user_id user_id: ', user_id)
             cursor.execute("EXEC GetUserMenuAndForms @User_ID=%s", [user_id])
-            print('columns columns')
+            # print('columns columns')
             columns = [col[0] for col in cursor.description]
             # print('columns: ', columns)
             rows = cursor.fetchall()
-            print('rows: ', rows)
+            # print('rows: ', rows)
             data = [dict(zip(columns, row)) for row in rows]
             # print('data: ', data)
-            print('form data: ', data)
+            # print('form data: ', data)
             if not data:
                 return Response({'error': 'No data found for the given user ID'}, status=status.HTTP_404_NOT_FOUND)
 

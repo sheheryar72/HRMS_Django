@@ -8,16 +8,23 @@ import pdb
 from department.models import HR_Department
 from payroll_period.models import HR_PAYROLL_PERIOD
 from django.db.models import F
+from .models import HR_Monthly_All_Ded
+from rest_framework.decorators import api_view
+from rest_framework import status
+from .serializers import HR_Monthly_All_Ded_Serializer
+from django.db.models import Q
+from payroll_period.serialiers import HR_PAYROLL_PERIOD_Serializer
 
 def Index(request):
     return render(request, 'monthly_all_ded.html')
 
 def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
-    print("W_DeptID: ", W_DeptID)
-    print("DeptID: ", DeptID)
+    # print("W_DeptID: ", W_DeptID)
+    # print("DeptID: ", DeptID)
+    print("getAll_W_Dept_By_DeptID")
     try:
         # pdb.set_trace()
-        print('getAll_W_Dept_By_DeptID called')
+        # print('getAll_W_Dept_By_DeptID called')
         w_dept_queryset = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=W_DeptID, Dept_ID=DeptID).prefetch_related('W_All_Ded_Dept_ID', 'W_All_Ded_Element_ID', 'Dept_ID')
         # print('w_dept_queryset: ', w_dept_queryset)
         emp_queryset = HR_Employees.objects.filter(Joining_Dept_ID=DeptID)
@@ -45,7 +52,7 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
 
         data3.append({"Employee": data})
         data3.append({"Element": data2})
-        print('data3: ', data3)
+        # print('data3: ', data3)
 
         # print('data3: ', data3)
         # return Response(data3, status=200)
@@ -70,7 +77,7 @@ def getAll_Assigned_Dept(request, DeptID):
     except Exception as e:
         return JsonResponse({'error': str(e)}, safe=False)
 
-def getAll_W_Dept_By_W_DeptID(request, W_DeptID, DeptID):
+def getAll_W_Dept_By_W_DeptID(request, W_DeptID, DeptID):   
     try:
         dept_ids = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=W_DeptID, Dept_ID=DeptID).values_list('Dept_ID', flat=True)
 
@@ -92,6 +99,86 @@ def getAll_W_Dept_By_W_DeptID(request, W_DeptID, DeptID):
         return JsonResponse(response_data, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+def getAll_W_Dept_By_W_DeptID(request, W_DeptID):
+    try:
+        # Get all department IDs associated with the given W_DeptID
+        dept_ids = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=W_DeptID).values_list('Dept_ID', flat=True)
+
+        # Get all employees in departments with the retrieved department IDs
+        emp_queryset = HR_Employees.objects.filter(Joining_Dept_ID__in=dept_ids)
+
+        # Create a list of dictionaries containing employee data
+        employees_data = [{'Emp_ID': emp.Emp_ID, 'Emp_Name': emp.Emp_Name} for emp in emp_queryset]
+
+        # Get distinct elements associated with the retrieved department IDs
+        elements_queryset = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=W_DeptID).values('W_All_Ded_Element_ID__Element_ID', 'W_All_Ded_Element_ID__Element_Name').distinct()
+
+        # Create a list of dictionaries containing element data
+        elements_data = [{'Element_ID': elem['W_All_Ded_Element_ID__Element_ID'], 'Element_Name': elem['W_All_Ded_Element_ID__Element_Name']} for elem in elements_queryset]
+
+        # Get department details
+        dept_queryset = HR_Department.objects.get(Dept_ID=W_DeptID)
+        dept_data = {'Dept_ID': dept_queryset.Dept_ID, 'Dept_Descr': dept_queryset.Dept_Descr}
+
+        # Get payroll period details
+        payroll_period_queryset = HR_PAYROLL_PERIOD.objects.filter(PERIOD_STATUS=True).values('ID', 'MNTH_ID__MNTH_ID', 'MNTH_ID__MNTH_NAME').first()
+        payroll_period = {'ID': payroll_period_queryset['ID'], 'MNTH_ID': payroll_period_queryset['MNTH_ID__MNTH_ID'], 'MNTH_NAME': payroll_period_queryset['MNTH_ID__MNTH_NAME']}
+
+        # Prepare the response data
+        response_data = {'Employee': employees_data, 'Element': elements_data, 'Period': payroll_period, 'Department': dept_data}
+        return JsonResponse(response_data, safe=False)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
+@api_view(['GET'])
+def get_current_pp(request):
+    try:
+        pp_instance = HR_PAYROLL_PERIOD.objects.get(PERIOD_STATUS=True)
+        data = {}
+        data["PERIOD_ID"] = pp_instance.ID
+        data["MNTH_NAME"] = pp_instance.MNTH_ID.MNTH_NAME
+        # pp_serializer = HR_PAYROLL_PERIOD_Serializer(pp_instance)
+        return Response(data, status=200)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
+
+@api_view(['POST'])
+def Insert_Monthly_PE(request):
+    try:
+        table_data = request.data['table_data']
+        print('table_data: ', table_data)
+
+        for item in table_data:
+            print('item: ', item)
+            print('item.Employee: ', item['Employee'])
+            my_monthly_data = {}
+            my_monthly_data['Employee'] = item['Employee']
+            my_monthly_data['Period'] = item["Period"]
+            for key, value in item.items():
+                print('Key:', key)
+                print('Value:', value)
+                my_monthly_data[key] = value
+
+            # Check if data already exists
+            existing_data = HR_Monthly_All_Ded.objects.filter(Employee=my_monthly_data['Employee'])
+            if existing_data.exists():
+                # Update existing data
+                serializer = HR_Monthly_All_Ded_Serializer(existing_data.first(), data=my_monthly_data)
+            else:
+                # Create new data
+                serializer = HR_Monthly_All_Ded_Serializer(data=my_monthly_data)
+            
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'message': 'Data saved successfully'}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 # def getAll_W_Dept_By_W_DeptID(request, W_DeptID):
@@ -135,36 +222,37 @@ def getAll_W_Dept_By_W_DeptID(request, W_DeptID, DeptID):
 #         return JsonResponse({'error': str(e)}, status=500)
 
 
-def getAll_W_Dept_By_W_DeptID(request, W_DeptID):
-    try:
-        # Get all department IDs associated with the given W_DeptID
-        dept_ids = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=W_DeptID).values_list('Dept_ID', flat=True)
 
-        # Get all employees in departments with the retrieved department IDs
-        emp_queryset = HR_Employees.objects.filter(Joining_Dept_ID__in=dept_ids)
 
-        # Create a list of dictionaries containing employee data
-        employees_data = [{'Emp_ID': emp.Emp_ID, 'Emp_Name': emp.Emp_Name} for emp in emp_queryset]
+# @api_view(['POST'])
+# def Insert_Monthly_PE(request):
+#     try:
+#         table_data = request.data
+#         print('table_data: ', table_data)
 
-        # Get distinct elements associated with the retrieved department IDs
-        elements_queryset = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=W_DeptID).values('W_All_Ded_Element_ID__Element_ID', 'W_All_Ded_Element_ID__Element_Name').distinct()
+#         for item in table_data:
+#             my_monthly_data = {}
+#             employee_id = item.get("Employee")
+#             employee_instance = HR_Employees.objects.get(pk=employee_id)
+#             my_monthly_data['Employee'] = employee_instance
 
-        # Create a list of dictionaries containing element data
-        elements_data = [{'Element_ID': elem['W_All_Ded_Element_ID__Element_ID'], 'Element_Name': elem['W_All_Ded_Element_ID__Element_Name']} for elem in elements_queryset]
+#             for key, value in item.items():
+#                 print('Key:', key)
+#                 print('Value:', value)
+#                 my_monthly_data[key] = value
 
-        # Get department details
-        dept_queryset = HR_Department.objects.get(Dept_ID=W_DeptID)
-        dept_data = {'Dept_ID': dept_queryset.Dept_ID, 'Dept_Descr': dept_queryset.Dept_Descr}
+#             # Check if data already exists
+#             existing_data = HR_Monthly_All_Ded.objects.filter(Employee=my_monthly_data['Employee'])
+#             if existing_data.exists():
+#                 # Update existing data
+#                 existing_data.update(**my_monthly_data)
+#             else:
+#                 # Create new data
+#                 HR_Monthly_All_Ded.objects.create(**my_monthly_data)
+#     except Exception as e:
+#         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Get payroll period details
-        payroll_period_queryset = HR_PAYROLL_PERIOD.objects.filter(PERIOD_STATUS=True).values('ID', 'MNTH_ID__MNTH_ID', 'MNTH_ID__MNTH_NAME').first()
-        payroll_period = {'ID': payroll_period_queryset['ID'], 'MNTH_ID': payroll_period_queryset['MNTH_ID__MNTH_ID'], 'MNTH_NAME': payroll_period_queryset['MNTH_ID__MNTH_NAME']}
 
-        # Prepare the response data
-        response_data = {'Employee': employees_data, 'Element': elements_data, 'Period': payroll_period, 'Department': dept_data}
-        return JsonResponse(response_data, safe=False)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
 
 
 

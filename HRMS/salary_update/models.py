@@ -16,7 +16,7 @@ class HR_Emp_Sal_Update_Mstr(models.Model):
     Remarks = models.CharField(max_length=200)
     Emp_ID = models.ForeignKey(HR_Employees, db_column='Emp_ID', to_field='Emp_ID', on_delete=models.CASCADE)
     HR_Emp_ID = models.IntegerField()
-    Grade_ID = models.ForeignKey(HR_Grade, db_column='Grade_ID', to_field='Grade_ID', on_delete=models.CASCADE)
+    Grade_ID = models.ForeignKey(HR_Grade, db_column='Grade_ID', to_field='Grade_ID', on_delete=models.DO_NOTHING)
     Dsg_ID = models.ForeignKey(HR_Designation, db_column='Dsg_ID', to_field='DSG_ID', on_delete=models.CASCADE)
     Dept_ID = models.ForeignKey(HR_Department, db_column='Dept_ID', to_field='Dept_ID', on_delete=models.CASCADE)
 

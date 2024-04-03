@@ -338,7 +338,7 @@ function populateDropdownElementOptions(dropdown) {
 function getAllElement() {
     $.ajax({
         type: 'GET',
-        url: `http://127.0.0.1:8000/payrollelement/api/getall`,
+        url: `http://127.0.0.1:8000/payroll_element/api/getall`,
         headers: {
             "Content-type": "application/json; charset=UTF-8",
             // "authorization": authorization,

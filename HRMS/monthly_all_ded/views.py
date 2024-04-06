@@ -28,13 +28,25 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
         w_dept_queryset = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=W_DeptID, Dept_ID=DeptID).prefetch_related('W_All_Ded_Dept_ID', 'W_All_Ded_Element_ID', 'Dept_ID')
         # print('w_dept_queryset: ', w_dept_queryset)
         emp_queryset = HR_Employees.objects.filter(Joining_Dept_ID=DeptID)
+
+        print('deprt: ', DeptID)
+        month_pp_queryset = HR_Monthly_All_Ded.objects.filter(Department=DeptID)
+
+        month_pp_serializer = HR_Monthly_All_Ded_Serializer(month_pp_queryset, many=True)
+
+        print('month_pp_serializer: ', month_pp_serializer.data)
+
         data = []
         data2 = []
+
+        count = 0
         for item in emp_queryset:
             single_emp = {
                 'Emp_ID': item.Emp_ID,
-                'Emp_Name': item.Emp_Name
+                'Emp_Name': item.Emp_Name,
+                'Element_Amount': month_pp_serializer.data[count] if month_pp_serializer.data else []
             }
+            count += count
             data.append(single_emp)
 
             # print('Employee data: ', data)
@@ -52,6 +64,8 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
 
         data3.append({"Employee": data})
         data3.append({"Element": data2})
+        # data3.append({"Monthly_Payromm_Element": month_pp_serializer.data})
+
         # print('data3: ', data3)
 
         # print('data3: ', data3)
@@ -59,6 +73,26 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
         return JsonResponse(data3, safe=False)
     except Exception as e:
         return Response({'error': str(e)}, status=500)
+
+
+
+def test2(request, W_DeptID, DeptID):
+    try:
+
+        elements_name = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=W_DeptID, Dept_ID=DeptID).prefetch_related('W_All_Ded_Element_ID').values_list('W_All_Ded_Element_ID__Element_Name')
+
+        elements_name_list = list(elements_name)
+        
+        month_pp_queryset = HR_Monthly_All_Ded.objects.filter(Department=DeptID).select_related('Employee', 'Period', 'Department').values(elements_name_list)
+
+        month_pp_serializer = HR_Monthly_All_Ded_Serializer(month_pp_queryset, many=True)
+
+        return JsonResponse(month_pp_serializer.data, safe=False)
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+
+
+
 
 def getAll_Assigned_Dept(request, DeptID):
     try:
@@ -148,6 +182,7 @@ def get_current_pp(request):
 def Insert_Monthly_PE(request):
     try:
         table_data = request.data['table_data']
+        W_Department = request.data['W_Department']
         print('table_data: ', table_data)
 
         for item in table_data:
@@ -156,6 +191,7 @@ def Insert_Monthly_PE(request):
             my_monthly_data = {}
             my_monthly_data['Employee'] = item['Employee']
             my_monthly_data['Period'] = item["Period"]
+            my_monthly_data['Department'] = W_Department
             for key, value in item.items():
                 print('Key:', key)
                 print('Value:', value)

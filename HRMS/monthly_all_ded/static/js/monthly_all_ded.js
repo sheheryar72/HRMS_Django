@@ -70,7 +70,7 @@ document.getElementById("W_Department").addEventListener("click", async function
         const data = await response.json();
         let temp = '', temp2 = '', counter = 1;
 
-        // console.log("W_Department data: ", data);
+        console.log("W_Department data: ", data);
 
         document.getElementById("InserRowHeadID").innerHTML = `<th style="width: 12%;">Employee ID</th><th style="width: 20%;">Employee</th>`;
 
@@ -83,21 +83,37 @@ document.getElementById("W_Department").addEventListener("click", async function
 
         document.getElementById("InserRowHeadID").innerHTML += temp;
 
+        // document.getElementById("InserRowID").innerHTML = '';
+        // data[0]["Employee"].forEach(emp => {
+        //     console.log('emp2: ', emp);
+        //     let element_columns = '';
+        //     element_columns += `<td><input type="number" class="form-control form-control-sm" value="${emp.Emp_ID}" id="Employee" style="width: 100%;" readonly /></td>`;
+        //     element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.Emp_Name}" style="width: 100%;" readonly /></td>`;
+        //     data[1]["Element"].forEach(element => {
+        //         element_name_col = `${element.Element_Name}_${element.Element_ID}`
+        //         element_columns += `<td><input type="number" class="form-control form-control-sm" value="${data[0]["Employee"][0]["Element_Amount"]["${element_name_col}"]}" style="width: 100%;"></td>`;
+        //     });
+        //     element_columns += '</tr>';
+        //     document.getElementById("InserRowID").innerHTML += element_columns;
+        //     counter++;
+        // });
+
+
         document.getElementById("InserRowID").innerHTML = '';
         data[0]["Employee"].forEach(emp => {
-            console.log('emp2: ', emp);
-            let element_columns = '';
+            let element_columns = '<tr>';
             element_columns += `<td><input type="number" class="form-control form-control-sm" value="${emp.Emp_ID}" id="Employee" style="width: 100%;" readonly /></td>`;
             element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.Emp_Name}" style="width: 100%;" readonly /></td>`;
             data[1]["Element"].forEach(element => {
-                element_columns += `<td><input type="number" class="form-control form-control-sm" style="width: 100%;"></td>`;
+                element_name_col = `${element.Element_Name}_${element.Element_ID}`;
+                element_name_col = element_name_col.replace(/ /g, "_");  // Replace all spaces with underscores globally
+                console.log('element_name_col: ', element_name_col);
+                element_columns += `<td><input type="number" class="form-control form-control-sm" value="${emp["Element_Amount"][element_name_col] || ''}" style="width: 100%;"></td>`;
             });
-            // console.log('element_columns: ', element_columns)
-            // table.row.add(element_columns).draw(false);
             element_columns += '</tr>';
             document.getElementById("InserRowID").innerHTML += element_columns;
-            counter++;
         });
+
 
     } catch (error) {
         console.error('Error fetching Grade:', error);
@@ -230,7 +246,7 @@ $(document).ready(function () {
     document.getElementById("CancelFormData").addEventListener('click', CancelFormAndGridData);
 })
 
-document.getElementById(INSERT_BUTTON_ID).addEventListener("click", function() {
+document.getElementById(INSERT_BUTTON_ID).addEventListener("click", function () {
     Insert_Monthly_PE();
 });
 
@@ -280,17 +296,19 @@ async function current_payrollperiod() {
 
 async function Insert_Monthly_PE() {
     let tableData = GetTableData()
+    let W_Department = document.getElementById("W_Department").value
     console.log("table data: ", tableData)
+    console.log("table W_Department: ", W_Department)
     const response = await fetch(`${BASE_URL}/monthly_all_ded/insert/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({'table_data': tableData}),
+        body: JSON.stringify({ 'table_data': tableData, 'W_Department': W_Department }),
     })
     if (!response.ok) {
-        displaySuccessMessage("Failed While assigning Elements")
-    }else{
+        displayErrorMessage("Failed While assigning Elements")
+    } else {
         displaySuccessMessage("Successfully Assigned Elements")
     }
     const data = await response.json();
@@ -305,13 +323,13 @@ function GetTableData() {
             let columnName = $('#GridID thead tr th').eq(index).attr('id');
             let cellValue = $(this).find('input').val();
             // console.log('celvalue: ', cellValue)
-            if(cellValue == ''){
+            if (cellValue == '') {
                 cellValue = 0;
-            } 
-            if(index == 0){
+            }
+            if (index == 0) {
                 columnName = "Employee"
             }
-            if(index != 1){
+            if (index != 1) {
                 if (columnName !== "") {
                     rowData['Period'] = Number(current_period_id);
                     rowData[columnName] = Number(cellValue);

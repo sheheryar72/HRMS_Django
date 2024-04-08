@@ -98,16 +98,16 @@ document.getElementById("W_Department").addEventListener("click", async function
         //     counter++;
         // });
 
-
         document.getElementById("InserRowID").innerHTML = '';
         data[0]["Employee"].forEach(emp => {
+            console.log('emp: ', emp)
             let element_columns = '<tr>';
             element_columns += `<td><input type="number" class="form-control form-control-sm" value="${emp.Emp_ID}" id="Employee" style="width: 100%;" readonly /></td>`;
             element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.Emp_Name}" style="width: 100%;" readonly /></td>`;
             data[1]["Element"].forEach(element => {
                 element_name_col = `${element.Element_Name}_${element.Element_ID}`;
                 element_name_col = element_name_col.replace(/ /g, "_");  // Replace all spaces with underscores globally
-                console.log('element_name_col: ', element_name_col);
+                // console.log('element_name_col: ', element_name_col);
                 element_columns += `<td><input type="number" class="form-control form-control-sm" value="${emp["Element_Amount"][element_name_col] || ''}" style="width: 100%;"></td>`;
             });
             element_columns += '</tr>';
@@ -340,6 +340,102 @@ function GetTableData() {
     });
 
     return data;
+}
+
+document.getElementById("exportData").addEventListener('click', async function () {
+    exportToExcel()
+});
+
+async function getDataFromAPI() {
+    try {
+        const W_deptID = 2;
+        const response = await fetch(`${BASE_URL}/monthly_all_ded/export_template/${W_deptID}`);
+        if (!response.ok) {
+            throw new Error('Some Error while Exporting Template');
+        }
+        const data = await response.json();
+        console.log("Export Data: ", data);
+        return data;
+    } catch (error) {
+        console.error('Error fetching Grade:', error);
+    }
+}
+
+async function exportToExcel() {
+    try {
+        // Fetch data from API
+        const data = await getDataFromAPI();    
+        console.log("exportToExcel exportToExcel: ", data)
+
+        const columns = ['Emp_ID', 'Emp_Name', 'Basic_Salary_01', 'Medical_Allowance_2', 'Conveyance_Allowance_3', 'Overtime_Allowance_4',
+            'House_Rent_Allowanc_5', 'Utilities_Allowance_6', 'Meal_Allowance_7', 'Arrears_8', 'Bike_Maintainence_9', 'Incentives_10',
+            'Device_Reimbursment_11', 'Communication_12', 'Bonus_13', 'Other_Allowance_14', 'Loan_15', 'Advance_Salary_16',
+            'EOBI_17', 'Income_Tax_18', 'Absent_Days_19', 'Device_Deduction_20', 'Over_Utilizaton_Mobile_21', 'Vehicle_or_Fuel_Deduction_22',
+            'Pandamic_Deduction_23', 'Late_Days_24', 'Other_Deduction_25', 'Mobile_Installment_26', 'Food_Panda_27'];
+
+        // Extract values for each row
+        const rows = data.map(obj => {
+            // Fill the first two columns with Emp_ID and Emp_Name values
+            const row = [obj['Emp_ID'], obj['Emp_Name']];
+            // Fill the rest of the columns with empty strings
+            for (let i = 2; i < 27; i++) {
+                row.push('');
+            }
+            return row;
+        });
+
+        // Create workbook and worksheet
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet([columns, ...rows]);
+
+        // Add worksheet to workbook
+        XLSX.utils.book_append_sheet(wb, ws, 'Monthly_Payroll_Template');
+
+        // Export the workbook as Excel file
+        XLSX.writeFile(wb, 'Monthly_Payroll_Template.xlsx');
+    } catch (error) {
+        console.error('Error exporting data:', error);
+    }
+}
+
+document.getElementById("importData").addEventListener('click', async function () {
+    try {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        await importFromExcel(file);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+});
+
+async function importFromExcel(file) {
+    try {
+        console.log('file: ', file);
+        const reader = new FileReader(); // Create a new FileReader object
+        reader.onload = function(event) {
+            const data = new Uint8Array(event.target.result); // Convert the file data to Uint8Array
+            const wb = XLSX.read(data, { type: 'array' }); // Read the Excel file using XLSX
+            const ws = wb.Sheets[wb.SheetNames[0]]; // Assume the data is in the first sheet
+            const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }); // Parse the data into an array of objects
+            const columns = jsonData[0]; // Extract column headers
+            const dictionary = {}; // Initialize the dictionary of arrays
+            // Iterate over columns
+            for (let i = 0; i < columns.length; i++) {
+                const columnName = columns[i];
+                dictionary[columnName] = [];
+                // Iterate over rows (skip the first row as it contains column headers)
+                for (let j = 1; j < jsonData.length; j++) {
+                    // Push data into the corresponding array
+                    dictionary[columnName].push(jsonData[j][i]);
+                }
+            }
+            // Log the dictionary
+            console.log('Dictionary of arrays:', dictionary);
+        };
+        reader.readAsArrayBuffer(file); // Read the file as an array buffer
+    } catch (error) {
+        console.error('Error importing data:', error);
+    }
 }
 
 function displaySuccessMessage(message) {

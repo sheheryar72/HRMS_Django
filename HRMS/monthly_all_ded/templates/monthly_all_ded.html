@@ -64,11 +64,23 @@
               <select class="form-control form-control-sm" id="W_Department"></select>
             </div>
           </div>
+          <div class="form-group row align-items-center">   
+            <label for="name" class="col-sm-3 col-form-label col-form-label-sm">Import/Export</label>
+            <div class="col-sm-5">
+              <input type="file" class="form-control form-control-sm" id="fileInput">
+            </div>
+            <button type="button" id="importData" class="btn btn-success">Import</button>
+            <button type="button" id="exportData" class="btn btn-success ml-2">Export</button>
+          </div>
           <div class="text-center">
-            <button type="button" id="insertFormData" class="btn btn-dark mr-2">Create</button>
+            <button type="button" id="insertFormData" class="btn btn-dark mr-2">Save</button>
             <button type="button" id="updateFormData" class="btn btn-dark mr-2 d-none">Update</button>
             <button type="button" id="CancelFormData" class="btn btn-dark">Cancel</button>
           </div>
+          <!-- <div class="text-center mt-2">
+            <button type="button" id="importData" class="btn btn-success mr-2">Import</button>
+            <button type="button" id="exportData" class="btn btn-success">Export</button>
+          </div> -->
         </form>
       </div>
     </div>
@@ -102,6 +114,7 @@
 </div>
   
 <!-- <script src="{% static 'js/jquery-3.5.1.min.js' %}"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
 <script src="{% static 'js/monthly_all_ded.js' %}"></script>
 
 

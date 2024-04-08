@@ -14,6 +14,7 @@ from rest_framework import status
 from .serializers import HR_Monthly_All_Ded_Serializer
 from django.db.models import Q
 from payroll_period.serialiers import HR_PAYROLL_PERIOD_Serializer
+from employee.serializers import HR_Employees_Serializer
 
 def Index(request):
     return render(request, 'monthly_all_ded.html')
@@ -34,7 +35,7 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
 
         month_pp_serializer = HR_Monthly_All_Ded_Serializer(month_pp_queryset, many=True)
 
-        print('month_pp_serializer: ', month_pp_serializer.data)
+        # print('month_pp_serializer: ', month_pp_serializer.data)
 
         data = []
         data2 = []
@@ -46,7 +47,9 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
                 'Emp_Name': item.Emp_Name,
                 'Element_Amount': month_pp_serializer.data[count] if month_pp_serializer.data else []
             }
-            count += count
+            # print('count: ', count)
+            # print('month_pp_serializer: ', month_pp_serializer.data[count])
+            count += 1
             data.append(single_emp)
 
             # print('Employee data: ', data)
@@ -215,7 +218,26 @@ def Insert_Monthly_PE(request):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
+@api_view(['GET'])
+def export_template(request, ID):
+    try:
+        assigned_depts = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=ID).values_list('Dept_ID')
+        if assigned_depts is None:
+            return Response({'error': 'No Data Found'}, status=404)
+        data = []
+        print('assigned_depts: ', assigned_depts)
+        assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID__in=assigned_depts).values("Emp_ID", "Emp_Name")
+        print('assigned_emps: ', assigned_emps)
+        # for emp in assigned_emps:
+        #     print('emp: ', emp)
+        #     single_emp = {
+        #         'Emp_ID': emp["Emp_ID"],
+        #         'Emp_Name': emp["Emp_Name"]
+        #     }
+        #     data.append(single_emp)
+        return Response(assigned_emps, status=200)
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
 
 # def getAll_W_Dept_By_W_DeptID(request, W_DeptID):
 #     try:

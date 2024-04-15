@@ -15,6 +15,7 @@ from .serializers import HR_Monthly_All_Ded_Serializer
 from django.db.models import Q
 from payroll_period.serialiers import HR_PAYROLL_PERIOD_Serializer
 from employee.serializers import HR_Employees_Serializer
+from salary_update.models import HR_Emp_Sal_Update_Mstr
 
 def Index(request):
     return render(request, 'monthly_all_ded.html')
@@ -28,7 +29,8 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
         # print('getAll_W_Dept_By_DeptID called')
         w_dept_queryset = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=W_DeptID, Dept_ID=DeptID).prefetch_related('W_All_Ded_Dept_ID', 'W_All_Ded_Element_ID', 'Dept_ID')
         # print('w_dept_queryset: ', w_dept_queryset)
-        emp_queryset = HR_Employees.objects.filter(Joining_Dept_ID=DeptID)
+        # emp_queryset = HR_Employees.objects.filter(Joining_Dept_ID=DeptID)
+        emp_queryset = HR_Emp_Sal_Update_Mstr.objects.filter(Dept_ID=DeptID)
 
         print('deprt: ', DeptID)
         month_pp_queryset = HR_Monthly_All_Ded.objects.filter(Department=DeptID)
@@ -43,8 +45,8 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
         count = 0
         for item in emp_queryset:
             single_emp = {
-                'Emp_ID': item.Emp_ID,
-                'Emp_Name': item.Emp_Name,
+                'Emp_ID': item.Emp_ID.Emp_ID,
+                'Emp_Name': item.Emp_ID.Emp_Name,
                 'Element_Amount': month_pp_serializer.data[count] if month_pp_serializer.data else []
             }
             # print('count: ', count)
@@ -61,7 +63,7 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
             }
             data2.append(single_w_dept)
 
-            # print('Element data2: ', data2)
+            print('Element data2: ', data2)
 
         data3 = []
 
@@ -93,9 +95,6 @@ def test2(request, W_DeptID, DeptID):
         return JsonResponse(month_pp_serializer.data, safe=False)
     except Exception as e:
         return Response({'error': str(e)}, status=500)
-
-
-
 
 def getAll_Assigned_Dept(request, DeptID):
     try:
@@ -179,7 +178,6 @@ def get_current_pp(request):
         return Response(data, status=200)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
-    
 
 @api_view(['POST'])
 def Insert_Monthly_PE(request):
@@ -201,7 +199,7 @@ def Insert_Monthly_PE(request):
                 my_monthly_data[key] = value
 
             # Check if data already exists
-            existing_data = HR_Monthly_All_Ded.objects.filter(Employee=my_monthly_data['Employee'])
+            existing_data = HR_Monthly_All_Ded.objects.filter(Employee=my_monthly_data['Employee'], Period=my_monthly_data['Period'])
             if existing_data.exists():
                 # Update existing data
                 serializer = HR_Monthly_All_Ded_Serializer(existing_data.first(), data=my_monthly_data)
@@ -218,15 +216,127 @@ def Insert_Monthly_PE(request):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+# @api_view(['POST'])
+# def Insert_from_excel(request):
+#     W_Department = request.data.get("W_Department")
+#     table_data = request.data.get("table_data")
+#     period = request.data.get('Period')
+#     print('W_Department: ', W_Department)
+#     print('table_data: ', table_data)
+#     print('period: ', period)
+#     print('table_data type: ', type(table_data))
+#     for i in range(len(table_data)):
+#         print('obj: ', table_data['Emp_ID'][i])
+#         existing_data = HR_Monthly_All_Ded.objects.filter(Employee=table_data['Emp_ID'][i], Period=period, Department=W_Department)
+#         if existing_data.exists():
+#             serializer = HR_Monthly_All_Ded_Serializer(existing_data.first(), data=my_monthly_data)
+#             serializer.save()
+
+
+# @api_view(['POST'])
+# def Insert_from_excel(request):
+#     try:
+#         W_Department = request.data.get("W_Department")
+#         table_data = request.data.get("table_data")
+#         period = request.data.get('Period')
+#         # print('W_Department: ', W_Department)
+#         print('table_data: ', table_data)
+#         print('period: ', period)
+#         # print('table_data type: ', type(table_data))
+
+#         # Assuming 'Emp_ID' is a key in table_data and it contains an array
+#         if 'Emp_ID' in table_data:
+#             for i in range(len(table_data['Emp_ID'])):
+#                 emp_id = table_data['Emp_ID'][i]
+
+#                 # Prepare data dictionary for serialization
+#                 my_monthly_data = {
+#                     'Employee': int(emp_id),
+#                     'Period': int(period),
+#                     'Department': int(W_Department),
+#                 }
+
+#                 # Dynamically add other columns from table_data
+#                 for key, value in table_data.items():
+#                     if key != 'Emp_ID' and i < len(value) and key != 'Emp_Name':
+#                         my_monthly_data[key] = int(value[i])
+
+#                 # Use the values to perform your operations
+#                 print('my_monthly_data: ', my_monthly_data)
+#                 existing_data = HR_Monthly_All_Ded.objects.filter(Employee=emp_id, Period=period, Department=W_Department)
+#                 if existing_data.exists():
+#                     serializer = HR_Monthly_All_Ded_Serializer(existing_data.first(), data=my_monthly_data)
+#                 else:
+#                     serializer = HR_Monthly_All_Ded_Serializer(data=my_monthly_data)
+
+#                 if serializer.is_valid():
+#                     serializer.save()
+#                 else:
+#                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#         return Response({'message': 'Data saved successfully'}, status=status.HTTP_200_OK)
+#     except Exception as e:
+#         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+def Insert_from_excel(request):
+    try:
+        W_Department = request.data.get("W_Department")
+        table_data = request.data.get("table_data")
+        period = request.data.get('Period')
+        print('W_Department: ', W_Department)
+        print('table_data: ', table_data)
+        print('period: ', period)
+
+        if 'Emp_ID' in table_data:
+            for i in range(len(table_data['Emp_ID'])):
+                emp_id = table_data['Emp_ID'][i]
+                my_monthly_data = {
+                    'Employee': int(emp_id),
+                    'Period': int(period),
+                    'Department': int(W_Department),
+                }
+
+                for key, value in table_data.items():
+                    if key != 'Emp_ID' and i < len(value) and key != 'Emp_Name':
+                        try:
+                            my_monthly_data[key] = int(value[i])
+                        except ValueError:
+                            my_monthly_data[key] = None  # Set to None if conversion fails
+
+                print('my_monthly_data: ', my_monthly_data)
+                existing_data = HR_Monthly_All_Ded.objects.filter(Employee=emp_id, Period=period, Department=W_Department)
+                if existing_data.exists():
+                    serializer = HR_Monthly_All_Ded_Serializer(existing_data.first(), data=my_monthly_data)
+                else: 
+                    serializer = HR_Monthly_All_Ded_Serializer(data=my_monthly_data)
+
+                if serializer.is_valid():
+                    serializer.save()
+                else:
+                    print('Serializer errors:', serializer.errors)  # Print serializer errors for debugging
+                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'message': 'Data saved successfully'}, status=status.HTTP_200_OK)
+    except Exception as e:
+        print('Exception:', e)  # Print the exception for debugging
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
 @api_view(['GET'])
 def export_template(request, ID):
     try:
         assigned_depts = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=ID).values_list('Dept_ID')
+        assigned_elements = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=ID).prefetch_related("W_All_Ded_Element_ID").values("W_All_Ded_Element_ID__Element_ID", "W_All_Ded_Element_ID__Element_Name").order_by('W_All_Ded_Element_ID__Element_ID')
+
         if assigned_depts is None:
             return Response({'error': 'No Data Found'}, status=404)
-        data = []
+        data = {}
         print('assigned_depts: ', assigned_depts)
         assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID__in=assigned_depts).values("Emp_ID", "Emp_Name")
+        
         print('assigned_emps: ', assigned_emps)
         # for emp in assigned_emps:
         #     print('emp: ', emp)
@@ -235,7 +345,12 @@ def export_template(request, ID):
         #         'Emp_Name': emp["Emp_Name"]
         #     }
         #     data.append(single_emp)
-        return Response(assigned_emps, status=200)
+        data = {
+            "Employee": assigned_emps,
+            "Element": assigned_elements
+        }
+        # print('data: ', data)
+        return Response(data, status=200)
     except Exception as e:
         return Response({'error': str(e)}, status=500)
 
@@ -278,8 +393,6 @@ def export_template(request, ID):
 #         return JsonResponse(response_data, safe=False)
 #     except Exception as e:
 #         return JsonResponse({'error': str(e)}, status=500)
-
-
 
 
 # @api_view(['POST'])

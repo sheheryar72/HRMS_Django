@@ -60,7 +60,7 @@ function CancelFormAndGridData() {
 
 document.getElementById("W_Department").addEventListener("click", async function () {
     // const W_deptID = localStorage.getItem("W_deptID");
-    const W_deptID = 2;
+    const W_deptID = 18;
     const W_Department = document.getElementById("W_Department").value;
     try {
         const response = await fetch(`${BASE_URL}/monthly_all_ded/getall_dept_element/${W_deptID}/${W_Department}`);
@@ -233,13 +233,12 @@ async function getAllDeptElemet() {
     }
 };
 
-
 $(document).ready(function () {
     initializeDataTable();
     current_w_dept_id = localStorage.getItem("current_w_dept_id");
     current_w_dept_name = localStorage.getItem("current_w_dept_name");
     document.getElementById("Department").value = current_w_dept_name;
-    W_deptID = 2;
+    W_deptID = 18;
     current_payrollperiod();
     getAll_Dept_ByID(W_deptID);
     // getAllDeptElemet(W_deptID);
@@ -364,17 +363,25 @@ async function getDataFromAPI() {
 async function exportToExcel() {
     try {
         // Fetch data from API
-        const data = await getDataFromAPI();    
+        const data = await getDataFromAPI();
         console.log("exportToExcel exportToExcel: ", data)
 
-        const columns = ['Emp_ID', 'Emp_Name', 'Basic_Salary_01', 'Medical_Allowance_2', 'Conveyance_Allowance_3', 'Overtime_Allowance_4',
-            'House_Rent_Allowanc_5', 'Utilities_Allowance_6', 'Meal_Allowance_7', 'Arrears_8', 'Bike_Maintainence_9', 'Incentives_10',
-            'Device_Reimbursment_11', 'Communication_12', 'Bonus_13', 'Other_Allowance_14', 'Loan_15', 'Advance_Salary_16',
-            'EOBI_17', 'Income_Tax_18', 'Absent_Days_19', 'Device_Deduction_20', 'Over_Utilizaton_Mobile_21', 'Vehicle_or_Fuel_Deduction_22',
-            'Pandamic_Deduction_23', 'Late_Days_24', 'Other_Deduction_25', 'Mobile_Installment_26', 'Food_Panda_27'];
+        // const columns = ['Emp_ID', 'Emp_Name', 'Basic_Salary_01', 'Medical_Allowance_2', 'Conveyance_Allowance_3', 'Overtime_Allowance_4',
+        //     'House_Rent_Allowanc_5', 'Utilities_Allowance_6', 'Meal_Allowance_7', 'Arrears_8', 'Bike_Maintainence_9', 'Incentives_10',
+        //     'Device_Reimbursment_11', 'Communication_12', 'Bonus_13', 'Other_Allowance_14', 'Loan_15', 'Advance_Salary_16',
+        //     'EOBI_17', 'Income_Tax_18', 'Absent_Days_19', 'Device_Deduction_20', 'Over_Utilizaton_Mobile_21', 'Vehicle_or_Fuel_Deduction_22',
+        //     'Pandamic_Deduction_23', 'Late_Days_24', 'Other_Deduction_25', 'Mobile_Installment_26', 'Food_Panda_27'];
+        const columns = ['Emp_ID', 'Emp_Name']
+        data.Element.map(obj => {
+            let element_col_name = `${obj.W_All_Ded_Element_ID__Element_Name}_${obj.W_All_Ded_Element_ID__Element_ID}`
+            let element_col_name2 = element_col_name.replace(/ /g, "_");
+            columns.push(element_col_name2)
+        })
+
+        console.log('columns: ', columns)
 
         // Extract values for each row
-        const rows = data.map(obj => {
+        const rows = data.Employee.map(obj => {
             // Fill the first two columns with Emp_ID and Emp_Name values
             const row = [obj['Emp_ID'], obj['Emp_Name']];
             // Fill the rest of the columns with empty strings
@@ -402,41 +409,118 @@ document.getElementById("importData").addEventListener('click', async function (
     try {
         const fileInput = document.getElementById('fileInput');
         const file = fileInput.files[0];
-        await importFromExcel(file);
+        Insert_Monthly_PE_By_Excel(file);
     } catch (error) {
         console.error('Error:', error);
     }
 });
 
-async function importFromExcel(file) {
+async function Insert_Monthly_PE_By_Excel(file) {
     try {
-        console.log('file: ', file);
-        const reader = new FileReader(); // Create a new FileReader object
-        reader.onload = function(event) {
-            const data = new Uint8Array(event.target.result); // Convert the file data to Uint8Array
-            const wb = XLSX.read(data, { type: 'array' }); // Read the Excel file using XLSX
-            const ws = wb.Sheets[wb.SheetNames[0]]; // Assume the data is in the first sheet
-            const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }); // Parse the data into an array of objects
-            const columns = jsonData[0]; // Extract column headers
-            const dictionary = {}; // Initialize the dictionary of arrays
-            // Iterate over columns
-            for (let i = 0; i < columns.length; i++) {
-                const columnName = columns[i];
-                dictionary[columnName] = [];
-                // Iterate over rows (skip the first row as it contains column headers)
-                for (let j = 1; j < jsonData.length; j++) {
-                    // Push data into the corresponding array
-                    dictionary[columnName].push(jsonData[j][i]);
-                }
-            }
-            // Log the dictionary
-            console.log('Dictionary of arrays:', dictionary);
-        };
-        reader.readAsArrayBuffer(file); // Read the file as an array buffer
+        let tableData = await importFromExcel(file);
+        let W_Department = document.getElementById("W_Department").value
+        console.log("table data: ", tableData)
+        console.log("table W_Department: ", W_Department)
+        const response = await fetch(`${BASE_URL}/monthly_all_ded/Insert_from_excel/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 'table_data': tableData, 'W_Department': W_Department, 'Period': current_period_id }),
+        })
+        if (!response.ok) {
+            displayErrorMessage("Failed While assigning Elements")
+        } else {
+            displaySuccessMessage("Successfully Assigned Elements")
+        }
+        const data = await response.json();
     } catch (error) {
-        console.error('Error importing data:', error);
+        console.error('Error inserting data:', error);
+        displayErrorMessage("Failed While assigning Elements")
     }
 }
+
+function importFromExcel(file) {
+    return new Promise((resolve, reject) => {
+        try {
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const data = new Uint8Array(event.target.result);
+                const wb = XLSX.read(data, { type: 'array' });
+                const ws = wb.Sheets[wb.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 });
+                const columns = jsonData[0];
+                const dictionary = {};
+                for (let i = 0; i < columns.length; i++) {
+                    const columnName = columns[i];
+                    dictionary[columnName] = [];
+                    for (let j = 1; j < jsonData.length; j++) {
+                        dictionary[columnName].push(jsonData[j][i]);
+                    }
+                }
+                console.log('Dictionary of arrays:', dictionary);
+                resolve(dictionary); // Resolve the promise with the processed data
+            };
+            reader.readAsArrayBuffer(file);
+        } catch (error) {
+            console.error('Error importing data:', error);
+            reject(error); // Reject the promise if an error occurs
+        }
+    });
+}
+
+
+
+// async function Insert_Monthly_PE_By_Excel(file) {
+//     let tableData = await importFromExcel(file);
+//     let W_Department = document.getElementById("W_Department").value
+//     console.log("table data: ", tableData)
+//     console.log("table W_Department: ", W_Department)
+//     const response = await fetch(`${BASE_URL}/monthly_all_ded/Insert_from_excel/`, {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ 'table_data': tableData, 'W_Department': W_Department }),
+//     })
+//     if (!response.ok) {
+//         displayErrorMessage("Failed While assigning Elements")
+//     } else {
+//         displaySuccessMessage("Successfully Assigned Elements")
+//     }
+//     const data = await response.json();
+// }
+
+// function importFromExcel(file) {
+//     try {
+//         console.log('file: ', file);
+//         const reader = new FileReader(); // Create a new FileReader object
+//         reader.onload = function (event) {
+//             const data = new Uint8Array(event.target.result); // Convert the file data to Uint8Array
+//             const wb = XLSX.read(data, { type: 'array' }); // Read the Excel file using XLSX
+//             const ws = wb.Sheets[wb.SheetNames[0]]; // Assume the data is in the first sheet
+//             const jsonData = XLSX.utils.sheet_to_json(ws, { header: 1 }); // Parse the data into an array of objects
+//             const columns = jsonData[0]; // Extract column headers
+//             const dictionary = {}; // Initialize the dictionary of arrays
+//             // Iterate over columns
+//             for (let i = 0; i < columns.length; i++) {
+//                 const columnName = columns[i];
+//                 dictionary[columnName] = [];
+//                 // Iterate over rows (skip the first row as it contains column headers)
+//                 for (let j = 1; j < jsonData.length; j++) {
+//                     // Push data into the corresponding array
+//                     dictionary[columnName].push(jsonData[j][i]);
+//                 }
+//             }
+//             // Log the dictionary
+//             console.log('Dictionary of arrays:', dictionary);
+//             return dictionary
+//         };
+//         reader.readAsArrayBuffer(file); // Read the file as an array buffer
+//     } catch (error) {
+//         console.error('Error importing data:', error);
+//     }
+// }
 
 function displaySuccessMessage(message) {
     const alertContainer = document.createElement('div');

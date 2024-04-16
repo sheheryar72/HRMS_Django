@@ -8,7 +8,7 @@ import pdb
 from department.models import HR_Department
 from payroll_period.models import HR_PAYROLL_PERIOD
 from django.db.models import F
-from .models import HR_Monthly_All_Ded
+from .models import HR_Monthly_All_Ded, HR_Emp_Salary_Grade_V
 from rest_framework.decorators import api_view
 from rest_framework import status
 from .serializers import HR_Monthly_All_Ded_Serializer
@@ -30,14 +30,24 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
         w_dept_queryset = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=W_DeptID, Dept_ID=DeptID).prefetch_related('W_All_Ded_Dept_ID', 'W_All_Ded_Element_ID', 'Dept_ID')
         # print('w_dept_queryset: ', w_dept_queryset)
         # emp_queryset = HR_Employees.objects.filter(Joining_Dept_ID=DeptID)
-        emp_queryset = HR_Emp_Sal_Update_Mstr.objects.filter(Dept_ID=DeptID)
+        
+        # emp_queryset = HR_Emp_Sal_Update_Mstr.objects.filter(Dept_ID=DeptID).select_related("Emp_ID")
+
+        emp_queryset = HR_Emp_Salary_Grade_V.objects.filter(Dept_ID=DeptID).distinct()
+
+        print('emp_queryset: ', emp_queryset)
 
         print('deprt: ', DeptID)
+        
         month_pp_queryset = HR_Monthly_All_Ded.objects.filter(Department=DeptID)
 
         month_pp_serializer = HR_Monthly_All_Ded_Serializer(month_pp_queryset, many=True)
 
         # print('month_pp_serializer: ', month_pp_serializer.data)
+
+        print('count 1: ', emp_queryset.count())
+        print('count 2: ', month_pp_queryset.count())
+        print('count 3: ', w_dept_queryset.count())
 
         data = []
         data2 = []
@@ -45,10 +55,18 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
         count = 0
         for item in emp_queryset:
             single_emp = {
-                'Emp_ID': item.Emp_ID.Emp_ID,
-                'Emp_Name': item.Emp_ID.Emp_Name,
+                'Emp_ID': item.Emp_ID,
+                'Emp_Name': item.Emp_Name,
+                'HR_Emp_ID': item.HR_Emp_ID,
+                'Grade_Descr': item.Grade_Descr,
+                # 'Element_Amount': 0
                 'Element_Amount': month_pp_serializer.data[count] if month_pp_serializer.data else []
             }
+            # single_emp = {
+            #     'Emp_ID': item.Emp_ID.Emp_ID,
+            #     'Emp_Name': item.Emp_ID.Emp_Name,
+            #     'Element_Amount': month_pp_serializer.data[count] if month_pp_serializer.data else []
+            # }
             # print('count: ', count)
             # print('month_pp_serializer: ', month_pp_serializer.data[count])
             count += 1
@@ -78,7 +96,6 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
         return JsonResponse(data3, safe=False)
     except Exception as e:
         return Response({'error': str(e)}, status=500)
-
 
 
 def test2(request, W_DeptID, DeptID):

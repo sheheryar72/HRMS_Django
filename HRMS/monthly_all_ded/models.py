@@ -55,3 +55,21 @@ class HR_Element_Grade_Combination(models.Model):
     
     def __str__(self):
         return str(self.Combination_ID)
+
+class HR_Emp_Salary_Grade_V(models.Model):
+    # Emp_ID = models.IntegerField(primary_key=True)
+    # Emp_Name = models.CharField(max_length=150)
+
+    Emp_ID = models.AutoField(primary_key=True, db_column='Emp_ID')   
+    Emp_Name = models.CharField(db_column='Emp_Name', max_length=150, blank=True, null=True)  
+    HR_Emp_ID = models.IntegerField()
+    Grade_Descr = models.CharField(max_length=50)
+    Dept_ID = models.IntegerField()
+
+    class Meta:
+        managed = False  # Mark the model as read-only
+        db_table = 'HR_Emp_Salary_Grade_V'  # Specify the view name
+
+    def __str__(self):
+        return self.Emp_Name
+

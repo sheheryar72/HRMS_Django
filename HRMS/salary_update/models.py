@@ -43,4 +43,3 @@ class HR_Emp_Sal_Update_Dtl(models.Model):
 
     def __str__(self):
         return str(self.Emp_Up_ID)
-

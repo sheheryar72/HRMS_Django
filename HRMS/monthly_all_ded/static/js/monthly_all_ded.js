@@ -60,7 +60,7 @@ function CancelFormAndGridData() {
 
 document.getElementById("W_Department").addEventListener("click", async function () {
     // const W_deptID = localStorage.getItem("W_deptID");
-    const W_deptID = 18;
+    const W_deptID = 8;
     const W_Department = document.getElementById("W_Department").value;
     try {
         const response = await fetch(`${BASE_URL}/monthly_all_ded/getall_dept_element/${W_deptID}/${W_Department}`);
@@ -72,7 +72,8 @@ document.getElementById("W_Department").addEventListener("click", async function
 
         console.log("W_Department data: ", data);
 
-        document.getElementById("InserRowHeadID").innerHTML = `<th style="width: 12%;">Employee ID</th><th style="width: 20%;">Employee</th>`;
+        document.getElementById("InserRowHeadID").innerHTML = 
+        `<th style="width: 12%;">Employee ID</th><th style="width: 20%;">Employee</th><th style="width: 10%;">HR Emp ID</th><th style="width: 10%;">Grade</th>`;
 
         data[1]["Element"].forEach(element => {
             // element_col_ID = `${element.Element_Name}_${element.Element_ID}`
@@ -104,6 +105,8 @@ document.getElementById("W_Department").addEventListener("click", async function
             let element_columns = '<tr>';
             element_columns += `<td><input type="number" class="form-control form-control-sm" value="${emp.Emp_ID}" id="Employee" style="width: 100%;" readonly /></td>`;
             element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.Emp_Name}" style="width: 100%;" readonly /></td>`;
+            element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.HR_Emp_ID}" style="width: 100%;" readonly /></td>`;
+            element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.Grade_Descr}" style="width: 100%;" readonly /></td>`;
             data[1]["Element"].forEach(element => {
                 element_name_col = `${element.Element_Name}_${element.Element_ID}`;
                 element_name_col = element_name_col.replace(/ /g, "_");  // Replace all spaces with underscores globally
@@ -238,7 +241,7 @@ $(document).ready(function () {
     current_w_dept_id = localStorage.getItem("current_w_dept_id");
     current_w_dept_name = localStorage.getItem("current_w_dept_name");
     document.getElementById("Department").value = current_w_dept_name;
-    W_deptID = 18;
+    W_deptID = 8;
     current_payrollperiod();
     getAll_Dept_ByID(W_deptID);
     // getAllDeptElemet(W_deptID);
@@ -328,7 +331,7 @@ function GetTableData() {
             if (index == 0) {
                 columnName = "Employee"
             }
-            if (index != 1) {
+            if (index != 1 && index != 2 && index != 3) {
                 if (columnName !== "") {
                     rowData['Period'] = Number(current_period_id);
                     rowData[columnName] = Number(cellValue);
@@ -468,8 +471,6 @@ function importFromExcel(file) {
         }
     });
 }
-
-
 
 // async function Insert_Monthly_PE_By_Excel(file) {
 //     let tableData = await importFromExcel(file);

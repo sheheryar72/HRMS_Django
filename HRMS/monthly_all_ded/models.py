@@ -63,6 +63,7 @@ class HR_Emp_Salary_Grade_V(models.Model):
     Emp_ID = models.AutoField(primary_key=True, db_column='Emp_ID')   
     Emp_Name = models.CharField(db_column='Emp_Name', max_length=150, blank=True, null=True)  
     HR_Emp_ID = models.IntegerField()
+    Grade_ID = models.IntegerField()
     Grade_Descr = models.CharField(max_length=50)
     Dept_ID = models.IntegerField()
 

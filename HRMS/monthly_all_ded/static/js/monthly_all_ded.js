@@ -60,7 +60,7 @@ function CancelFormAndGridData() {
 
 document.getElementById("W_Department").addEventListener("click", async function () {
     // const W_deptID = localStorage.getItem("W_deptID");
-    const W_deptID = 8;
+    const W_deptID = 2;
     const W_Department = document.getElementById("W_Department").value;
     try {
         const response = await fetch(`${BASE_URL}/monthly_all_ded/getall_dept_element/${W_deptID}/${W_Department}`);
@@ -70,10 +70,10 @@ document.getElementById("W_Department").addEventListener("click", async function
         const data = await response.json();
         let temp = '', temp2 = '', counter = 1;
 
-        console.log("W_Department data: ", data);
+        // console.log("W_Department data: ", data);
 
-        document.getElementById("InserRowHeadID").innerHTML = 
-        `<th style="width: 12%;">Employee ID</th><th style="width: 20%;">Employee</th><th style="width: 10%;">HR Emp ID</th><th style="width: 10%;">Grade</th>`;
+        document.getElementById("InserRowHeadID").innerHTML =
+            `<th style="width: 12%;">Emp ID</th><th style="width: 40%;">Emp Name</th><th style="width: 15%;">HR Code</th><th style="width: 10%;">Grade</th>`;
 
         data[1]["Element"].forEach(element => {
             // element_col_ID = `${element.Element_Name}_${element.Element_ID}`
@@ -100,28 +100,72 @@ document.getElementById("W_Department").addEventListener("click", async function
         // });
 
         document.getElementById("InserRowID").innerHTML = '';
+        let maxRows = data[1]["Element"].reduce((max, element) => Math.max(max, element.rows), 0);
+
+        console.log("new data loop")
+
         data[0]["Employee"].forEach(emp => {
-            console.log('emp: ', emp)
             let element_columns = '<tr>';
-            element_columns += `<td><input type="number" class="form-control form-control-sm" value="${emp.Emp_ID}" id="Employee" style="width: 100%;" readonly /></td>`;
-            element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.Emp_Name}" style="width: 100%;" readonly /></td>`;
-            element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.HR_Emp_ID}" style="width: 100%;" readonly /></td>`;
-            element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.Grade_Descr}" style="width: 100%;" readonly /></td>`;
-            data[1]["Element"].forEach(element => {
+            element_columns += `<td><input type="number" class="form-control form-control-sm" value="${emp.Emp_ID}" id="Employee"  readonly /></td>`;
+            element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.Emp_Name}" readonly /></td>`;
+            element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.HR_Emp_ID}"  readonly /></td>`;
+            element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.Grade_Descr}" readonly /></td>`;
+
+            data[1]["Element"].forEach((element, index) => {
                 element_name_col = `${element.Element_Name}_${element.Element_ID}`;
-                element_name_col = element_name_col.replace(/ /g, "_");  // Replace all spaces with underscores globally
-                // console.log('element_name_col: ', element_name_col);
-                element_columns += `<td><input type="number" class="form-control form-control-sm" value="${emp["Element_Amount"][element_name_col] || ''}" style="width: 100%;"></td>`;
+                element_name_col = element_name_col.replace(/ /g, "_");
+                table_row_length = document.getElementById("InserRowID").rows.length
+                
+                single_emp_data = data[2]['Emp_Element_Status'].filter(x=>x.Emp_ID == emp.Emp_ID)
+
+                console.log('single_emp_data: ', single_emp_data)
+                
+                let readonly = '';
+                if (!single_emp_data.some(obj => obj.Element_ID === element.Element_ID)){
+                    readonly = 'readonly'
+                    console.log('not element.Element_ID: ', element.Element_ID)
+                }else{
+                    // console.log('not element.Element_ID: ', element.Element_ID)
+                }
+
+                // console.log(data[2]['Emp_Element_Status'].filter(x=>x.Emp_ID == emp.Emp_ID))
+                // let readonly = 5 >= table_row_length ? '' : 'readonly'; // Check if the current row exceeds the maximum rows for this column
+                // debugger
+
+                element_columns += `<td><input type="number" class="form-control form-control-sm" value="${emp["Element_Amount"][element_name_col] || ''}"  ${readonly}></td>`;
             });
+
             element_columns += '</tr>';
             document.getElementById("InserRowID").innerHTML += element_columns;
         });
+
+        // document.getElementById("InserRowID").innerHTML = '';
+        // data[0]["Employee"].forEach(emp => {
+        //     console.log('emp: ', emp)
+        //     let element_columns = '<tr>';
+        //     element_columns += `<td><input type="number" class="form-control form-control-sm" value="${emp.Emp_ID}" id="Employee" style="width: 100%;" readonly /></td>`;
+        //     element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.Emp_Name}" style="width: 100%;" readonly /></td>`;
+        //     element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.HR_Emp_ID}" style="width: 100%;" readonly /></td>`;
+        //     element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.Grade_Descr}" style="width: 100%;" readonly /></td>`;
+        //     data[1]["Element"].forEach(element => {
+        //         element_name_col = `${element.Element_Name}_${element.Element_ID}`;
+        //         element_name_col = element_name_col.replace(/ /g, "_");  // Replace all spaces with underscores globally
+        //         // console.log('element_name_col: ', element_name_col);
+        //         console.log('element.Element_ID: ', element.Element_ID)
+        //         element_columns += `<td><input type="number" class="form-control form-control-sm" value="${emp["Element_Amount"][element_name_col] || ''}" style="width: 100%;"></td>`;
+        //     });
+        //     element_columns += '</tr>';
+        //     document.getElementById("InserRowID").innerHTML += element_columns;
+        // });
+
 
 
     } catch (error) {
         console.error('Error fetching Grade:', error);
         return null;
     }
+
+
 });
 
 async function getAll_Dept_ByID(id) {
@@ -241,7 +285,7 @@ $(document).ready(function () {
     current_w_dept_id = localStorage.getItem("current_w_dept_id");
     current_w_dept_name = localStorage.getItem("current_w_dept_name");
     document.getElementById("Department").value = current_w_dept_name;
-    W_deptID = 8;
+    W_deptID = 2;
     current_payrollperiod();
     getAll_Dept_ByID(W_deptID);
     // getAllDeptElemet(W_deptID);

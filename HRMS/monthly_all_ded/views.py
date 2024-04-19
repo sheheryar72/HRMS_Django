@@ -16,6 +16,7 @@ from django.db.models import Q
 from payroll_period.serialiers import HR_PAYROLL_PERIOD_Serializer
 from employee.serializers import HR_Employees_Serializer
 from salary_update.models import HR_Emp_Sal_Update_Mstr
+from .models import HR_Element_Grade_Combination
 
 def Index(request):
     return render(request, 'monthly_all_ded.html')
@@ -51,6 +52,7 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
 
         data = []
         data2 = []
+        data4 = []
 
         count = 0
         for item in emp_queryset:
@@ -58,6 +60,7 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
                 'Emp_ID': item.Emp_ID,
                 'Emp_Name': item.Emp_Name,
                 'HR_Emp_ID': item.HR_Emp_ID,
+                'Grade_ID': item.Grade_ID,
                 'Grade_Descr': item.Grade_Descr,
                 # 'Element_Amount': 0
                 'Element_Amount': month_pp_serializer.data[count] if month_pp_serializer.data else []
@@ -74,6 +77,22 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
 
             # print('Employee data: ', data)
 
+            a1 = w_dept_queryset.values_list('W_All_Ded_Element_ID__Element_ID', flat=True).distinct()
+            # print('a1: ', a1)
+
+            grade_comb = HR_Element_Grade_Combination.objects.filter(Grade_ID=item.Grade_ID, Element_ID__in=a1)
+            # grade_comb = HR_Element_Grade_Combination.objects.filter(Grade_ID=item.Grade_ID, Element_ID__in=(27))
+            # print('grade_comb: ', grade_comb)
+            for j in grade_comb:
+                data4.append({
+                    'Emp_ID': item.Emp_ID,
+                    'Element_ID': j.Element_ID.Element_ID,
+                    'Grade_ID': j.Grade_ID.Grade_ID,  
+                })
+
+
+        print('data4: ', data4)
+
         for item in w_dept_queryset:
             single_w_dept = {
                 'Element_ID': item.W_All_Ded_Element_ID.Element_ID,
@@ -81,12 +100,13 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
             }
             data2.append(single_w_dept)
 
-            print('Element data2: ', data2)
+            # print('Element data2: ', data2)
 
         data3 = []
 
         data3.append({"Employee": data})
         data3.append({"Element": data2})
+        data3.append({"Emp_Element_Status": data4})
         # data3.append({"Monthly_Payromm_Element": month_pp_serializer.data})
 
         # print('data3: ', data3)

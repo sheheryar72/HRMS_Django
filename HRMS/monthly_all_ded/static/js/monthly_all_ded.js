@@ -60,7 +60,8 @@ function CancelFormAndGridData() {
 
 document.getElementById("W_Department").addEventListener("click", async function () {
     // const W_deptID = localStorage.getItem("W_deptID");
-    const W_deptID = 2;
+    // const W_deptID = 2;
+    const W_deptID = document.getElementById("Current_Department").value;
     const W_Department = document.getElementById("W_Department").value;
     try {
         const response = await fetch(`${BASE_URL}/monthly_all_ded/getall_dept_element/${W_deptID}/${W_Department}`);
@@ -285,9 +286,10 @@ $(document).ready(function () {
     current_w_dept_id = localStorage.getItem("current_w_dept_id");
     current_w_dept_name = localStorage.getItem("current_w_dept_name");
     document.getElementById("Department").value = current_w_dept_name;
-    W_deptID = 2;
+    W_deptID = 1;
     current_payrollperiod();
-    getAll_Dept_ByID(W_deptID);
+    getAllDepartmentFromAPI();
+    // getAll_Dept_ByID(W_deptID);
     // getAllDeptElemet(W_deptID);
     document.getElementById("CancelFormData").addEventListener('click', CancelFormAndGridData);
 })
@@ -406,6 +408,31 @@ async function getDataFromAPI() {
         console.error('Error fetching Grade:', error);
     }
 }
+
+async function getAllDepartmentFromAPI() {
+    try {
+        const W_deptID = 2;
+        const response = await fetch(`${BASE_URL}/department/api/getall`);
+        if (!response.ok) {
+            throw new Error('Some Error while Exporting Template');
+        }
+        const data = await response.json();
+        console.log("getAllDepartmentFromAPI: ", data);
+        let depts = ''
+        data.forEach(item => {
+            depts += `<option value="${item.Dept_ID}">${item.Dept_Descr}</option>`
+        });
+        document.getElementById("Current_Department").innerHTML = depts
+        // return data;
+    } catch (error) {
+        console.error('Error fetching Grade:', error);
+    }
+}
+
+document.getElementById("Current_Department").addEventListener('click', function(){
+    let W_deptID = this.value
+    getAll_Dept_ByID(W_deptID);
+})
 
 async function exportToExcel() {
     try {

@@ -160,13 +160,12 @@ document.getElementById("W_Department").addEventListener("click", async function
         // });
 
 
-
     } catch (error) {
         console.error('Error fetching Grade:', error);
         return null;
     }
 
-
+    
 });
 
 async function getAll_Dept_ByID(id) {

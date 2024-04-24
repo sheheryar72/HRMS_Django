@@ -360,17 +360,16 @@ def Insert_from_excel(request):
         print('Exception:', e)  # Print the exception for debugging
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
-
 @api_view(['GET'])
 def export_template(request, ID):
     try:
         assigned_depts = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=ID).values_list('Dept_ID')
-        assigned_elements = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=ID).prefetch_related("W_All_Ded_Element_ID").values("W_All_Ded_Element_ID__Element_ID", "W_All_Ded_Element_ID__Element_Name").order_by('W_All_Ded_Element_ID__Element_ID')
+        assigned_elements = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=ID).prefetch_related("W_All_Ded_Element_ID").values("W_All_Ded_Element_ID__Element_ID", "W_All_Ded_Element_ID__Element_Name").order_by('W_All_Ded_Element_ID__Element_ID').distinct()
 
         if assigned_depts is None:
             return Response({'error': 'No Data Found'}, status=404)
         data = {}
+        print('assigned_elements: ', assigned_elements)
         print('assigned_depts: ', assigned_depts)
         assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID__in=assigned_depts).values("Emp_ID", "Emp_Name")
         

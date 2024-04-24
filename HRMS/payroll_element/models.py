@@ -6,6 +6,7 @@ class HR_Payroll_Elements(models.Model):
     Element_Name = models.CharField(max_length=50)
     Element_Type = models.CharField(max_length=50)
     Element_Category = models.CharField(max_length=50)
+    Cal_Type = models.CharField(max_length=20)
 
     class Meta:
         managed = False

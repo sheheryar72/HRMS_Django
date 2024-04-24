@@ -47,6 +47,16 @@
                                 placeholder="Elemenet Category">
                         </div>
                     </div>
+                    <div class="form-group row align-items-center">
+                        <label for="name" class="col-sm-3 col-form-label col-form-label-sm">Calculation Type</label>
+                        <div class="col-sm-9">
+                            <select type="text" class="form-control form-control-sm" id="Cal_Type">
+                                <option value="AMOUNT">Amount</option>
+                                <option value="FUEL_CAL">Fuel Calculation</option>
+                                <option value="OT_CAL">Overtime Calculation</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="text-center">
                         <button type="button" id="insertFormData" class="btn btn-dark mr-2">Create</button>
                         <button type="button" id="updateFormData" class="btn btn-dark mr-2 d-none">Update</button>
@@ -69,6 +79,7 @@
                 <th style="width: 35%;">Element Name</th>
                 <th style="width: 25%;">Element Type</th>
                 <th style="width: 25%;">Element Category</th>
+                <th style="width: 20%;">Cal Type</th>
                 <th style="width: 7%;">Action</th>
             </tr>
         </thead>

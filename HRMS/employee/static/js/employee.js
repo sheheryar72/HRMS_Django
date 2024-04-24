@@ -330,13 +330,62 @@ function createActionButton() {
 }
 
 function handleUpdateClick() {
-    const Dept_ID = document.getElementById("Dept_ID").value;
-    const Dept_Descr = document.getElementById("Dept_Descr").value;
+    // const Dept_ID = document.getElementById("Dept_ID").value;
+    // const Dept_Descr = document.getElementById("Dept_Descr").value;
 
-    const departmentData = {
-        Dept_ID: Dept_ID,
-        Dept_Descr: Dept_Descr
-    }
+    // const departmentData = {
+    //     Dept_ID: Dept_ID,
+    //     Dept_Descr: Dept_Descr
+    // }
+
+
+
+    const Emp_ID = Number(document.getElementById("Emp_ID").value);
+    const Emp_Name = document.getElementById("Emp_Name").value;
+    const DateOfBirth = document.getElementById("DateOfBirth").value;
+    const Gender = document.getElementById("Gender").value;
+    const Marital_Status = document.getElementById("Marital_Status").value;
+    const Personal_Cell_No = document.getElementById("Personal_Cell_No").value;
+    const HR_Emp_ID = Number(document.getElementById("HR_Emp_ID").value);
+    const Father_Name = document.getElementById("Father_Name").value;
+    const CNIC_No = document.getElementById("CNIC_No").value;
+    const religion = document.getElementById("Religion").value;
+    const CT_ID = Number(document.getElementById("CT_ID").value);
+    const Emergency_Cell_No = document.getElementById("Emergency_Cell_No").value;
+    const Joining_Date = document.getElementById("Joining_Date").value;
+    const Joining_Dsg_ID = Number(document.getElementById("Joining_Dsg_ID").value);
+    const Official_Cell_No = document.getElementById("Official_Cell_No").value;
+    const Co_ID = Number(document.getElementById("Co_ID").value);
+    const Joining_Dept_ID = Number(document.getElementById("Joining_Dept_ID").value);
+    const Emp_Status = document.getElementById("Emp_Status").value;
+
+    console.log('profileImage: ', document.getElementById('profileImage').files[0])
+
+    let formData = new FormData();
+    formData.append('profileImage', document.getElementById('profileImage').files[0]);
+    formData.append('Emp_ID', Emp_ID);
+    formData.append('Emp_Name', Emp_Name);
+    formData.append('DateOfBirth', DateOfBirth);
+    formData.append('Gender', Gender);
+    formData.append('Marital_Status', Marital_Status);
+    formData.append('Personal_Cell_No', Personal_Cell_No);
+    formData.append('HR_Emp_ID', HR_Emp_ID);
+    formData.append('Father_Name', Father_Name);
+    formData.append('CNIC_No', CNIC_No);
+    formData.append('religion', religion);
+    formData.append('CT_ID', CT_ID);
+    formData.append('Emergency_Cell_No', Emergency_Cell_No);
+    formData.append('Joining_Date', Joining_Date);
+    formData.append('Joining_Dsg_ID', Joining_Dsg_ID);
+    formData.append('Official_Cell_No', Official_Cell_No);
+    formData.append('Co_ID', Co_ID);
+    formData.append('Joining_Dept_ID', Joining_Dept_ID);
+    formData.append('Emp_Status', Emp_Status);
+
+
+
+
+
     updateDesignation(Dept_ID, departmentData);
     fillTableGrid();
 }

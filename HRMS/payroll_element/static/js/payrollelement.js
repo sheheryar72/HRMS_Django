@@ -32,10 +32,12 @@ function handleTableRowClick() {
     const Element_Name = rowData[2];
     const Element_Type = rowData[3];
     const Element_Categpry = rowData[4];
+    const Cal_Type = rowData[5];
     $('#Element_ID').val(Element_ID);
     $('#Element_Name').val(Element_Name);
     $('#Element_Type').val(Element_Type);
     $('#Element_Category').val(Element_Categpry);
+    $('#Cal_Type').val(Cal_Type);
     document.getElementById("updateFormData").classList.remove("d-none");
     document.getElementById("insertFormData").classList.add("d-none");
 }
@@ -62,6 +64,7 @@ function handleCancelClick() {
     document.getElementById("Element_Name").value = '';
     document.getElementById("Element_Type").value = '';
     document.getElementById("Element_Category").value = '';
+    document.getElementById("Cal_Type").selectedIndex = 0;
     document.getElementById("updateFormData").classList.add("d-none");
     document.getElementById("insertFormData").classList.remove("d-none");
 }
@@ -165,7 +168,7 @@ function fillTableGrid() {
        
         for (var i = 0; i < data.length; i++) {
             var actionButton = createActionButton(); 
-            var row = [counter, data[i].Element_ID, data[i].Element_Name, data[i].Element_Type, data[i].Element_Category, actionButton.outerHTML];
+            var row = [counter, data[i].Element_ID, data[i].Element_Name, data[i].Element_Type, data[i].Element_Category, data[i].Cal_Type, actionButton.outerHTML];
             table.row.add(row).draw(false);
             counter++;
         }
@@ -215,12 +218,14 @@ function handleInsertClick(){
     const Element_Name = document.getElementById("Element_Name").value;
     const Element_Type = document.getElementById("Element_Type").value;
     const Element_Category = document.getElementById("Element_Category").value;
+    const Cal_Type = document.getElementById("Cal_Type").value;
 
     const formData = {
         Element_ID: Element_ID,
-        Element_Name: Element_Name,
+        Element_Name: Element_Name, 
         Element_Type: Element_Type,
-        Element_Category: Element_Category
+        Element_Category: Element_Category,
+        Cal_Type: Cal_Type
     }
     createPayrollElement(formData);
     
@@ -231,12 +236,14 @@ function handleUpdateClick(){
     const Element_Name = document.getElementById("Element_Name").value;
     const Element_Type = document.getElementById("Element_Type").value;
     const Element_Category = document.getElementById("Element_Category").value;
+    const Cal_Type = document.getElementById("Cal_Type").value;
 
     const formData = {
         Element_ID: Element_ID,
         Element_Name: Element_Name,
         Element_Type: Element_Type,
-        Element_Category: Element_Category
+        Element_Category: Element_Category,
+        Cal_Type: Cal_Type
     }
     updatePayrollElement(Element_ID, formData);
     fillTableGrid();

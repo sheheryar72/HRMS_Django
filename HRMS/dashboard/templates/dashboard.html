@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Beautiful Bootstrap Sidebar</title>
+    <!-- <title>Beautiful Bootstrap Sidebar</title> -->
     <title>{% block title %}Your Title{% endblock %}</title>
 
     <!-- Bootstrap CSS -->
@@ -42,9 +42,10 @@
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
                 <span class="menu-icon" id="sidebarCollapse">&#9776;</span>
         
-                <!-- <div class=" text-center" id="formHeading">
-                    <h1>Sheheryar Izhar</h1>
-                </div> -->
+                <div class=" text-center" id="formHeading" style="color: rgb(255, 185, 71); width: 90%; line-height: 3.77rem; font-weight: 700 !important;">
+                    <h1> {% block pagetitle %} Page Title {% endblock %}</h1>
+                </div> 
+
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 </div>
                 <div class="dropdown" id="profileDropdown" style="left: -12%;">

@@ -68,14 +68,15 @@
 
         #content {
             width: 100%;
-            padding: 20px;
+            /* padding-left: 20px; */
+            /* padding-right: 20px; */
             min-height: 100vh;
             transition: all 0.3s;
         }
 
         .navbar {
-            padding: 15px 10px;
-            background: #343a40;
+            /* padding: 15px 10px; */
+            /* background: #141414 !important; */
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 

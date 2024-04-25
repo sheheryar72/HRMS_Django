@@ -180,16 +180,16 @@ function handleInsertClick() {
     const DateOfBirth = document.getElementById("DateOfBirth").value;
     const Gender = document.getElementById("Gender").value;
     const Marital_Status = document.getElementById("Marital_Status").value;
-    const Personal_Cell_No = document.getElementById("Personal_Cell_No").value;
     const HR_Emp_ID = Number(document.getElementById("HR_Emp_ID").value);
     const Father_Name = document.getElementById("Father_Name").value;
     const CNIC_No = document.getElementById("CNIC_No").value;
-    const religion = document.getElementById("Religion").value;
+    const Religion = document.getElementById("Religion").value;
     const CT_ID = Number(document.getElementById("CT_ID").value);
+    const Personal_Cell_No = document.getElementById("Personal_Cell_No").value;
+    const Official_Cell_No = document.getElementById("Official_Cell_No").value;
     const Emergency_Cell_No = document.getElementById("Emergency_Cell_No").value;
     const Joining_Date = document.getElementById("Joining_Date").value;
     const Joining_Dsg_ID = Number(document.getElementById("Joining_Dsg_ID").value);
-    const Official_Cell_No = document.getElementById("Official_Cell_No").value;
     const Co_ID = Number(document.getElementById("Co_ID").value);
     const Joining_Dept_ID = Number(document.getElementById("Joining_Dept_ID").value);
     const Emp_Status = document.getElementById("Emp_Status").value;
@@ -199,15 +199,15 @@ function handleInsertClick() {
     let formData = new FormData();
     formData.append('profileImage', document.getElementById('profileImage').files[0]);
     formData.append('Emp_ID', Emp_ID);
+    formData.append('HR_Emp_ID', HR_Emp_ID);
     formData.append('Emp_Name', Emp_Name);
+    formData.append('Father_Name', Father_Name);
     formData.append('DateOfBirth', DateOfBirth);
     formData.append('Gender', Gender);
     formData.append('Marital_Status', Marital_Status);
     formData.append('Personal_Cell_No', Personal_Cell_No);
-    formData.append('HR_Emp_ID', HR_Emp_ID);
-    formData.append('Father_Name', Father_Name);
     formData.append('CNIC_No', CNIC_No);
-    formData.append('religion', religion);
+    formData.append('Religion', Religion);
     formData.append('CT_ID', CT_ID);
     formData.append('Emergency_Cell_No', Emergency_Cell_No);
     formData.append('Joining_Date', Joining_Date);
@@ -237,14 +237,11 @@ async function createEmployee(formData) {
     }
 }
 
-async function updateDesignation(id, departmentData) {
+async function updateDesignation(id, formData) {
     try {
         const response = await fetch(`${BASE_URL}update/${id}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(departmentData),
+            body: formData,
         });
         if (!response.ok) {
             throw new Error('Failed to update department');
@@ -338,23 +335,21 @@ function handleUpdateClick() {
     //     Dept_Descr: Dept_Descr
     // }
 
-
-
     const Emp_ID = Number(document.getElementById("Emp_ID").value);
     const Emp_Name = document.getElementById("Emp_Name").value;
     const DateOfBirth = document.getElementById("DateOfBirth").value;
     const Gender = document.getElementById("Gender").value;
     const Marital_Status = document.getElementById("Marital_Status").value;
-    const Personal_Cell_No = document.getElementById("Personal_Cell_No").value;
     const HR_Emp_ID = Number(document.getElementById("HR_Emp_ID").value);
     const Father_Name = document.getElementById("Father_Name").value;
     const CNIC_No = document.getElementById("CNIC_No").value;
-    const religion = document.getElementById("Religion").value;
+    const Religion = document.getElementById("Religion").value;
     const CT_ID = Number(document.getElementById("CT_ID").value);
+    const Personal_Cell_No = document.getElementById("Personal_Cell_No").value;
+    const Official_Cell_No = document.getElementById("Official_Cell_No").value;
     const Emergency_Cell_No = document.getElementById("Emergency_Cell_No").value;
     const Joining_Date = document.getElementById("Joining_Date").value;
     const Joining_Dsg_ID = Number(document.getElementById("Joining_Dsg_ID").value);
-    const Official_Cell_No = document.getElementById("Official_Cell_No").value;
     const Co_ID = Number(document.getElementById("Co_ID").value);
     const Joining_Dept_ID = Number(document.getElementById("Joining_Dept_ID").value);
     const Emp_Status = document.getElementById("Emp_Status").value;
@@ -364,15 +359,15 @@ function handleUpdateClick() {
     let formData = new FormData();
     formData.append('profileImage', document.getElementById('profileImage').files[0]);
     formData.append('Emp_ID', Emp_ID);
+    formData.append('HR_Emp_ID', HR_Emp_ID);
     formData.append('Emp_Name', Emp_Name);
+    formData.append('Father_Name', Father_Name);
     formData.append('DateOfBirth', DateOfBirth);
     formData.append('Gender', Gender);
     formData.append('Marital_Status', Marital_Status);
     formData.append('Personal_Cell_No', Personal_Cell_No);
-    formData.append('HR_Emp_ID', HR_Emp_ID);
-    formData.append('Father_Name', Father_Name);
     formData.append('CNIC_No', CNIC_No);
-    formData.append('religion', religion);
+    formData.append('Religion', Religion);
     formData.append('CT_ID', CT_ID);
     formData.append('Emergency_Cell_No', Emergency_Cell_No);
     formData.append('Joining_Date', Joining_Date);
@@ -382,11 +377,7 @@ function handleUpdateClick() {
     formData.append('Joining_Dept_ID', Joining_Dept_ID);
     formData.append('Emp_Status', Emp_Status);
 
-
-
-
-
-    updateDesignation(Dept_ID, departmentData);
+    updateDesignation(Emp_ID, formData);
     fillTableGrid();
 }
 

@@ -93,6 +93,7 @@ def get_Employees_by_id(request, emp_id):
 @api_view(['POST'])
 def insert_Employees(request):
     try:
+        print('request.data: ', request.data)
         # Create a serializer instance with the request data
         serializer = HR_Employees_Serializer(data=request.data)
 
@@ -126,6 +127,10 @@ def insert_Employees(request):
 @api_view(['PUT'])
 def update_Employees(request, emp_id):
     try:
+
+        print('emp_id: ', emp_id)
+        print('request.data: ', request.data)
+
         Employees = HR_Employees.objects.get(pk=emp_id)
     except HR_Employees.DoesNotExist:
         return Response({'error': 'Employees not found'}, status=status.HTTP_404_NOT_FOUND)

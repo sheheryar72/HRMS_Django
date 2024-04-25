@@ -1,6 +1,9 @@
 {% extends 'dashboard.html' %}
 {% load static %}
 
+{% block title %} Employee {% endblock %}
+{% block pagetitle %} Employee {% endblock %}
+
 {% block content %}
 
 <link rel="stylesheet" href="{% static 'css/employee.css' %}">
@@ -57,6 +60,11 @@
     background-color: #343a40;
     color: #FFF;
     opacity: 1;
+  }
+
+  .nav-tabs .nav-link{
+    color: white !important;
+    background-color: #454d55 !important;
   }
 </style>
 
@@ -230,153 +238,151 @@
   <div class="row justify-content-center">
     <div class="col-lg-10">
       <div class="form-container">
-        <form id="myForm" enctype="multipart/form-data">
-          <div id="alertMessage"></div>
-          <div class="row">
-            <div class="col-sm-2">
-              <label for="profileImage" class="uploadButton">
-                <input type="file" id="profileImage" name="profileImage" accept="image/*">
-                <img id="previewImage"
-                  src="data:image/png;base64,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"
-                  alt=".">
-                <span>Upload Employee Profile Image</span>
-              </label>
-            </div>
-            <div class="col-sm-1">
-            </div>
-            <div class="col-sm-6 mt-4">
-              <h3 class="text-center mb-4 form-heading">Employee Information</h3>
-            </div>
-            <div class="col-sm-3">
-            </div>
-          </div>
-          <div class="row">
-            <!-- First Part: Employee Information -->
-            <!-- <div class="col-sm-12">
-              <h3 class="text-center mb-4 form-heading">Employee Information</h3>
-            </div> -->
-            <div class="col-sm-6">
-              <div class="form-group row">
-                <label for="emp_name" class="col-sm-4 col-form-label">Employee ID</label>
-                <div class="col-sm-8">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" id="employee-tab" data-toggle="tab" href="#employee" role="tab"
+              aria-controls="employee" aria-selected="true">Employee Information</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" id="company-tab" data-toggle="tab" href="#company" role="tab" aria-controls="company"
+              aria-selected="false">Company Information</a>
+          </li>
+        </ul>
+        <div id="alertMessage"></div>
+        <div class="tab-content" id="myTabContent">
+          <!-- Employee Information Tab -->
+          <div class="tab-pane fade show active" id="employee" role="tabpanel" aria-labelledby="employee-tab">
+            <form id="employeeForm" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-sm-3">
+                  <label for="profileImage" class="uploadButton">
+                    <input type="file" id="profileImage" name="profileImage" accept="image/*">
+                    <img id="previewImage"
+                      src="data:image/png;base64,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"
+                      alt=".">
+                    <span>Upload Employee Profile Image</span>
+                  </label>
+                </div>
+                <div class="col-sm-6">
+                  <h3 class="text-center mt-4  form-heading">Employee Information</h3>
+                </div>
+                <div class="col-sm-3">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-4">
+                  <label for="emp_name" class="col-form-label">Employee ID</label>
                   <input type="number" class="form-control form-control-sm" id="Emp_ID" placeholder="Employee ID"
                     readonly>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="emp_name" class="col-sm-4 col-form-label">Employee Name</label>
-                <div class="col-sm-8">
+                <div class="col-sm-4">
+                  <label for="emp_name" class="col-form-label">Employee Name</label>
                   <input type="text" class="form-control form-control-sm" id="Emp_Name" placeholder="Employee Name">
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="dateofbirth" class="col-sm-4 col-form-label">Date of Birth</label>
-                <div class="col-sm-8">
+                <div class="col-sm-4">
+                  <label for="dateofbirth" class="col-form-label">Date of Birth</label>
                   <input type="date" class="form-control form-control-sm" id="DateOfBirth">
                 </div>
               </div>
-              <div class="form-group row">
-                <label for="gender" class="col-sm-4 col-form-label">Gender</label>
-                <div class="col-sm-8">
+              <div class="row">
+                <div class="col-sm-4">
+                  <label for="gender" class="col-form-label">Gender</label>
                   <select class="form-control form-control-sm" id="Gender">
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                     <option value="Other">Other</option>
                   </select>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="marital_status" class="col-sm-4 col-form-label">Marital Status</label>
-                <div class="col-sm-8">
+                <div class="col-sm-4">
+                  <label for="marital_status" class="col-form-label">Marital Status</label>
                   <select class="form-control form-control-sm" id="Marital_Status">
                     <option value="Single">Single</option>
                     <option value="Married">Married</option>
                     <option value="Divorced">Divorced</option>
                   </select>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="Personal_Cell_No" class="col-sm-4 col-form-label">Personal Cell Number</label>
-                <div class="col-sm-8">
+                <div class="col-sm-4">
+                  <label for="Personal_Cell_No" class="col-form-label">Personal Cell Number</label>
                   <input type="tel" class="form-control form-control-sm" id="Personal_Cell_No"
                     placeholder="Personal Cell Number">
                 </div>
               </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group row">
-                <label for="emp_name" class="col-sm-4 col-form-label">Employee Code</label>
-                <div class="col-sm-8">
+              <div class="row">
+                <div class="col-sm-4">
+                  <label for="emp_name" class="col-form-label">Employee Code</label>
                   <input type="number" class="form-control form-control-sm" id="HR_Emp_ID" placeholder="Employee Code">
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="emp_name" class="col-sm-4 col-form-label">Father Name</label>
-                <div class="col-sm-8">
+                <div class="col-sm-4">
+                  <label for="emp_name" class="col-form-label">Father Name</label>
                   <input type="text" class="form-control form-control-sm" id="Father_Name" placeholder="Father Name">
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="cnic_no" class="col-sm-4 col-form-label">CNIC Number</label>
-                <div class="col-sm-8">
+                <div class="col-sm-4">
+                  <label for="cnic_no" class="col-form-label">CNIC Number</label>
                   <input type="text" class="form-control form-control-sm" id="CNIC_No" placeholder="CNIC Number">
                 </div>
               </div>
-              <div class="form-group row">
-                <label for="marital_status" class="col-sm-4 col-form-label">Religion</label>
-                <div class="col-sm-8">
+              <div class="row">
+                <div class="col-sm-4">
+                  <label for="marital_status" class="col-form-label">Religion</label>
                   <select class="form-control form-control-sm" id="Religion">
                     <option value="Islam">Islam</option>
                     <option value="christian">christian</option>
                     <option value="Hindu">Hindu</option>
                   </select>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="CT_ID" class="col-sm-4 col-form-label">City</label>
-                <div class="col-sm-8">
+                <div class="col-sm-4">
+                  <label for="personal_cell_no" class="col-form-label">Emergency Cell Number</label>
+                  <input type="tel" class="form-control form-control-sm" id="Emergency_Cell_No"
+                    placeholder="Emergency Cell Number">
+                </div>
+                <div class="col-sm-4">
+                  <label for="CT_ID" class="col-form-label">City</label>
                   <select class="form-control form-control-sm" id="CT_ID">
                   </select>
                 </div>
               </div>
-              <div class="form-group row">
-                <label for="personal_cell_no" class="col-sm-4 col-form-label">Emergency Cell Number</label>
-                <div class="col-sm-8">
-                  <input type="tel" class="form-control form-control-sm" id="Emergency_Cell_No"
-                    placeholder="Emergency Cell Number">
+              <div class="row">
+                <div class="col-sm-4">
+                  <label for="emp_name" class="col-form-label">Employee Code</label>
+                  <input type="number" class="form-control form-control-sm" id="HR_Emp_ID" placeholder="Employee Code">
+                </div>
+                <div class="col-sm-4">
+                  <label for="emp_name" class="col-form-label">Father Name</label>
+                  <input type="text" class="form-control form-control-sm" id="Father_Name" placeholder="Father Name">
+                </div>
+                <div class="col-sm-4">
+
                 </div>
               </div>
-            </div>
-            <!-- Second Part: Company Information -->
-            <div class="col-sm-12 mt-4">
-              <h3 class="text-center mb-4 form-heading">Company Information</h3>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group row">
-                <label for="dateofbirth" class="col-sm-4 col-form-label">Joining Date</label>
-                <div class="col-sm-8">
+            </form>
+          </div>
+          <!-- Company Information Tab -->
+          <div class="tab-pane fade" id="company" role="tabpanel" aria-labelledby="company-tab">
+            <form id="companyForm" enctype="multipart/form-data">
+              <div class="row">
+                <div class="col-sm-12">
+                  <h3 class="text-center mt-4 mb-4 form-heading">Company Information</h3>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-4">
+                  <label for="dateofbirth" class="col-form-label">Joining Date</label>
                   <input type="date" class="form-control form-control-sm" id="Joining_Date">
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="marital_status" class="col-sm-4 col-form-label">Joining Designation</label>
-                <div class="col-sm-8">
+                <div class="col-sm-4">
+                  <label for="marital_status" class="col-form-label">Joining Designation</label>
                   <select class="form-control form-control-sm" id="Joining_Dsg_ID">
                   </select>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="personal_cell_no" class="col-sm-4 col-form-label">Official Cell Number</label>
-                <div class="col-sm-8">
+                <div class="col-sm-4">
+                  <label for="personal_cell_no" class="col-form-label">Official Cell Number</label>
                   <input type="tel" class="form-control form-control-sm" id="Official_Cell_No"
                     placeholder="Official Cell Number">
                 </div>
               </div>
-            </div>
-            <div class="col-sm-6">
-              <div class="form-group row">
-                <label for="marital_status" class="col-sm-4 col-form-label">Company</label>
-                <div class="col-sm-8">
+              <div class="row">
+                <div class="col-sm-4">
+                  <label for="marital_status" class="col-form-label">Company</label>
                   <select class="form-control form-control-sm" id="Co_ID">
                     <option value="1">iTecknologi Tracking</option>
                     <option value="2">Avolox</option>
@@ -384,38 +390,47 @@
                     <option value="4">Coder</option>
                   </select>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="marital_status" class="col-sm-4 col-form-label">Joining Department</label>
-                <div class="col-sm-8">
+                <div class="col-sm-4">
+                  <label for="marital_status" class="col-form-label">Joining Department</label>
                   <select class="form-control form-control-sm" id="Joining_Dept_ID">
                   </select>
                 </div>
-              </div>
-              <div class="form-group row">
-                <label for="marital_status" class="col-sm-4 col-form-label">Employee Status</label>
-                <div class="col-sm-8">
+                <div class="col-sm-4">
+                  <label for="marital_status" class="col-form-label">Employee Status</label>
                   <select class="form-control form-control-sm" id="Emp_Status">
                     <option value="true">Active</option>
                     <option value="false">In-Active</option>
                   </select>
                 </div>
               </div>
-            </div>
+              <div class="row">
+                <div class="col-sm-4">
+                  <label for="dateofbirth" class="col-form-label">Joining Date</label>
+                  <input type="date" class="form-control form-control-sm" id="Joining_Date">
+                </div>
+                <div class="col-sm-4">
+                  <label for="marital_status" class="col-form-label">Joining Designation</label>
+                  <select class="form-control form-control-sm" id="Joining_Dsg_ID">
+                  </select>
+                </div>
+                <div class="col-sm-4">
+                  <label for="personal_cell_no" class="col-form-label">Official Cell Number</label>
+                  <input type="tel" class="form-control form-control-sm" id="Official_Cell_No"
+                    placeholder="Official Cell Number">
+                </div>
+              </div>
+            </form>
           </div>
-          <div class="text-center">
-            <button type="button" id="insertFormData" class="btn btn-dark mr-2">Create</button>
-            <button type="button" id="updateFormData" class="btn btn-dark mr-2 d-none">Update</button>
-            <button type="button" id="CancelFormData" class="btn btn-dark">Cancel</button>
-          </div>
-        </form>
+        </div>
+        <div class="text-center mt-4">
+          <button type="button" id="insertFormData" class="btn btn-dark mr-2">Create</button>
+          <button type="button" id="updateFormData" class="btn btn-dark mr-2 d-none">Update</button>
+          <button type="button" id="CancelFormData" class="btn btn-dark">Cancel</button>
+        </div>
       </div>
     </div>
   </div>
 </div>
-
-
-
 
 
 <div class="container mt-3">

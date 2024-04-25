@@ -10,6 +10,7 @@ from city.models import HR_City
 from department.models import HR_Department
 from designation.models import HR_Designation
 from datetime import date
+from datetime import datetime
 
 # issue in venv so delete that file and make again
 
@@ -45,6 +46,13 @@ class HR_Employees(models.Model):
     # profileimage = models.ImageField(upload_to='profile/', default='employee/default.jpg')
     profileimage = models.ImageField(upload_to='profile/', default='profile/default.jpg')
     # mod_date = models.DateField(default=date.today)
+    
+    # New Fields
+    Address = models.CharField(max_length=300, null=True, blank=True)
+    Email = models.CharField(max_length=50, null=True, blank=True)
+    CNIC_Issue_Date = models.DateField(null=True, blank=True)
+    CNIC_Exp_Date = models.DateField(null=True, blank=True)
+    Confirmation_Date = models.DateField(null=True, blank=True)
 
     class Meta:
         managed = False

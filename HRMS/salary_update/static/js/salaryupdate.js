@@ -107,6 +107,7 @@ function handleDeleteButtonClick() {
 function handleCancelClick() {
     // document.getElementById("Grade_ID").readOnly = false;
     document.getElementById("Emp_Up_ID").value = '';
+    document.getElementById("Emp_ID_").value = '';
     document.getElementById("Emp_Up_Date").value = '';
     document.getElementById("No_of_Children").value = '';
     document.getElementById("GrossSalary").value = '';
@@ -124,6 +125,9 @@ function handleCancelClick() {
 
     document.getElementById("InserRowID1").innerHTML = "";
     document.getElementById("InserRowID2").innerHTML = "";
+
+    document.getElementById('totalAllowance').innerText = `Total Allowance: 0.00`
+    document.getElementById('totalDeduction').innerText = `Total Deduction: 0.00`
 }
 
 async function getDesignationById(id) {
@@ -342,6 +346,7 @@ function handleUpdateClick() {
     const Emp_Up_ID = Number(document.getElementById("Emp_Up_ID").value);
     const Emp_Up_Date = document.getElementById("Emp_Up_Date").value;
     const Emp_ID = Number(document.getElementById("Emp_ID").value);
+    const Emp_ID_ = Number(document.getElementById("Emp_ID_").value);
     const HR_Emp_ID = Number(document.getElementById("HR_Emp_ID").value);
     const Emp_Category = document.getElementById("Emp_Category").value;
     const Dsg_ID = Number(document.getElementById("DSG_ID").value);
@@ -423,8 +428,57 @@ document.getElementById("Emp_ID").addEventListener("change", function () {
     mapEmployeeDate(this.value);
 })
 
-function mapEmployeeDate(empID) {
+// function mapEmployeeDate(empID) {
 
+//     console.log('listofEmployeeNotInSalUpdate: ', listofEmployeeNotInSalUpdate);
+//     const singleEmpData = listofEmployeeNotInSalUpdate.find(item => item.Emp_ID == empID);
+//     console.log('singleEmpData: ', singleEmpData);
+//     //debugger
+//     if (singleEmpData != null && singleEmpData != 0) {
+//         document.getElementById("Emp_ID").value = singleEmpData.Emp_ID;
+//         document.getElementById("HR_Emp_ID").value = singleEmpData.HR_Emp_ID;
+//         document.getElementById("Emp_Category").value = '';
+//         document.getElementById("DSG_ID").value = singleEmpData.Joining_Dsg_ID;
+//         document.getElementById("Dept_ID").value = singleEmpData.Joining_Dept_ID;
+//         document.getElementById("Grade_ID").value = singleEmpData.Grade_ID;
+//         document.getElementById("Marital_Status").value = singleEmpData.Marital_Status;
+//     }
+
+//     getAllDataFromDB(`${API_URL}payroll_element/api/getall/`, "Payroll Element").then((data) => {
+//         console.log("Data: ", data)
+//         listofPayrollElement = data;
+
+//         let counter = 0;
+//         document.getElementById("InserRowID1").innerHTML = '';
+//         document.getElementById("InserRowID2").innerHTML = '';
+
+//         for (var i = 0; i < listofPayrollElement.length; i++) {
+//             if (listofPayrollElement[i].Element_Category == "Fixed") {
+//                 if (listofPayrollElement[i].Element_Type == "Allowance") {
+//                     document.getElementById("InserRowID1").innerHTML +=
+//                         `<tr>
+//                                 <td><input type="text" id="${listofPayrollElement[i].Element_ID}" value="${listofPayrollElement[i].Element_Name}" readonly /></td>
+//                                 <td><input type="text" value="${listofPayrollElement[i].Element_Category}" readonly /></td>
+//                                 <td><input type="number" value=""  /></td></tr>`;
+
+//                 }
+
+//                 if (listofPayrollElement[i].Element_Type == "Deduction") {
+//                     document.getElementById("InserRowID2").innerHTML +=
+//                         `<tr>
+//                                 <td><input type="text" id="${listofPayrollElement[i].Element_ID}" value="${listofPayrollElement[i].Element_Name}" readonly /></td>
+//                                 <td><input type="text" value="${listofPayrollElement[i].Element_Category}" readonly /></td>
+//                                 <td><input type="number" value="" /></td></tr>`;
+//                 }
+//             }
+//         }
+//     })
+//         .catch((error) => {
+//             console.log("Error")
+//         })
+// }
+
+function mapEmployeeDate(empID) {
     console.log('listofEmployeeNotInSalUpdate: ', listofEmployeeNotInSalUpdate);
     const singleEmpData = listofEmployeeNotInSalUpdate.find(item => item.Emp_ID == empID);
     console.log('singleEmpData: ', singleEmpData);
@@ -447,29 +501,70 @@ function mapEmployeeDate(empID) {
         document.getElementById("InserRowID1").innerHTML = '';
         document.getElementById("InserRowID2").innerHTML = '';
 
+        let totalAllowance = 0;
+        let totalDeduction = 0;
+
         for (var i = 0; i < listofPayrollElement.length; i++) {
             if (listofPayrollElement[i].Element_Category == "Fixed") {
                 if (listofPayrollElement[i].Element_Type == "Allowance") {
+                    let allowanceAmount = document.createElement('input');
+                    allowanceAmount.setAttribute('type', 'number');
+                    allowanceAmount.setAttribute('value', '');
+                    allowanceAmount.setAttribute('class', 'allowanceInput');
+
                     document.getElementById("InserRowID1").innerHTML +=
                         `<tr>
                                 <td><input type="text" id="${listofPayrollElement[i].Element_ID}" value="${listofPayrollElement[i].Element_Name}" readonly /></td>
                                 <td><input type="text" value="${listofPayrollElement[i].Element_Category}" readonly /></td>
-                                <td><input type="number" value=""  /></td></tr>`;
+                                <td><input type="number" value="" class="allowanceInput" /></td></tr>`;
                 }
+
                 if (listofPayrollElement[i].Element_Type == "Deduction") {
+                    let deductionAmount = document.createElement('input');
+                    deductionAmount.setAttribute('type', 'number');
+                    deductionAmount.setAttribute('value', '');
+                    deductionAmount.setAttribute('class', 'deductionInput');
+
                     document.getElementById("InserRowID2").innerHTML +=
                         `<tr>
                                 <td><input type="text" id="${listofPayrollElement[i].Element_ID}" value="${listofPayrollElement[i].Element_Name}" readonly /></td>
                                 <td><input type="text" value="${listofPayrollElement[i].Element_Category}" readonly /></td>
-                                <td><input type="number" value="" /></td></tr>`;
+                                <td><input type="number" value="" class="deductionInput" /></td></tr>`;
                 }
             }
         }
-
+        // Calculate total after elements are added
+        calculateTotal();
     })
         .catch((error) => {
             console.log("Error")
         })
+}
+
+// Event delegation for dynamic elements
+document.addEventListener('focusout', function (e) {
+    if (e.target.classList.contains('allowanceInput') || e.target.classList.contains('deductionInput')) {
+        calculateTotal();
+    }
+});
+
+function calculateTotal() {
+    // alert()
+    let allowanceInputs = document.querySelectorAll('.allowanceInput');
+    let deductionInputs = document.querySelectorAll('.deductionInput');
+    let allowanceTotal = 0;
+    let deductionTotal = 0;
+
+    allowanceInputs.forEach(input => {
+        allowanceTotal += parseFloat(input.value) || 0;
+    });
+
+    deductionInputs.forEach(input => {
+        deductionTotal += parseFloat(input.value) || 0;
+    });
+
+    document.getElementById('totalAllowance').innerText = `Total Allowance: ${allowanceTotal.toFixed(2)}`
+    document.getElementById('totalDeduction').innerText = `Total Deduction: ${deductionTotal.toFixed(2)}`
 }
 
 async function getAllDataFromDB(url, name) {
@@ -541,6 +636,8 @@ document.getElementById("calculateGrossSalary").addEventListener('click', functi
             }
         });
     }
+
+    calculateTotal();
 
 });
 
@@ -619,8 +716,8 @@ function fillEmployeeTableGrid() {
 
 function handleTableRowClick3() {
 
-    const Emp_Up_ID = $(this).find('td')[0].innerHTML;
-    const Emp_ID = $(this).find('td')[1].innerHTML;
+    const Emp_Up_ID = Number($(this).find('td')[0].innerHTML);
+    const Emp_ID = Number($(this).find('td')[1].innerHTML);
 
     GetAll_Salary_update_BYID(Emp_Up_ID, Emp_ID);
 
@@ -638,8 +735,9 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
         console.log("response: ", data);
 
         document.getElementById("Emp_Up_ID").value = data[0].Emp_Up_ID;
-        document.getElementById("Emp_Up_ID2").value = data[0].Emp_Up_ID;
+        // document.getElementById("Emp_Up_ID2").value = data[0].Emp_Up_ID;
         document.getElementById("Emp_Up_Date").value = moment(data[0].Emp_Up_Date).format("YYYY-MM-DD");
+        document.getElementById("Emp_ID_").value = data[0].Emp_ID;
         document.getElementById("Emp_ID").value = data[0].Emp_ID;
         document.getElementById("HR_Emp_ID").value = data[0].HR_Emp_ID;
         // document.getElementById("Emp_Name").value = data[0].Emp_Name;
@@ -660,14 +758,14 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
                 allowanceRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
                         <td><input type="text" value="${data[i].Element_Category}" readonly /></td>
-                        <td><input type="text" value="${data[i].Amount}" /></td></tr>`;
+                        <td><input type="text" class="allowanceInput" value="${data[i].Amount}" /></td></tr>`;
                 totalAllowance += data[i].Amount;
             }
             if (data[i].Element_Type == 'Deduction') {
                 deductionRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
                         <td><input type="text" value="${data[i].Element_Category}" readonly /></td>
-                        <td><input type="text" value="${data[i].Amount}" /></td></tr>`;
+                        <td><input type="text" class="deductionInput" value="${data[i].Amount}" /></td></tr>`;
                 totalDeduction += data[i].Amount;
             }
             counter++;
@@ -721,7 +819,7 @@ function handleTableRowClick2() {
                             <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                             <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
                             <td><input type="text" value="" /></td></tr>`;
-                            $("#InserRowID1").append(temp);
+        $("#InserRowID1").append(temp);
     }
     if (ElemenT_TYPE == "Deduction") {
         var temp =

@@ -10,6 +10,7 @@ from django.db import transaction
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
+
 def Employees_view(request):
     print('Employees called')
     return render(request, 'employee.html')

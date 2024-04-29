@@ -72,6 +72,12 @@ function handleCancelClick() {
     document.getElementById("Co_ID").selectedIndex = 0
     document.getElementById("Joining_Dept_ID").selectedIndex = 0
     document.getElementById("Emp_Status").selectedIndex = 0
+    document.getElementById("Email").value = '';
+    document.getElementById("Address").value = '';
+    document.getElementById("Confirmation_Date").value = '';
+    document.getElementById("CNIC_Issue_Date").value = '';
+    document.getElementById("CNIC_Exp_Date").value = '';
+    document.getElementById("previewImage").src = "{% get_media_prefix %}profile/avatar.png"
 
     document.getElementById("updateFormData").classList.add("d-none");
     document.getElementById("insertFormData").classList.remove("d-none");
@@ -178,7 +184,7 @@ function handleInsertClick() {
     const Emp_ID = Number(document.getElementById("Emp_ID").value);
     const Emp_Name = document.getElementById("Emp_Name").value;
     const DateOfBirth = document.getElementById("DateOfBirth").value;
-    const Gender = document.getElementById("Gender").value;
+    const Gender = document.getElementById("G ender").value;
     const Marital_Status = document.getElementById("Marital_Status").value;
     const HR_Emp_ID = Number(document.getElementById("HR_Emp_ID").value);
     const Father_Name = document.getElementById("Father_Name").value;
@@ -193,6 +199,11 @@ function handleInsertClick() {
     const Co_ID = Number(document.getElementById("Co_ID").value);
     const Joining_Dept_ID = Number(document.getElementById("Joining_Dept_ID").value);
     const Emp_Status = document.getElementById("Emp_Status").value;
+    const Email = document.getElementById("Email").value;
+    const Address = document.getElementById("Address").value;
+    const Confirmation_Date = document.getElementById("Confirmation_Date").value;
+    const CNIC_Issue_Date = document.getElementById("CNIC_Issue_Date").value;
+    const CNIC_Exp_Date = document.getElementById("CNIC_Exp_Date").value;
 
     console.log('profileImage: ', document.getElementById('profileImage').files[0])
 
@@ -216,6 +227,11 @@ function handleInsertClick() {
     formData.append('Co_ID', Co_ID);
     formData.append('Joining_Dept_ID', Joining_Dept_ID);
     formData.append('Emp_Status', Emp_Status);
+    formData.append('Email', Email);
+    formData.append('Address', Address);
+    formData.append('Confirmation_Date', Confirmation_Date);
+    formData.append('CNIC_Issue_Date', CNIC_Issue_Date);
+    formData.append('CNIC_Exp_Date', CNIC_Exp_Date);
 
     createEmployee(formData);
 }
@@ -353,6 +369,11 @@ function handleUpdateClick() {
     const Co_ID = Number(document.getElementById("Co_ID").value);
     const Joining_Dept_ID = Number(document.getElementById("Joining_Dept_ID").value);
     const Emp_Status = document.getElementById("Emp_Status").value;
+    const Email = document.getElementById("Email").value;
+    const Address = document.getElementById("Address").value;
+    const Confirmation_Date = document.getElementById("Confirmation_Date").value;
+    const CNIC_Issue_Date = document.getElementById("CNIC_Issue_Date").value;
+    const CNIC_Exp_Date = document.getElementById("CNIC_Exp_Date").value;
 
     console.log('profileImage: ', document.getElementById('profileImage').files[0])
 
@@ -376,6 +397,11 @@ function handleUpdateClick() {
     formData.append('Co_ID', Co_ID);
     formData.append('Joining_Dept_ID', Joining_Dept_ID);
     formData.append('Emp_Status', Emp_Status);
+    formData.append('Email', Email);
+    formData.append('Address', Address);
+    formData.append('Confirmation_Date', Confirmation_Date);
+    formData.append('CNIC_Issue_Date', CNIC_Issue_Date);
+    formData.append('CNIC_Exp_Date', CNIC_Exp_Date);
 
     updateDesignation(Emp_ID, formData);
     fillTableGrid();
@@ -456,11 +482,15 @@ function fillDropDown(dataName, dropdownId, valueField, displayTextField) {
 
 document.getElementById('profileImage').addEventListener('change', function (e) {
     var reader = new FileReader();
-    reader.onload = function (e) {
+    reader.onload = function (e) {       
         document.getElementById('previewImage').setAttribute('src', e.target.result);
     };  
     reader.readAsDataURL(this.files[0]);
 });
+
+// window.onload = function(){
+//     document.getElementById('previewImage').setAttribute('src', "{% static 'profile/avatar.png' %}");
+// }
 
 $(document).ready(function () {
     initializeDataTable();

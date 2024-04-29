@@ -150,9 +150,11 @@ def getall_master_byid(request, empUpID, empID):
             return Response({'error': 'Employee ID or Update ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
         print("up is: ", empUpID)
         print("empID: ", empID)
-        detail_queryset = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID=empUpID, Emp_ID=empID).select_related('Emp_Up_ID', 'Emp_ID', 'Element_ID')
+        # detail_queryset = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID=empUpID)
+        # detail_queryset = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID=empUpID, Emp_ID=empID).select_related('Emp_Up_ID', 'Emp_ID', 'Element_ID')
+        detail_queryset = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID=empUpID, Emp_ID=empID)
         datas = []
-        
+        print('detail_queryset: ', detail_queryset)
         for data in detail_queryset:
             print('data: ', data)
             item = {

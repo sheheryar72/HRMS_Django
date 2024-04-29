@@ -17,6 +17,13 @@ from datetime import datetime
 # to_field is the master table referecnce id
 # db_column is the details table forngin key id
 
+class TimeStampedModel(models.Model):
+    insertedAt = models.DateField(auto_now_add=True)
+    updatedAt = models.DateField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
 class HR_Employees(models.Model):
     Emp_ID = models.AutoField(primary_key=True, db_column='Emp_ID')   
     # Emp_ID = models.IntegerField(primary_key=True, db_column='Emp_ID')   
@@ -60,5 +67,17 @@ class HR_Employees(models.Model):
     
     def __str__(self):
         return self.Emp_Name
+    
+class HR_Employees2(TimeStampedModel):
+    Emp_Name = models.CharField(db_column='Emp_Name', max_length=150, blank=True, null=True)  
+    Father_Name = models.CharField(db_column='Father_Name', max_length=150, blank=True, null=True)  
+
+    class Meta:
+        managed = True
+        db_table = 'HR_Employees2'
+    
+    def __str__(self):
+        return self.Emp_Name
+    
 
 

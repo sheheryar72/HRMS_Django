@@ -58,7 +58,9 @@ def add_salary_update(request):
                         print("detail saved")
                     else:
                         return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            return Response(master_serializer.data, status=status.HTTP_200_OK)
+                return Response(master_serializer.data, status=status.HTTP_200_OK)
+            else:
+                return Response(master_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -151,8 +153,8 @@ def getall_master_byid(request, empUpID, empID):
         print("up is: ", empUpID)
         print("empID: ", empID)
         # detail_queryset = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID=empUpID)
-        # detail_queryset = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID=empUpID, Emp_ID=empID).select_related('Emp_Up_ID', 'Emp_ID', 'Element_ID')
-        detail_queryset = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID=empUpID, Emp_ID=empID)
+        detail_queryset = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID=empUpID, Emp_ID=empID).select_related('Emp_Up_ID', 'Emp_ID', 'Element_ID')
+        # detail_queryset = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID=empUpID, Emp_ID=empID)
         datas = []
         print('detail_queryset: ', detail_queryset)
         for data in detail_queryset:

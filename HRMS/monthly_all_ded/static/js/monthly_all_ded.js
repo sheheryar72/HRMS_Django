@@ -116,16 +116,16 @@ document.getElementById("W_Department").addEventListener("click", async function
                 element_name_col = `${element.Element_Name}_${element.Element_ID}`;
                 element_name_col = element_name_col.replace(/ /g, "_");
                 table_row_length = document.getElementById("InserRowID").rows.length
-                
-                single_emp_data = data[2]['Emp_Element_Status'].filter(x=>x.Emp_ID == emp.Emp_ID)
+
+                single_emp_data = data[2]['Emp_Element_Status'].filter(x => x.Emp_ID == emp.Emp_ID)
 
                 console.log('single_emp_data: ', single_emp_data)
-                
+
                 let readonly = '';
-                if (!single_emp_data.some(obj => obj.Element_ID === element.Element_ID)){
+                if (!single_emp_data.some(obj => obj.Element_ID === element.Element_ID)) {
                     readonly = 'readonly'
                     console.log('not element.Element_ID: ', element.Element_ID)
-                }else{
+                } else {
                     // console.log('not element.Element_ID: ', element.Element_ID)
                 }
 
@@ -165,7 +165,7 @@ document.getElementById("W_Department").addEventListener("click", async function
         return null;
     }
 
-    
+
 });
 
 async function getAll_Dept_ByID(id) {
@@ -288,6 +288,12 @@ $(document).ready(function () {
     W_deptID = 1;
     current_payrollperiod();
     getAllDepartmentFromAPI();
+
+    w_dept = document.getElementById("W_Department");
+    if(w_dept.length == 1){
+        alert(w_dept)
+    }
+
     // getAll_Dept_ByID(W_deptID);
     // getAllDeptElemet(W_deptID);
     document.getElementById("CancelFormData").addEventListener('click', CancelFormAndGridData);
@@ -428,7 +434,7 @@ async function getAllDepartmentFromAPI() {
     }
 }
 
-document.getElementById("Current_Department").addEventListener('click', function(){
+document.getElementById("Current_Department").addEventListener('click', function () {
     let W_deptID = this.value
     getAll_Dept_ByID(W_deptID);
 })

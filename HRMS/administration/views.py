@@ -7,6 +7,8 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 from hr_login.serializers import User_Login_Serializer
 from django.db.models import Sum, Count, Avg, Min, Max
+from django.views.decorators.csrf import csrf_exempt
+
 
 def view_userprivileges(request):
     return render(request, template_name='userprivileges.html')
@@ -33,8 +35,10 @@ def getall_groupofcompanies(request):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+@csrf_exempt
 @api_view(['POST'])
 def add_userprivileges(request):
+    print('add_userprivileges: ', add_userprivileges)
     try:
         insertedUser = UserLogin.objects.create(
             User_Emp_Code=request.data.get('User_Emp_Code', ''),

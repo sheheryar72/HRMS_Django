@@ -311,8 +311,11 @@ function handleInsertClick() {
         Co_ID: 1
     }
 
+    console.log("addsalarymaster masterData: ", masterData)
+    console.log("addsalarymaster dataArray: ", dataArray)
+
     //debugger
-    if (Emp_ID != 0 && Dsg_ID != 0 && Dept_ID != 0 && Grade_ID != 0 && dataArray.length != 0) {
+    if (Emp_ID != 0 && Dsg_ID != 0 && Dept_ID != 0 && Grade_ID != 0 && dataArray.length != 0, Emp_Up_Date != "") {
 
         $.post({
             url: API_URL + 'salaryupdate/addsalarymaster/',
@@ -485,11 +488,12 @@ function mapEmployeeDate(empID) {
     //debugger
     if (singleEmpData != null && singleEmpData != 0) {
         document.getElementById("Emp_ID").value = singleEmpData.Emp_ID;
+        document.getElementById("Emp_ID_").value = singleEmpData.Emp_ID;
         document.getElementById("HR_Emp_ID").value = singleEmpData.HR_Emp_ID;
         document.getElementById("Emp_Category").value = '';
-        document.getElementById("DSG_ID").value = singleEmpData.Joining_Dsg_ID;
+        document.getElementById("DSG_ID").value = singleEmpData.Joining_Dsg_ID; 
         document.getElementById("Dept_ID").value = singleEmpData.Joining_Dept_ID;
-        document.getElementById("Grade_ID").value = singleEmpData.Grade_ID;
+        document.getElementById("Grade_ID").value = singleEmpData.Grade_ID; 
         document.getElementById("Marital_Status").value = singleEmpData.Marital_Status;
     }
 
@@ -703,10 +707,20 @@ function fillSalaryMasterTableGrid() {
 }
 
 function fillEmployeeTableGrid() {
-    getAllDataFromDB(`${API_URL}employee/api/getall`, 'Employee').then((data) => {
+    getAllDataFromDB(`${API_URL}employee/api/getall`, 'Employee').then( (data) => {
         // console.log("response: ", data);
         var temp = '';
         listofEmployeeNotInSalUpdate = data;
+        // Sort the list of objects by name in ascending order
+        listofEmployeeNotInSalUpdate.sort((a, b) => {
+            if (a.Emp_Name < b.Emp_Name) {
+                return -1;
+            }
+            if (a.name > b.name) {
+                return 1;
+            }
+            return 0;
+        });
         for (var i = 0; i < data.length; i++) {
             temp += `<option value="${data[i].Emp_ID}">${data[i].Emp_Name} - ${data[i].HR_Emp_ID}</option>`
         }

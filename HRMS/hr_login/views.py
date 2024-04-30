@@ -10,6 +10,7 @@ from .serializers import User_Login_Serializer
 from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import check_password
+from employee.models import HR_Employees
 
 def sheheryar_test2(request):
     return HttpResponse("Hi This is second request")  
@@ -23,35 +24,12 @@ def login2_view(request):
     print('login2 called')
     return render(request, template_name='login2.html')
 
+@csrf_exempt
+@api_view(['POST'])
 def login3_view(request):
     print('login2 called')
     return render(request, template_name='dashboard.html')
     
-# @csrf_exempt
-# @api_view(['POST'])
-# def authenticate_user(request):
-#     try:
-#         # Get user credentials from the request
-#         username = request.data.get('username')
-#         password = request.data.get('password')
-
-#         # Authenticate user using Django's authenticate function with the specified database alias
-#         user = authenticate(request, username=username, password=password, using='erp_admin')
-
-#         print('username: ', username)
-#         print('password: ', password)
-#         print('user: ', user)
-
-#         if user is not None:
-#             # Login the user
-#             login(request, user)
-#             return JsonResponse({'message': 'Login successful!'})
-#         else:
-#             return JsonResponse({'error': 'Invalid email or password.'}, status=400)
-
-#     except Exception as e:
-#         return JsonResponse({'error': str(e)}, status=500)
-
 @csrf_exempt
 @api_view(['POST'])
 def authenticate_user(request):
@@ -63,20 +41,95 @@ def authenticate_user(request):
         print('username: ', username)
         print('password: ', password)
 
+        # user = UserLogin.objects.filter(User_Name=username, User_Password=password)
+
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM User_Login WHERE User_Name = %s AND User_Password = %s", [username, password])
+            cursor.execute("select User_ID, User_Name, User_Email, User_Password, User_Email, User_Status, Emp_ID from User_Login WHERE User_Name = %s AND User_Password = %s", [username, password])
             user = cursor.fetchone()
 
         print('user: ', user)
 
-        if user is not None and user[2] == username and user[3] == password:  # Assuming User_Password is at index 3 in the result
+        if user is not None and user[1] == username and user[3] == password:  # Assuming User_Password is at index 3 in the result
             # Authentication successful
-            return JsonResponse({'data': user[0], 'message': 'Login successful!'})
+            print('user 6: ', user[6])
+            emp_user = HR_Employees.objects.get(pk=user[6])
+            print('emp_user: ', emp_user)
+            data = {
+                'Emp_ID': emp_user.Emp_ID,
+                'Emp_Name': emp_user.Emp_Name,
+                'HR_Emp_ID': emp_user.HR_Emp_ID,
+                'Dep_ID': emp_user.Joining_Dept_ID.Dept_ID,
+                'Dept_Descr': emp_user.Joining_Dept_ID.Dept_Descr
+            }
+            return JsonResponse({'data': data, 'message': 'Login successful!'})
         else:
             return JsonResponse({'error': 'Invalid username or password.'}, status=400)
 
     except Exception as e:
         return JsonResponse({'error': 'Authentication failed. Please check your credentials.'}, status=400)
+
+
+
+# @csrf_exempt
+# @api_view(['POST'])
+# def authenticate_user(request):
+#     try:
+#         # Get user credentials from the request
+#         username = request.data.get('username')
+#         password = request.data.get('password')
+
+#         print('username: ', username)
+#         print('password: ', password)
+
+#         # Check if the user exists
+#         # user = UserLogin.objects.filter(User_Name=username, User_Password=password).first()
+#         user = UserLogin.objects.first()
+
+#         print('user: ', user)
+
+#         if user is not None:
+#             # Authentication successful
+#             return JsonResponse({'data': user.id, 'message': 'Login successful!'})
+#         else:
+#             return JsonResponse({'error': 'Invalid username or password.'}, status=400)
+
+#     except Exception as e:
+#         return JsonResponse({'error': 'Authentication failed. Please check your credentials.'}, status=400)
+
+
+
+
+
+
+
+# @csrf_exempt
+# @api_view(['POST'])
+# def authenticate_user(request):
+#     try:
+#         # Get user credentials from the request
+#         username = request.data.get('username')
+#         password = request.data.get('password')
+
+#         print('username: ', username)
+#         print('password: ', password)
+
+#         user = UserLogin.objects.filter(User_Name=username, User_Password=password)
+
+#         # with connection.cursor() as cursor:
+#         #     cursor.execute("SELECT * FROM User_Login WHERE User_Name = %s AND User_Password = %s", [username, password])
+#         #     user = cursor.fetchone()
+
+#         print('user: ', user)
+
+#         if user is not None and user[0].User_Name == username and user[0].User_Password == password:  # Assuming User_Password is at index 3 in the result
+#             # Authentication successful
+#             # login_user = HR_Employees.objects.filter(Emp_ID=user[0])
+#             return JsonResponse({'data': user, 'message': 'Login successful!'})
+#         else:
+#             return JsonResponse({'error': 'Invalid username or password.'}, status=400)
+
+#     except Exception as e:
+#         return JsonResponse({'error': 'Authentication failed. Please check your credentials.'}, status=400)
 
 
 # @api_view(['POST'])

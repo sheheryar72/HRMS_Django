@@ -1,4 +1,4 @@
-const BASE_URL = '/';
+const BASE_URL = window.location.origin;
 var table;
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';
@@ -24,6 +24,23 @@ function initializeDataTable() {
         ],
         lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]
     });
+}
+
+// Function to get the CSRF token from the cookie
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Check if the cookie name matches the expected format
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
 }
 
 // Handle click on table row
@@ -55,6 +72,8 @@ function handleDeleteButtonClick() {
     }
 }
 
+
+
 function handleCancelClick() {
     // document.getElementById("Grade_ID").readOnly = false;
     document.getElementById("Search_User").selectedIndex = 0;
@@ -75,7 +94,7 @@ function handleCancelClick() {
 async function getAllUserPrivileges(userid) {
     try {
         console.log('userid: ', userid)
-        const response = await fetch(`${BASE_URL}administration/api/userprivileges/getall/${userid}`);
+        const response = await fetch(`${BASE_URL}/administration/api/userprivileges/getall/${userid}`);
         if (!response.ok) {
             throw new Error('Failed to fetch Grade');
         }
@@ -89,7 +108,7 @@ async function getAllUserPrivileges(userid) {
 
 async function getAllCompanies() {
     try {
-        const response = await fetch(`${BASE_URL}administration/api/company/getall`);
+        const response = await fetch(`${BASE_URL}/administration/api/company/getall`);
         if (!response.ok) {
             throw new Error('Failed to fetch Companies');
         }
@@ -103,7 +122,7 @@ async function getAllCompanies() {
 
 async function getAllFormDescription() {
     try {
-        const response = await fetch(`${BASE_URL}administration/api/formdescription/getall`);
+        const response = await fetch(`${BASE_URL}/administration/api/formdescription/getall`);
         if (!response.ok) {
             throw new Error('Failed to fetch formdescription');
         }
@@ -117,7 +136,7 @@ async function getAllFormDescription() {
 
 async function getAllDesignation() {
     try {
-        const response = await fetch(`${BASE_URL}designation/api/getall`);
+        const response = await fetch(`${BASE_URL}/designation/api/getall`);
         if (!response.ok) {
             throw new Error('Failed to fetch designation');
         }
@@ -131,7 +150,7 @@ async function getAllDesignation() {
 
 async function getAllUserFromDB() {
     try {
-        const response = await fetch(`${BASE_URL}login/api/getalluser`);
+        const response = await fetch(`${BASE_URL}/login/api/getalluser`);
         if (!response.ok) {
             throw new Error('Failed to fetch designation');
         }
@@ -155,7 +174,7 @@ function fillUserDropDown() {
 
 async function getUserPrivilegesById(id) {
     try {
-        const response = await fetch(`${BASE_URL}${id}`);
+        const response = await fetch(`${BASE_URL}/${id}`);
         if (!response.ok) {
             throw new Error('Failed to fetch Grade');
         }
@@ -169,10 +188,14 @@ async function getUserPrivilegesById(id) {
 
 async function createUserPrivileges(formData) {
     try {
-        const response = await fetch(`${BASE_URL}administration/api/add`, {
+            // Get the CSRF token from the cookie
+    const csrftoken = getCookie('csrftoken');
+        const response = await fetch(`${BASE_URL}/administration/api/add`, {
             method: 'POST',
+            // headers: {'X-CSRFToken': csrftoken},  // Include the CSRF token in the headers
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
             },
             body: JSON.stringify(formData),
         });
@@ -192,7 +215,7 @@ async function createUserPrivileges(formData) {
 
 async function updateUserPrivileges(id, departmentData) {
     try {
-        const response = await fetch(`${BASE_URL}update/${id}`, {
+        const response = await fetch(`${BASE_URL}/update/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -215,7 +238,7 @@ async function updateUserPrivileges(id, departmentData) {
 
 async function deleteUserPrivileges(id) {
     try {
-        const response = await fetch(`${BASE_URL}delete/${id}`, {
+        const response = await fetch(`${BASE_URL}/delete/${id}`, {
             method: 'DELETE',
         });
         if (!response.ok) {

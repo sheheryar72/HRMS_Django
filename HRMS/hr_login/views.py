@@ -52,16 +52,16 @@ def authenticate_user(request):
         if user is not None and user[1] == username and user[3] == password:  # Assuming User_Password is at index 3 in the result
             # Authentication successful
             print('user 6: ', user[6])
-            emp_user = HR_Employees.objects.get(pk=user[6])
-            print('emp_user: ', emp_user)
-            data = {
-                'Emp_ID': emp_user.Emp_ID,
-                'Emp_Name': emp_user.Emp_Name,
-                'HR_Emp_ID': emp_user.HR_Emp_ID,
-                'Dep_ID': emp_user.Joining_Dept_ID.Dept_ID,
-                'Dept_Descr': emp_user.Joining_Dept_ID.Dept_Descr
-            }
-            return JsonResponse({'data': data, 'message': 'Login successful!'})
+            # emp_user = HR_Employees.objects.get(pk=user[6])
+            # print('emp_user: ', emp_user)
+            # data = {
+            #     'Emp_ID': emp_user.Emp_ID,
+            #     'Emp_Name': emp_user.Emp_Name,
+            #     'HR_Emp_ID': emp_user.HR_Emp_ID,
+            #     'Dep_ID': emp_user.Joining_Dept_ID.Dept_ID,
+            #     'Dept_Descr': emp_user.Joining_Dept_ID.Dept_Descr
+            # }
+            return JsonResponse({'data': user, 'message': 'Login successful!'})
         else:
             return JsonResponse({'error': 'Invalid username or password.'}, status=400)
 
@@ -147,13 +147,23 @@ def authenticate_user(request):
 #     except Exception as e:
 #         return Response({'error': str(e)}, status=500)
 
+from django.contrib.auth.models import User
 
 @api_view(['GET'])
 def getall_user(request):
     try:
-        userlogin = UserLogin.objects.all()
-        serializer = User_Login_Serializer(userlogin, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        # userlogin = UserLogin.objects.all()
+        # serializer = User_Login_Serializer(userlogin, many=True)
+        all_users = User.objects.all()
+        data = []
+        for user in all_users:
+            data.append({
+            'id': user.id,
+            'username': user.username
+            }
+            ) 
+
+        return Response(data, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

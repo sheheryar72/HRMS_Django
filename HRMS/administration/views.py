@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import User_Froms, GroupOfCompanies, FormDescription
-from hr_login.models import UserLogin
+from hr_login.models import *
 from .serializers import User_Froms_Serializer, GroupOfCompanies_Serializer, FormDescription_Serializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
@@ -8,10 +8,15 @@ from rest_framework import status
 from hr_login.serializers import User_Login_Serializer
 from django.db.models import Sum, Count, Avg, Min, Max
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.models import User
+from hr_login.models import *
 
 
 def view_userprivileges(request):
     return render(request, template_name='userprivileges.html')
+
+def view_userprivileges2(request):
+    return render(request, template_name='userprivileges2.html')
 
 @api_view(['GET'])
 def getall_userprivileges(request, userid):
@@ -32,6 +37,104 @@ def getall_groupofcompanies(request):
         groupofcompanies = GroupOfCompanies.objects.all()
         serializer = GroupOfCompanies_Serializer(groupofcompanies, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+# @csrf_exempt
+# @api_view(['POST'])
+# def add_userprivileges2(request):
+#     try:
+#         print('add_userprivileges 2: ')
+#         User_Name=request.data.get('User_Name', ''),
+#         User_Password=request.data.get('User_Password', ''),
+#         Emp_ID = request.data.get('Emp_ID'),
+#         User_Status=request.data.get('User_Status')
+
+#         print('add_userprivileges2: request: ', request.data)
+
+#         new_user = User.objects.create(
+#             username = User_Name,
+#             password = User_Password,
+#             User_Status = User_Status,
+#             Emp_ID = Emp_ID 
+#         )
+
+#         print('new_user: ', new_user)
+        
+#         for obj in request.data.get('tableFormIDs', []):
+#             formID = obj.get('FormID')
+#             if formID is not None:
+#                 formDescr = FormDescription.objects.filter(FormID=formID).first()
+#                 # UserDetail = UserLogin.objects.filter(User_ID=new_user.id).first()
+#                 if formDescr:
+#                     User_Froms.objects.create(
+#                         COID=1,
+#                         User=new_user.id,
+#                         FormDescription=formDescr,
+#                         ModuleID=formDescr.ModuleID,
+#                         MnuID=formDescr.MnuID,
+#                         MnuSubID=formDescr.MnuSubID,
+#                         FormSeq=formDescr.FormSeq,
+#                         FormStatusID=obj.get('FormStatusID', ''),
+#                         FormStatus=obj.get('FormStatus', ''),
+#                         Status=True
+#                     )
+#                 else:
+#                     print(f"FormDescription not found for FormID: {formID}")
+#             else:
+#                 print("FormID missing in obj")
+
+#         return Response("User created successfully", status=status.HTTP_201_CREATED)
+#     except KeyError as e:
+#         return Response({'error': f"Missing key in request data: {e}"}, status=status.HTTP_400_BAD_REQUEST)
+#     except Exception as e:
+#         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@csrf_exempt
+@api_view(['POST'])
+def add_userprivileges2(request):
+    try:
+        User_Name = request.data.get('User_Name', '')
+        User_Password = request.data.get('User_Password', '')
+        Emp_ID = request.data.get('Emp_ID')
+        User_Status = request.data.get('User_Status')
+
+        print('add_userprivileges2 request: ', request.data)
+
+        new_user = User.objects.create_user(
+            username=User_Name,
+            password=User_Password,
+            is_active=User_Status
+        )
+
+        newuser_profle = UserProfile.objects.create(user=new_user, Emp_ID=Emp_ID)
+
+        for obj in request.data.get('tableFormIDs', []):
+            formID = obj.get('FormID')
+            if formID is not None:
+                formDescr = FormDescription.objects.filter(FormID=formID).first()
+                if formDescr:
+                    User_Froms.objects.create(
+                        COID=1,
+                        UserProfile=newuser_profle,
+                        FormDescription=formDescr,
+                        ModuleID=formDescr.ModuleID,
+                        MnuID=formDescr.MnuID,
+                        MnuSubID=formDescr.MnuSubID,
+                        FormSeq=formDescr.FormSeq,
+                        FormStatusID=obj.get('FormStatusID', ''),
+                        FormStatus=obj.get('FormStatus', ''),
+                        Status=True
+                    )
+                else:
+                    print(f"FormDescription not found for FormID: {formID}")
+            else:
+                print("FormID missing in obj")
+
+        return Response("User created successfully", status=status.HTTP_201_CREATED)
+    except KeyError as e:
+        return Response({'error': f"Missing key in request data: {e}"}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

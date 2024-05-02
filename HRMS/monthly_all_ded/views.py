@@ -211,6 +211,7 @@ def get_current_pp(request):
         data = {}
         data["PERIOD_ID"] = pp_instance.ID
         data["MNTH_NAME"] = pp_instance.MNTH_ID.MNTH_NAME
+        data["FinYear"] = pp_instance.FYID.FinYear
         # pp_serializer = HR_PAYROLL_PERIOD_Serializer(pp_instance)
         return Response(data, status=200)
     except Exception as e:

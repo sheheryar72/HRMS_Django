@@ -8,6 +8,7 @@ from django.http import JsonResponse
 from rest_framework.exceptions import NotFound
 from django.db.models import Max, Min, Count
 from django.core.exceptions import ObjectDoesNotExist 
+from django.views.decorators.csrf import csrf_exempt
 
 def payrollperiod_view(request):
     print('payrollperiod called')
@@ -66,6 +67,7 @@ def get_byid_finYear(request, id):
 #        payroll_period.append(data)
 #     return payroll_period
 
+@csrf_exempt
 @api_view(['POST'])
 def add_finYear(request):
     try:
@@ -74,7 +76,7 @@ def add_finYear(request):
             fin_year_obj = serializer.save()
             if int(request.data.get('FYStatus')) == 1:
                 HR_FinYearMstr.objects.exclude(FYID=fin_year_obj.FYID).update(FYStatus=False)
-            payroll_period_data = add_payroll_period(fin_year_obj.FYID)
+            payroll_period_data = add_payroll_period(fin_year_obj.FYID, fin_year_obj.FinYear)
             print("payroll_period_data payroll_period_data: ", payroll_period_data)
             pp_serializer = HR_PAYROLL_PERIOD_Serializer(data=payroll_period_data, many=True)
             if pp_serializer.is_valid():
@@ -87,10 +89,11 @@ def add_finYear(request):
     except Exception as e:
         return Response({"error": str(e)}, status=500)
 
-def add_payroll_period(finid):
+def add_payroll_period(finid, FinYear):
     max_pp = HR_PAYROLL_PERIOD.objects.aggregate(max_id=Max("PERIOD_ID"))['max_id'] or 0
     payroll_period = []
     max_pp += 1
+    finyears = FinYear.split('-')
     for i in range(1, 13):
         data = {
             "ID": 0,
@@ -98,6 +101,7 @@ def add_payroll_period(finid):
             "FYID": finid,
             "MNTH_ID": i,
             "PERIOD_STATUS": 0,
+            "PERIOD_YEAR": finyears[0] if i <= 7 else finyears[1]
         }
         payroll_period.append(data)
     return payroll_period

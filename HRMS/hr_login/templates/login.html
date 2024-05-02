@@ -127,6 +127,7 @@
         },
         success: function(res){
             console.log('res: ', res);
+            localStorage.setItem('User_ID', res.data[0])
             localStorage.setItem('Dept_ID', res.data.Dept_ID)
             localStorage.setItem('Dept_Descr', res.data.Dept_Descr)
             localStorage.setItem('Emp_ID', res.data.Emp_ID)

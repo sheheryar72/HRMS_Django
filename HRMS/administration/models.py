@@ -39,12 +39,16 @@ class GroupOfCompanies(models.Model):
     def __str__(self):
         return self.CoName
 
+from django.contrib.auth.models import User
+from hr_login.models import *
+
 class User_Froms(models.Model):
     UF_ID = models.AutoField(primary_key=True)
     COID = models.IntegerField()
     # FormID = models.IntegerField()
     FormDescription = models.ForeignKey(FormDescription, to_field='FormID', db_column='FormID', null=True, on_delete=models.SET_NULL)
-    UserDetail = models.ForeignKey(UserLogin, to_field='User_ID', db_column='User_ID', null=True, on_delete=models.SET_NULL)
+    # UserDetail = models.ForeignKey(UserLogin, to_field='User_ID', db_column='User_ID', null=True, on_delete=models.SET_NULL)
+    UserProfile = models.ForeignKey(UserProfile, to_field='id', db_column='Profile_ID', on_delete=models.CASCADE)
     ModuleID = models.IntegerField()   
     MnuID = models.IntegerField()   
     MnuSubID = models.IntegerField()   

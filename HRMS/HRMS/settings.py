@@ -63,6 +63,7 @@ EXTERNAL_APPS = [
     'administration',
     'working_dept_assignment',
     'monthly_all_ded',
+    'monthly_sal_process',
 ]
 
 INSTALLED_APPS += EXTERNAL_APPS

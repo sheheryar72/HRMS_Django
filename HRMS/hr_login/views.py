@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.db import connection
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import UserLogin
+from .models import UserLogin, UserProfile
 from django.http import JsonResponse
 from django.http import HttpResponse
 from rest_framework import status
@@ -47,11 +47,10 @@ def authenticate_user(request):
             cursor.execute("select User_ID, User_Name, User_Email, User_Password, User_Email, User_Status, Emp_ID from User_Login WHERE User_Name = %s AND User_Password = %s", [username, password])
             user = cursor.fetchone()
 
-        print('user: ', user)
 
         if user is not None and user[1] == username and user[3] == password:  # Assuming User_Password is at index 3 in the result
             # Authentication successful
-            print('user 6: ', user[6])
+            print('user 6: ')
             # emp_user = HR_Employees.objects.get(pk=user[6])
             # print('emp_user: ', emp_user)
             # data = {
@@ -68,7 +67,45 @@ def authenticate_user(request):
     except Exception as e:
         return JsonResponse({'error': 'Authentication failed. Please check your credentials.'}, status=400)
 
+@csrf_exempt
+@api_view(['POST'])
+def authenticate_user2(request):
+    try:
+        username = request.data.get('username')
+        password = request.data.get('password')
 
+        # Check if both username and password are provided
+        if not username or not password:
+            return JsonResponse({'error': 'Both username and password are required.'}, status=400)
+
+        # Authenticate user
+        user = authenticate(username=username, password=password)
+
+        if user is not None:
+            # Get UserProfile associated with the authenticated user
+            user_profile = UserProfile.objects.filter(user__username=username).select_related("Emp_ID").first()
+            data = {
+                'Profile_ID': user_profile.id,
+                'Email': user_profile.Emp_ID.Email,
+                'Dept_ID': user_profile.Emp_ID.Joining_Dept_ID.Dept_ID,
+                'Dept_Descr': user_profile.Emp_ID.Joining_Dept_ID.Dept_Descr,
+                'Emp_ID': user_profile.Emp_ID.Emp_ID,
+                'Emp_Name': user_profile.Emp_ID.Emp_Name,
+            }
+            print('user_profile: ', data)
+
+            if user_profile is not None:
+                # Authentication successful
+                return JsonResponse({'data': data, 'message': 'Login successful!'})
+            else:
+                # UserProfile not found
+                return JsonResponse({'error': 'User profile not found.'}, status=400)
+        else:
+            # Authentication failed
+            return JsonResponse({'error': 'Invalid username or password.'}, status=400)
+
+    except Exception as e:
+        return JsonResponse({'error': 'Authentication failed. Please check your credentials.'}, status=400)
 
 # @csrf_exempt
 # @api_view(['POST'])

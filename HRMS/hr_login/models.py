@@ -31,10 +31,11 @@ class UserLogin(models.Model):
 #         return self.username
 
 from django.contrib.auth.models import User
+from employee.models import HR_Employees
 
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    Emp_ID = models.CharField(max_length=100)
+    Emp_ID = models.ForeignKey(HR_Employees, on_delete=models.CASCADE)
 
     class Meta:
         managed = True

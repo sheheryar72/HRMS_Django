@@ -128,6 +128,12 @@ function handleCancelClick() {
 
     document.getElementById('totalAllowance').innerText = `Total Allowance: 0.00`
     document.getElementById('totalDeduction').innerText = `Total Deduction: 0.00`
+
+    document.getElementById("Transfer_Type").selectedIndex = 0;
+    document.getElementById("Account_No").value = '';
+    document.getElementById("Bank_Name").value = '';
+    document.getElementById("Stop_Salary").selectedIndex = 0;
+
 }
 
 async function getDesignationById(id) {
@@ -273,6 +279,11 @@ function handleInsertClick() {
     const Element_Descr = document.getElementById("Element_Descr").value;
     const grossSalary = Number(document.getElementById("GrossSalary").value);
 
+    const Transfer_Type = document.getElementById("Transfer_Type");
+    const Account_No = document.getElementById("Account_No");
+    const Bank_Name = document.getElementById("Bank_Name");
+    const Stop_Salary = document.getElementById("Stop_Salary");
+
     let dataArray = [];
 
     $("#bmGridID1 tbody tr").each(function () {
@@ -308,7 +319,11 @@ function handleInsertClick() {
         No_of_Children: No_of_Children,
         Remarks: Remarks,
         GrossSalary: grossSalary,
-        Co_ID: 1
+        Co_ID: 1,
+        Transfer_Type: Transfer_Type,
+        Account_No: Account_No,
+        Bank_Name: Bank_Name,
+        Stop_Salary: Stop_Salary,
     }
 
     console.log("addsalarymaster masterData: ", masterData)
@@ -361,6 +376,11 @@ function handleUpdateClick() {
     const Element_Descr = document.getElementById("Element_Descr").value;
     const grossSalary = Number(document.getElementById("GrossSalary").value);
 
+    const Transfer_Type = document.getElementById("Transfer_Type");
+    const Account_No = document.getElementById("Account_No");
+    const Bank_Name = document.getElementById("Bank_Name");
+    const Stop_Salary = document.getElementById("Stop_Salary");
+
     let dataArray = [];
 
     $("#bmGridID1 tbody tr").each(function () {
@@ -396,7 +416,11 @@ function handleUpdateClick() {
         No_of_Children: No_of_Children,
         Remarks: Remarks,
         GrossSalary: grossSalary,
-        Co_ID: 1
+        Co_ID: 1,
+        Transfer_Type: Transfer_Type,
+        Account_No: Account_No,
+        Bank_Name: Bank_Name,
+        Stop_Salary: Stop_Salary
     }
     // alert('update salary')
     // alert(Emp_Up_ID)
@@ -763,6 +787,11 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
         document.getElementById("No_of_Children").value = data[0].No_of_Children;
         document.getElementById("Remarks").value = data[0].Remarks;
         document.getElementById("GrossSalary").value = data[0].GrossSalary;
+
+        document.getElementById("Transfer_Type").value = data[0].Transfer_Type;
+        document.getElementById("Account_No").value =  data[0].Account_No;
+        document.getElementById("Bank_Name").value =  data[0].Bank_Name;
+        document.getElementById("Stop_Salary").value =  data[0].Stop_Salary;
 
         let allowanceRow = '', deductionRow = '';
         let counter = 1, totalAllowance = 0, totalDeduction = 0;

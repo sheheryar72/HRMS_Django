@@ -19,6 +19,10 @@ class HR_Emp_Sal_Update_Mstr(models.Model):
     Grade_ID = models.ForeignKey(HR_Grade, db_column='Grade_ID', to_field='Grade_ID', on_delete=models.DO_NOTHING)
     Dsg_ID = models.ForeignKey(HR_Designation, db_column='Dsg_ID', to_field='DSG_ID', on_delete=models.CASCADE)
     Dept_ID = models.ForeignKey(HR_Department, db_column='Dept_ID', to_field='Dept_ID', on_delete=models.CASCADE)
+    Transfer_Type = models.CharField(max_length=10)
+    Account_No = models.CharField(max_length=20, null=True)
+    Bank_Name = models.CharField(max_length=100, null=True)
+    Stop_Salary = models.BooleanField(default=False)
 
     class Meta:
         managed = False

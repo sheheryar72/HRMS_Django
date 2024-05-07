@@ -13,13 +13,13 @@ def dashboard_view(request):
 @api_view(['GET'])
 def get_all_usermenuforms(request):
     try:
-        user_id = request.query_params.get('user_id')
+        Profile_ID = request.query_params.get('Profile_ID')
         # print('user_id: ', user_id)
         with connection.cursor() as cursor:
             # cursor.execute("EXEC HR_GetUserMenuAndForms @User_ID=%s", [user_id])
             # cursor.execute("EXEC [ERP_ADMIN].[dbo].HR_GetUserMenuAndForms @User_ID=%s", [user_id])
-            print('user_id user_id: ', user_id)
-            cursor.execute("EXEC GetUserMenuAndForms @User_ID=%s", [user_id])
+            print('Profile_ID Profile_ID: ', Profile_ID)
+            cursor.execute("EXEC GetUserMenuAndForms @Profile_ID=%s", [Profile_ID])
             # print('columns columns')
             columns = [col[0] for col in cursor.description]
             # print('columns: ', columns)

@@ -64,7 +64,7 @@ function handleDeleteButtonClick() {
         deleteUserPrivileges(Grade_ID).then(success => {
             if (success) {
                 displaySuccessMessage('Grade deleted successfully!');
-                fillTableGrid(); // Reload table after deletion
+                // fillTableGrid(); // Reload table after deletion
             } else {
                 displayErrorMessage('Failed to delete Grade. Please try again.');
             }
@@ -73,20 +73,12 @@ function handleDeleteButtonClick() {
 }
 
 function handleCancelClick() {
-    // document.getElementById("Grade_ID").readOnly = false;
-    document.getElementById("Search_User").selectedIndex = 0;
-    document.getElementById("User_ID").value = 0;
-    document.getElementById("User_Emp_Code").value = '';
-    document.getElementById("User_Name").value = '';
-    document.getElementById("User_Password").value = '';
-    document.getElementById("User_Designation").selectedIndex = 0;
-    document.getElementById("User_NICNo").value = '';
-    document.getElementById("User_Email").value = '';
-    document.getElementById("Confirm_Password").value = '';
-    document.getElementById("PTCL_No").value = '';
-    document.getElementById("Cell_No").value = '';
+    document.getElementById("Emp_ID").selectedIndex = 0;
+    document.getElementById("User_Name").value = "";
+    document.getElementById("User_Password").value = "";    
     document.getElementById("updateFormData").classList.add("d-none");
     document.getElementById("insertFormData").classList.remove("d-none");
+    table.clear().draw();
 }
 
 async function getAllUserPrivileges(userid) {
@@ -118,6 +110,7 @@ async function getAllCompanies() {
     }
 }
 
+var employee_list = []
 async function getallEmployee(){
     try{
         const response = await fetch(`${BASE_URL}/employee/api/getall`);
@@ -126,6 +119,8 @@ async function getallEmployee(){
         }
         const data = await response.json();
         let temp = '';
+        console.log('Employee Data: ', data)    
+        employee_list = data;
         data.forEach(element => {
             temp += `<option value="${element.Emp_ID}">${element.Emp_Name}</option>`
         });
@@ -135,6 +130,13 @@ async function getallEmployee(){
         return null;
     }
 }
+
+document.getElementById("Emp_ID").addEventListener("change", function(){
+    const emp_id = this.value
+    current_emp = employee_list.find(x=>x.Emp_ID==emp_id)
+    console.log('current_emp: ', current_emp)
+    // document.getElementById("User_Email").value = current_emp.Email
+})
 
 async function getAllFormDescription() {
     try {
@@ -220,7 +222,7 @@ async function createUserPrivileges(formData) {
         }
         //const data = await response.json();
         displaySuccessMessage('Grade created successfully!');
-        fillTableGrid();
+        // fillTableGrid();
         //return data;
     } catch (error) {
         console.error('Error creating Grade:', error);
@@ -243,7 +245,7 @@ async function updateUserPrivileges(id, departmentData) {
         }
         //const data = await response.json();
         displaySuccessMessage('Grade updated successfully!');
-        fillTableGrid();
+        // fillTableGrid();
         //return data;
     } catch (error) {
         console.error('Error updating Grade:', error);
@@ -318,17 +320,9 @@ document.getElementById("Search_User").addEventListener('change', function () {
         let companiesSelect = '<select class="form-control form-control-sm" id="companies"><option value="1">iTecknologi Tracking</option></select>';
         var counter = 1;
         if (data && data.length > 0) {
-            document.getElementById("Search_User").selectedIndex = 0;
-            document.getElementById("User_ID").value = data[0].UserDetail.User_ID;
-            document.getElementById("User_Emp_Code").value = data[0].UserDetail.User_Emp_Code;
-            document.getElementById("User_Name").value = data[0].UserDetail.User_Name;
-            document.getElementById("User_Password").value = data[0].UserDetail.User_Password;
-            document.getElementById("User_Designation").selectedIndex = data[0].UserDetail.User_Designation;
-            document.getElementById("User_NICNo").value = data[0].UserDetail.User_NICNo;
-            document.getElementById("User_Email").value = data[0].UserDetail.User_Email;
-            document.getElementById("Confirm_Password").value = data[0].UserDetail.User_ID;
-            document.getElementById("PTCL_No").value = data[0].UserDetail.User_ID;
-            document.getElementById("Cell_No").value = data[0].UserDetail.Cell_No;
+            document.getElementById("Emp_ID").selectedIndex = 0;
+            document.getElementById("User_Name").value = data[0].UserDetail.User_ID;
+            document.getElementById("User_Password").value = data[0].UserDetail.User_ID;
             document.getElementById("updateFormData").classList.remove("d-none");
             document.getElementById("insertFormData").classList.add("d-none");
 
@@ -515,7 +509,6 @@ function handleInsertClick() {
     const User_Password = document.getElementById("User_Password").value;
     const Emp_ID = document.getElementById("Emp_ID").value;
     const User_Status = $('input[name="User_Status"]:checked').val();
-    
 
     const formData = {
         User_Name: User_Name,
@@ -528,6 +521,7 @@ function handleInsertClick() {
     console.log('formData: ', formData)
 
     createUserPrivileges(formData);
+    fillUserDropDown();
 }
 
 function handleUpdateClick() {
@@ -539,7 +533,7 @@ function handleUpdateClick() {
         Grade_Descr: Grade_Descr
     }
     updateUserPrivileges(Grade_ID, departmentData);
-    fillTableGrid();
+    // fillTableGrid();
 }
 
 function displaySuccessMessage(message) {

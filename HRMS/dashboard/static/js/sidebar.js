@@ -221,8 +221,9 @@ function onClickFunc(formID, formDescr) {
 
 window.onload = function () {
     $(document).ready(function () {
-        const User_ID = localStorage.getItem('User_ID')
-        fetch(`/dashboard/api/userform/?user_id=${User_ID}`)
+        const Profile_ID = localStorage.getItem('Profile_ID')
+        // const User_ID = localStorage.getItem('User_ID')
+        fetch(`/dashboard/api/userform/?Profile_ID=${Profile_ID}`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -232,6 +233,7 @@ window.onload = function () {
             .then((data) => {
                 // Group data by ModuleDescr, MnuDescr, and MnuSubDescr
                 const groupedData = {};
+                console.log('data data: ', data)
                 data.forEach(item => {
                     if (!groupedData[item.ModuleDescr]) {
                         groupedData[item.ModuleDescr] = {};

@@ -119,7 +119,7 @@ document.getElementById("W_Department").addEventListener("click", async function
 
                 single_emp_data = data[2]['Emp_Element_Status'].filter(x => x.Emp_ID == emp.Emp_ID)
 
-                console.log('single_emp_data: ', single_emp_data)
+                // console.log('single_emp_data: ', single_emp_data)
 
                 let readonly = '';
                 if (!single_emp_data.some(obj => obj.Element_ID === element.Element_ID)) {

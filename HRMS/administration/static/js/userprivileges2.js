@@ -121,6 +121,8 @@ async function getallEmployee(){
         let temp = '';
         console.log('Employee Data: ', data)    
         employee_list = data;
+        employee_list.sort((a, b) => a.Emp_Name.localeCompare(b.Emp_Name));
+        // console.log("employee_list: employee_list: ", employee_list)
         data.forEach(element => {
             temp += `<option value="${element.Emp_ID}">${element.Emp_Name}</option>`
         });

@@ -208,11 +208,13 @@ def getAll_W_Dept_By_W_DeptID(request, W_DeptID):
 def get_current_pp(request):
     try:
         pp_instance = HR_PAYROLL_PERIOD.objects.get(PERIOD_STATUS=True)
+        print('pp_instance: ', pp_instance)
         data = {}
         data["PERIOD_ID"] = pp_instance.ID
         data["MNTH_NAME"] = pp_instance.MNTH_ID.MNTH_NAME
         data["FinYear"] = pp_instance.FYID.FinYear
         # pp_serializer = HR_PAYROLL_PERIOD_Serializer(pp_instance)
+        print('get_current_pp: ', data)
         return Response(data, status=200)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
@@ -372,7 +374,14 @@ def export_template(request, ID):
         data = {}
         print('assigned_elements: ', assigned_elements)
         print('assigned_depts: ', assigned_depts)
-        assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID__in=assigned_depts).values("Emp_ID", "Emp_Name")
+        emp_list = []
+
+        # for dept in (assigned_depts):
+        #     data = assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID=dept).values("Emp_ID", "Emp_Name", "")
+        #     emp_list.append(data)
+
+        assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID__in=assigned_depts).values("Emp_ID", "Emp_Name", "Joining_Dept_ID", "Joining_Dept_ID__Dept_Descr", "Joining_Dsg_ID", "Joining_Dsg_ID__DSG_Descr")
+        # assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID__in=assigned_depts).values("Emp_ID", "Emp_Name", "Joining_Dept_ID", "Joining_Dept_ID__Dept_Descr", "Joining_Dsg_ID", "Joining_Dsg_ID__Dsg_Descr")
         
         print('assigned_emps: ', assigned_emps)
         # for emp in assigned_emps:
@@ -386,7 +395,7 @@ def export_template(request, ID):
             "Employee": assigned_emps,
             "Element": assigned_elements
         }
-        # print('data: ', data)
+        print('export_template data: ', data)
         return Response(data, status=200)
     except Exception as e:
         return Response({'error': str(e)}, status=500)

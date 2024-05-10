@@ -11,6 +11,8 @@ from django.contrib.auth import authenticate, login
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import check_password
 from employee.models import HR_Employees
+from django.contrib.auth import login as auth_login
+
 
 def sheheryar_test2(request):
     return HttpResponse("Hi This is second request")  
@@ -80,6 +82,10 @@ def authenticate_user2(request):
 
         # Authenticate user
         user = authenticate(username=username, password=password)
+        # login(request, user)
+        if user is not None:
+            auth_login(request, user)  # This creates a session for the user
+
 
         if user is not None:
             # Get UserProfile associated with the authenticated user

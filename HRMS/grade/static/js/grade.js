@@ -1,4 +1,4 @@
-const BASE_URL = '/grade/api/';
+const BASE_URL = window.location.origin;
 var table;
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';
@@ -65,7 +65,7 @@ function handleCancelClick() {
 
 async function getAllDesignations() {
     try {
-        const response = await fetch(`${BASE_URL}getall`);
+        const response = await fetch(`${BASE_URL}/grade/getall`);
         if (!response.ok) {
             throw new Error('Failed to fetch Grade');
         }
@@ -79,7 +79,7 @@ async function getAllDesignations() {
 
 async function getDesignationById(id) {
     try {
-        const response = await fetch(`${BASE_URL}${id}/`);
+        const response = await fetch(`${BASE_URL}/grade/${id}/`);
         if (!response.ok) {
             throw new Error('Failed to fetch Grade');
         }
@@ -93,10 +93,11 @@ async function getDesignationById(id) {
 
 async function createDesignation(departmentData) {
     try {
-        const response = await fetch(`${BASE_URL}add`, {
+        const response = await fetch(`${BASE_URL}/grade/add`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify(departmentData),
         });
@@ -116,10 +117,11 @@ async function createDesignation(departmentData) {
 
 async function updateDesignation(id, departmentData) {
     try {
-        const response = await fetch(`${BASE_URL}update/${id}`, {
+        const response = await fetch(`${BASE_URL}/grade/update/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify(departmentData),
         });
@@ -139,8 +141,12 @@ async function updateDesignation(id, departmentData) {
 
 async function deleteDesignation(id) {
     try {
-        const response = await fetch(`${BASE_URL}delete/${id}`, {
+        const response = await fetch(`${BASE_URL}/grade/delete/${id}`, {
             method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
         });
         if (!response.ok) {
             throw new Error('Failed to delete Grade');

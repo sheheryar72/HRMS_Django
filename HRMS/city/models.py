@@ -10,9 +10,18 @@ class HR_City(models.Model):
 
     def __str__(self):
         return self.CT_Descr
-    
 
+class HR_Region(models.Model):
+    REG_ID = models.AutoField(primary_key=True)
+    REG_Descr = models.CharField(max_length=100)
+
+    class Meta:
+        db_table = 'HR_Region'
+        managed = True
     
+    def __str__(self):
+        return self.REG_Descr
+
 
 
 

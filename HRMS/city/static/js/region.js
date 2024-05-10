@@ -43,13 +43,13 @@ function handleDeleteButtonClick() {
     const rowData = table.row($(this).closest('tr')).data();
     const CT_ID = rowData[1];
     console.log('CT_ID: ', CT_ID)
-    if (confirm("Are you sure you want to delete this City?")) {
-        deleteCity(CT_ID).then(success => {
+    if (confirm("Are you sure you want to delete this region?")) {
+        deleteregion(CT_ID).then(success => {
             if (success) {
-                displaySuccessMessage('City deleted successfully!');
+                displaySuccessMessage('region deleted successfully!');
                 fillTableGrid(); // Reload table after deletion
             } else {
-                displayErrorMessage('Failed to delete City. Please try again.');
+                displayErrorMessage('Failed to delete region. Please try again.');
             }
         });
     }
@@ -63,37 +63,37 @@ function handleCancelClick() {
     document.getElementById("insertFormData").classList.remove("d-none");
 }
 
-async function getAllCity() {
+async function getAllregion() {
     try {
-        const response = await fetch(`${BASE_URL}/city/getall`);
+        const response = await fetch(`${BASE_URL}/region/getall`);
         if (!response.ok) {
-            throw new Error('Failed to fetch City');
+            throw new Error('Failed to fetch region');
         }
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error('Error fetching City:', error);
+        console.error('Error fetching region:', error);
         return null;
     }
 }
 
-async function getCityById(id) {
+async function getregionById(id) {
     try {
-        const response = await fetch(`${BASE_URL}/city/${id}/`);
+        const response = await fetch(`${BASE_URL}/region/${id}/`);
         if (!response.ok) {
-            throw new Error('Failed to fetch City');
+            throw new Error('Failed to fetch region');
         }
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error(`Error fetching City with ID ${id}:`, error);
+        console.error(`Error fetching region with ID ${id}:`, error);
         return null;
     }
 }
 
-async function createCity(departmentData) {
+async function createregion(departmentData) {
     try {
-        const response = await fetch(`${BASE_URL}/city/add`, {
+        const response = await fetch(`${BASE_URL}/region/add`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -102,22 +102,22 @@ async function createCity(departmentData) {
             body: JSON.stringify(departmentData),
         });
         if (!response.ok) {
-            throw new Error('Failed to create City');
+            throw new Error('Failed to create region');
         }
         //const data = await response.json();
-        displaySuccessMessage('City created successfully!');
+        displaySuccessMessage('region created successfully!');
         fillTableGrid();
         //return data;
     } catch (error) {
-        console.error('Error creating City:', error);
-        displayErrorMessage('Failed to create City. Please try again.');
+        console.error('Error creating region:', error);
+        displayErrorMessage('Failed to create region. Please try again.');
         return null;
     }
 }
 
-async function updateCity(id, departmentData) {
+async function updateregion(id, departmentData) {
     try {
-        const response = await fetch(`${BASE_URL}/city/update/${id}`, {
+        const response = await fetch(`${BASE_URL}/region/update/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -125,36 +125,36 @@ async function updateCity(id, departmentData) {
             body: JSON.stringify(departmentData),
         });
         if (!response.ok) {
-            throw new Error('Failed to update City');
+            throw new Error('Failed to update region');
         }
         //const data = await response.json();
-        displaySuccessMessage('City updated successfully!');
+        displaySuccessMessage('region updated successfully!');
         fillTableGrid();
         //return data;
     } catch (error) {
-        console.error('Error updating City:', error);
-        displayErrorMessage('Failed to update City. Please try again.');
+        console.error('Error updating region:', error);
+        displayErrorMessage('Failed to update region. Please try again.');
         return null;
     }
 }
 
-async function deleteCity(id) {
+async function deleteregion(id) {
     try {
-        const response = await fetch(`${BASE_URL}/city/delete/${id}`, {
+        const response = await fetch(`${BASE_URL}/region/delete/${id}`, {
             method: 'DELETE',
         });
         if (!response.ok) {
-            throw new Error('Failed to delete City');
+            throw new Error('Failed to delete region');
         }
         return true;
     } catch (error) {
-        console.error(`Error deleting City with ID ${id}:`, error);
+        console.error(`Error deleting region with ID ${id}:`, error);
         return false;
     }
 }
 
 function fillTableGrid() {
-    getAllCity().then((data) => {
+    getAllregion().then((data) => {
         console.log("response: ", data);
         var counter = 1;
         table.clear().draw();
@@ -215,7 +215,7 @@ function handleInsertClick(){
         CT_ID: CT_ID,
         CT_Descr: CT_Descr
     }
-    createCity(departmentData);
+    createregion(departmentData);
     
 }
 
@@ -227,7 +227,7 @@ function handleUpdateClick(){
         CT_ID: CT_ID,
         CT_Descr: CT_Descr
     }
-    updateCity(CT_ID, departmentData);
+    updateregion(CT_ID, departmentData);
     fillTableGrid();
 }
 

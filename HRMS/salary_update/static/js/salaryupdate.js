@@ -1,4 +1,4 @@
-const API_URL = '/';
+const BASE_URL = window.location.origin;
 var table, tabl2;
 const INSERT_BUTTON_ID = 'insertFormData';
 const SAVE_NEW_BUTTON_ID = 'saveNewBtnId';
@@ -333,7 +333,7 @@ function handleInsertClick() {
     if (Emp_ID != 0 && Dsg_ID != 0 && Dept_ID != 0 && Grade_ID != 0 && dataArray.length != 0, Emp_Up_Date != "") {
 
         $.post({
-            url: API_URL + 'salaryupdate/addsalarymaster/',
+            url: BASE_URL + '/salaryupdate/addsalarymaster/',
             contentType: 'application/json',
             data: JSON.stringify({
                 masterData: masterData,
@@ -345,6 +345,7 @@ function handleInsertClick() {
                 // "companyID": companyID,
                 // "MenuId": MenuId,
                 // "FormId": FormId
+                'X-CSRFToken': getCookie('csrftoken')
             },
             success: function (response) {
                 displaySuccessMessage("Salary Successfully Updated")
@@ -428,8 +429,8 @@ function handleUpdateClick() {
     if (Emp_Up_ID != 0 && Emp_ID != 0 && Dsg_ID != 0 && Dept_ID != 0 && Grade_ID != 0 && dataArray.length != 0) {
 
         $.post({
-            // url: API_URL + `salaryupdate/updatesalary/${Emp_Up_ID}/`,
-            url: API_URL + `salaryupdate/updatesalary/${Emp_Up_ID}`,
+            // url: BASE_URL + `salaryupdate/updatesalary/${Emp_Up_ID}/`,
+            url: BASE_URL + `/salaryupdate/updatesalary/${Emp_Up_ID}`,
             contentType: 'application/json',
             data: JSON.stringify({
                 masterData: masterData,
@@ -437,6 +438,7 @@ function handleUpdateClick() {
             }),
             dataType: 'json',
             headers: {
+                'X-CSRFToken': getCookie('csrftoken')
             },
             success: function (response) {
                 displaySuccessMessage("Salary Successfully Updated")
@@ -471,7 +473,7 @@ document.getElementById("Emp_ID").addEventListener("change", function () {
 //         document.getElementById("Marital_Status").value = singleEmpData.Marital_Status;
 //     }
 
-//     getAllDataFromDB(`${API_URL}payroll_element/api/getall/`, "Payroll Element").then((data) => {
+//     getAllDataFromDB(`${BASE_URL}payroll_element/getall/`, "Payroll Element").then((data) => {
 //         console.log("Data: ", data)
 //         listofPayrollElement = data;
 
@@ -521,7 +523,7 @@ function mapEmployeeDate(empID) {
         document.getElementById("Marital_Status").value = singleEmpData.Marital_Status;
     }
 
-    getAllDataFromDB(`${API_URL}payroll_element/api/getall/`, "Payroll Element").then((data) => {
+    getAllDataFromDB(`${BASE_URL}/payroll_element/getall/`, "Payroll Element").then((data) => {
         console.log("Data: ", data)
         listofPayrollElement = data;
 
@@ -610,7 +612,7 @@ async function getAllDataFromDB(url, name) {
 }
 
 function fillGradeTableGrid() {
-    getAllDataFromDB(`${API_URL}grade/api/getall`, 'Grade').then((data) => {
+    getAllDataFromDB(`${BASE_URL}/grade/getall`, 'Grade').then((data) => {
         // console.log("response: ", data);
         var temp = '';
         for (var i = 0; i < data.length; i++) {
@@ -671,7 +673,7 @@ document.getElementById("calculateGrossSalary").addEventListener('click', functi
 
 async function fillPayrollElementTableGrid(empID, empUpID) {
     try {
-        const response = await fetch(`${API_URL}salaryupdate/payrollelement/${empUpID}/${empID}/`, {
+        const response = await fetch(`${BASE_URL}/salaryupdate/payrollelement/${empUpID}/${empID}/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -695,7 +697,7 @@ async function fillPayrollElementTableGrid(empID, empUpID) {
 }
 
 function fillDepartmentTableGrid() {
-    getAllDataFromDB(`${API_URL}department/api/getall`, 'Department').then((data) => {
+    getAllDataFromDB(`${BASE_URL}/department/getall`, 'Department').then((data) => {
         // console.log("response: ", data);
         var temp = '';
         for (var i = 0; i < data.length; i++) {
@@ -706,7 +708,7 @@ function fillDepartmentTableGrid() {
 }
 
 function fillDesignationTableGrid() {
-    getAllDataFromDB(`${API_URL}designation/api/getall`, 'Designation').then((data) => {
+    getAllDataFromDB(`${BASE_URL}/designation/getall`, 'Designation').then((data) => {
         // console.log("response: ", data);
         var temp = '';
         for (var i = 0; i < data.length; i++) {
@@ -717,7 +719,7 @@ function fillDesignationTableGrid() {
 }
 
 function fillSalaryMasterTableGrid() {
-    getAllDataFromDB(`${API_URL}salaryupdate/getllmaster/`, 'Salary Update Master').then((data) => {
+    getAllDataFromDB(`${BASE_URL}/salaryupdate/getllmaster/`, 'Salary Update Master').then((data) => {
         console.log("response: ", data);
         var temp = '';
         table5.clear().draw();
@@ -731,7 +733,7 @@ function fillSalaryMasterTableGrid() {
 }
 
 function fillEmployeeTableGrid() {
-    getAllDataFromDB(`${API_URL}employee/api/getall`, 'Employee').then( (data) => {
+    getAllDataFromDB(`${BASE_URL}/employee/getall`, 'Employee').then( (data) => {
         // console.log("response: ", data);
         var temp = '';
         listofEmployeeNotInSalUpdate = data;
@@ -769,7 +771,7 @@ function handleTableRowClick3() {
 function GetAll_Salary_update_BYID(emp_up_Id, empId) {
     console.log("emp_up_Id: ", emp_up_Id)
     console.log("empId: ", empId)
-    getAllDataFromDB(`${API_URL}salaryupdate/getallmasterbyid/${emp_up_Id}/${empId}/`, 'Salary Master').then((data) => {
+    getAllDataFromDB(`${BASE_URL}/salaryupdate/getallmasterbyid/${emp_up_Id}/${empId}/`, 'Salary Master').then((data) => {
         console.log("response: ", data);
 
         document.getElementById("Emp_Up_ID").value = data[0].Emp_Up_ID;

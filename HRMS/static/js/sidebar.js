@@ -190,7 +190,6 @@
 // };
 
 function onClickFunc(formID, formDescr) {
-    console.log('onClickFunc: ', formID, formDescr)
     const message = 'formID: ' + formID + '\n' + 'formDescr: ' + formDescr;
     // alert(message);
     if (formID === 5) {
@@ -217,8 +216,6 @@ function onClickFunc(formID, formDescr) {
         window.open('/wda/')
     }    else if (formID === 15) {
         window.open('/monthly_all_ded/')
-    }     else if (formID === 17) {
-        window.open('/region/')
     } 
 }
 
@@ -226,8 +223,7 @@ window.onload = function () {
     $(document).ready(function () {
         const Profile_ID = localStorage.getItem('Profile_ID')
         // const User_ID = localStorage.getItem('User_ID')
-        const BASE_URL = window.location.origin;
-        fetch(`${BASE_URL}/dashboard/userform/?Profile_ID=${Profile_ID}`)
+        fetch(`/dashboard/userform/?Profile_ID=${Profile_ID}`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');

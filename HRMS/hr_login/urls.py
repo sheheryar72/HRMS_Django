@@ -7,7 +7,7 @@ urlpatterns = [
     path('login2/', login2_view, name='login2_view'),
     path('login3/', login3_view, name='login3_view'),
     path('authenticate/', authenticate_user2, name='authenticate_user'),
-    path('api/getalluser/', getall_user, name='getall_user'),
+    path('getalluser/', getall_user, name='getall_user'),
 ]
 
 

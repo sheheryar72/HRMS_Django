@@ -1,7 +1,7 @@
-// import { api_url, authorization, companyID, FormStatusID, MenuId, FormId } from './Common.js';
+// import { BASE_URL, authorization, companyID, FormStatusID, MenuId, FormId } from './Common.js';
 
 let table, table2, listofDepartments = [], listofElements = [];
-const API_URL = `http://127.0.0.1:8000/wda/api/`;
+const BASE_URL = window.location.origin;
 const INSERT_BUTTON_ID = 'insertBtnId';
 const UPDATE_BUTTON_ID = 'updateBtnId';
 const CANCEL_BUTTON_ID = 'cancelBtnId';
@@ -95,9 +95,10 @@ function getCategoryItemDataFromAPI() {
     if (authorization != null) {
         $.ajax({
             type: 'GET',
-            url: API_URL + 'GetAll',
+            url: BASE_URL + '/wda/GetAll',
             headers: {
                 "Content-type": "application/json; charset=UTF-8",
+                'X-CSRFToken': getCookie('csrftoken')
                 // "authorization": authorization,
                 // "companyID": companyID,
                 // "MenuId": MenuId,
@@ -155,7 +156,7 @@ function insertWorkingData(W_ID, W_Dept_ID, Mode) {
 
         $.ajax({
             type: 'POST',
-            url: API_URL + 'add',
+            url: BASE_URL + '/wda/add',
             contentType: 'application/json',
             data: JSON.stringify(workingDeptData),
             // data: {
@@ -163,6 +164,7 @@ function insertWorkingData(W_ID, W_Dept_ID, Mode) {
             // },
             dataType: 'json',
             headers: {
+                'X-CSRFToken': getCookie('csrftoken')
                 // "authorization": authorization,
                 // "companyID": companyID,
                 // "MenuId": MenuId,
@@ -199,9 +201,10 @@ function handleUpdateClick() {
 function getWDAByID(W_ID) {
     $.ajax({
         type: 'GET',
-        url: `${API_URL}getall/${W_ID}`,
+        url: `${BASE_URL}/wda/getall/${W_ID}`,
         headers: {
             "Content-type": "application/json; charset=UTF-8",
+            'X-CSRFToken': getCookie('csrftoken')
             // "authorization": authorization,
             // "companyID": companyID,
             // "MenuId": MenuId,
@@ -263,7 +266,7 @@ function getWDAByID(W_ID) {
 function getAllDepartment() {
     $.ajax({
         type: 'GET',
-        url: `http://127.0.0.1:8000/department/api/getall`,
+        url: `/department/getall`,
         headers: {
             "Content-type": "application/json; charset=UTF-8",
             // "authorization": authorization,
@@ -338,7 +341,7 @@ function populateDropdownElementOptions(dropdown) {
 function getAllElement() {
     $.ajax({
         type: 'GET',
-        url: `http://127.0.0.1:8000/payroll_element/api/getall`,
+        url: `/payroll_element/getall`,
         headers: {
             "Content-type": "application/json; charset=UTF-8",
             // "authorization": authorization,
@@ -365,9 +368,10 @@ function GetAllWDAByID(W_Dept_ID) {
     if (1 == 1) {
         $.ajax({
             type: 'GET',
-            url: `${API_URL}getall/${W_Dept_ID}`,
+            url: `${BASE_URL}/wda/getall/${W_Dept_ID}`,
             headers: {
                 "Content-type": "application/json; charset=UTF-8",
+                'X-CSRFToken': getCookie('csrftoken')
                 // "authorization": authorization,
                 // "companyID": companyID,
                 // "MenuId": MenuId,

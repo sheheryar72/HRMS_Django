@@ -1,6 +1,6 @@
 // window.onload = function () {
 //     $(document).ready(function () {
-//         fetch(`/userform/api/dashboard/?user_id=2`)
+//         fetch(`/userform/dashboard/?user_id=2`)
 //             .then((response) => {
 //                 console.log('response status: ', response.status);
 //                 if (!response.ok) {
@@ -66,7 +66,7 @@
 
 // window.onload = function () {
 //     $(document).ready(function () {
-//         fetch(`/userform/api/dashboard/?user_id=2`)
+//         fetch(`/userform/dashboard/?user_id=2`)
 //             .then((response) => {
 //                 if (!response.ok) {
 //                     throw new Error('Network response was not ok');
@@ -124,7 +124,7 @@
 
 // window.onload = function () {
 //     $(document).ready(function () {
-//         fetch(`/userform/api/dashboard/?user_id=2`)
+//         fetch(`/userform/dashboard/?user_id=2`)
 //             .then((response) => {
 //                 if (!response.ok) {
 //                     throw new Error('Network response was not ok');
@@ -210,7 +210,7 @@ function onClickFunc(formID, formDescr) {
 window.onload = function () {
     $(document).ready(function () {
         alert("dashboard")
-        fetch(`/userform/api/dashboard/?user_id=2`)
+        fetch(`/userform/dashboard/?user_id=2`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');

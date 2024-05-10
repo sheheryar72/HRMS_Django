@@ -94,7 +94,7 @@ function handleCancelClick() {
 async function getAllUserPrivileges(userid) {
     try {
         console.log('userid: ', userid)
-        const response = await fetch(`${BASE_URL}/administration/api/userprivileges/getall/${userid}`);
+        const response = await fetch(`${BASE_URL}/administration/userprivileges/getall/${userid}`);
         if (!response.ok) {
             throw new Error('Failed to fetch Grade');
         }
@@ -108,7 +108,7 @@ async function getAllUserPrivileges(userid) {
 
 async function getAllCompanies() {
     try {
-        const response = await fetch(`${BASE_URL}/administration/api/company/getall`);
+        const response = await fetch(`${BASE_URL}/administration/company/getall`);
         if (!response.ok) {
             throw new Error('Failed to fetch Companies');
         }
@@ -122,7 +122,7 @@ async function getAllCompanies() {
 
 async function getAllFormDescription() {
     try {
-        const response = await fetch(`${BASE_URL}/administration/api/formdescription/getall`);
+        const response = await fetch(`${BASE_URL}/administration/formdescription/getall`);
         if (!response.ok) {
             throw new Error('Failed to fetch formdescription');
         }
@@ -136,7 +136,7 @@ async function getAllFormDescription() {
 
 async function getAllDesignation() {
     try {
-        const response = await fetch(`${BASE_URL}/designation/api/getall`);
+        const response = await fetch(`${BASE_URL}/designation/getall`);
         if (!response.ok) {
             throw new Error('Failed to fetch designation');
         }
@@ -150,7 +150,7 @@ async function getAllDesignation() {
 
 async function getAllUserFromDB() {
     try {
-        const response = await fetch(`${BASE_URL}/login/api/getalluser`);
+        const response = await fetch(`${BASE_URL}/login/getalluser`);
         if (!response.ok) {
             throw new Error('Failed to fetch designation');
         }
@@ -190,7 +190,7 @@ async function createUserPrivileges(formData) {
     try {
             // Get the CSRF token from the cookie
     const csrftoken = getCookie('csrftoken');
-        const response = await fetch(`${BASE_URL}/administration/api/add`, {
+        const response = await fetch(`${BASE_URL}/administration/add`, {
             method: 'POST',
             // headers: {'X-CSRFToken': csrftoken},  // Include the CSRF token in the headers
             headers: {

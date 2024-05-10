@@ -29,7 +29,7 @@ def get_all_cities(request):
     try:
         cities = HR_City.objects.all()
         print('cities: ', cities)
-        print('cities.count(): ', cities.count())
+        print('cities uguuggug(): ', cities.count())
 
         #city_objects = [HR_City(CT_ID=city.CT_ID, CT_Descr=city.CT_Descr) for city in cities]
         #serializer = HR_CITY_Serializer(city_objects, many=True)
@@ -70,6 +70,7 @@ def insert_city(request):
 
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 @api_view(['PUT'])
 def update_city(request, city_id):

@@ -339,7 +339,8 @@ def Insert_from_excel(request):
                 }
 
                 for key, value in table_data.items():
-                    if key != 'Emp_ID' and i < len(value) and key != 'Emp_Name':
+                    print('key: ', key)
+                    if key != 'Emp_ID' and i < len(value) and key != 'Emp_Name' and key != 'Department' and key != 'Designation':
                         try:
                             my_monthly_data[key] = int(value[i])
                         except ValueError:
@@ -373,14 +374,16 @@ def export_template(request, ID):
             return Response({'error': 'No Data Found'}, status=404)
         data = {}
         print('assigned_elements: ', assigned_elements)
-        print('assigned_depts: ', assigned_depts)
+        print('assigned_depts: ', assigned_depts.distinct())
         emp_list = []
 
         # for dept in (assigned_depts):
         #     data = assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID=dept).values("Emp_ID", "Emp_Name", "")
         #     emp_list.append(data)
 
-        assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID__in=assigned_depts).values("Emp_ID", "Emp_Name", "Joining_Dept_ID", "Joining_Dept_ID__Dept_Descr", "Joining_Dsg_ID", "Joining_Dsg_ID__DSG_Descr")
+        # assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID__in=assigned_depts).values("Emp_ID", "Emp_Name", "Joining_Dept_ID", "Joining_Dept_ID__Dept_Descr", "Joining_Dsg_ID", "Joining_Dsg_ID__DSG_Descr")
+        assigned_emps = HR_Emp_Sal_Update_Mstr.objects.filter(Dept_ID__in=assigned_depts).prefetch_related('Emp_ID', 'Dept_ID', 'Dsg_ID').values("Emp_ID", "Emp_ID__Emp_Name", "Dept_ID", "Dept_ID__Dept_Descr", "Dsg_ID", "Dsg_ID__DSG_Descr")
+       
         # assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID__in=assigned_depts).values("Emp_ID", "Emp_Name", "Joining_Dept_ID", "Joining_Dept_ID__Dept_Descr", "Joining_Dsg_ID", "Joining_Dsg_ID__Dsg_Descr")
         
         print('assigned_emps: ', assigned_emps)

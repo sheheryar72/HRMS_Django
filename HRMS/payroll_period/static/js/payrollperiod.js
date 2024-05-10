@@ -1,4 +1,4 @@
-const BASE_URL = '/payroll_period/api/';
+const BASE_URL = window.location.origin;
 var table, table2, current_finyear = {};
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';
@@ -237,7 +237,7 @@ $(document).ready(function () {
 
 async function getAllFinancialYears() {
     try {
-        const response = await fetch(`${BASE_URL}getall`);
+        const response = await fetch(`${BASE_URL}/payroll_period/getall`);
         if (!response.ok) {
             throw new Error('Failed to fetch Financial Year');
         }
@@ -251,7 +251,7 @@ async function getAllFinancialYears() {
 
 async function getAllPayrollPeriod(id) {
     try {
-        const response = await fetch(`${BASE_URL}getallpayrollperiod/${id}`);
+        const response = await fetch(`${BASE_URL}/payroll_period/getallpayrollperiod/${id}`);
         if (!response.ok) {
             throw new Error('Failed to fetch Financial Year');
         }
@@ -265,7 +265,7 @@ async function getAllPayrollPeriod(id) {
 
 async function getFinancialYearById(id) {
     try {
-        const response = await fetch(`${BASE_URL}${id}/`);
+        const response = await fetch(`${BASE_URL}/payroll_period/${id}/`);
         if (!response.ok) {
             throw new Error('Failed to fetch Financial Year');
         }
@@ -280,10 +280,11 @@ async function getFinancialYearById(id) {
 async function createFinancialYear(formData) {
     console.log('formData: ', formData)
     try {
-        const response = await fetch(`${BASE_URL}add`, {
+        const response = await fetch(`${BASE_URL}/payroll_period/add`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify(formData),
         });
@@ -294,7 +295,7 @@ async function createFinancialYear(formData) {
         displaySuccessMessage('Financial Year created successfully!');
         console.log('created data: ', obj)
         fillTableGrid();
-        debugger
+        // debugger
         if (obj.data.FYStatus){
             current_finyear = obj.data;
             fillTable2Grid(obj.data.FYID)
@@ -314,15 +315,16 @@ async function createFinancialYear(formData) {
 
 async function updateFinancialYear(id, departmentData) {
     try {
-        const response = await fetch(`${BASE_URL}update/${id}`, {
+        const response = await fetch(`${BASE_URL}/payroll_period/update/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify(departmentData),
         });
         const obj = await response.json();
-        debugger
+        // debugger
         current_finyear = obj.data;
         if (!response.ok) {
             throw new Error('Failed to update Financial Year');
@@ -340,8 +342,12 @@ async function updateFinancialYear(id, departmentData) {
 
 async function deleteFinancialYear(id) {
     try {
-        const response = await fetch(`${BASE_URL}delete/${id}`, {
+        const response = await fetch(`${BASE_URL}/payroll_period/delete/${id}`, {
             method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
         });
         if (!response.ok) {
             throw new Error('Failed to delete Financial Year');
@@ -355,8 +361,12 @@ async function deleteFinancialYear(id) {
 
 async function updatePeriodMonth(id) {
     try {
-        const response = await fetch(`${BASE_URL}updatemonth/${id}`, {
+        const response = await fetch(`${BASE_URL}/payroll_period/updatemonth/${id}`, {
             method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
         });
         if (!response.ok) {
             throw new Error('Failed to Update Period Month');
@@ -381,7 +391,7 @@ function fillTableGrid() {
             table.row.add(row).draw(false);
             counter++;
         }
-        debugger
+        // debugger
         if(current_finyear != undefined){
             fillTable2Grid(current_finyear.FYID);
         }

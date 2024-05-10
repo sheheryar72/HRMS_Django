@@ -74,7 +74,7 @@ document.getElementById("W_Department").addEventListener("click", async function
         // console.log("W_Department data: ", data);
 
         document.getElementById("InserRowHeadID").innerHTML =
-            `<th style="width: 12%;">Emp ID</th><th style="width: 40%;">Emp Name</th><th style="width: 15%;">HR Code</th><th style="width: 10%;">Grade</th>`;
+            `<th style="width: 10%;">S.No</th><th style="width: 12%;">Emp ID</th><th style="width: 40%;">Emp Name</th><th style="width: 15%;">HR Code</th><th style="width: 10%;">Grade</th>`;
 
         data[1]["Element"].forEach(element => {
             // element_col_ID = `${element.Element_Name}_${element.Element_ID}`
@@ -104,13 +104,15 @@ document.getElementById("W_Department").addEventListener("click", async function
         let maxRows = data[1]["Element"].reduce((max, element) => Math.max(max, element.rows), 0);
 
         console.log("new data loop")
-
+        let grid_counter = 1;
         data[0]["Employee"].forEach(emp => {
             let element_columns = '<tr>';
+            element_columns += `<td><input type="number" class="form-control form-control-sm" value="${grid_counter}"  readonly /></td>`;
             element_columns += `<td><input type="number" class="form-control form-control-sm" value="${emp.Emp_ID}" id="Employee"  readonly /></td>`;
             element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.Emp_Name}" readonly /></td>`;
             element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.HR_Emp_ID}"  readonly /></td>`;
             element_columns += `<td><input type="text" class="form-control form-control-sm" value="${emp.Grade_Descr}" readonly /></td>`;
+            grid_counter += 1;
 
             data[1]["Element"].forEach((element, index) => {
                 element_name_col = `${element.Element_Name}_${element.Element_ID}`;
@@ -159,12 +161,10 @@ document.getElementById("W_Department").addEventListener("click", async function
         //     document.getElementById("InserRowID").innerHTML += element_columns;
         // });
 
-
     } catch (error) {
         console.error('Error fetching Grade:', error);
         return null;
     }
-
 
 });
 
@@ -281,6 +281,9 @@ async function getAllDeptElemet() {
 };
 
 $(document).ready(function () {
+
+    console.log('scrf token: ', getCookie('csrftoken'))
+
     initializeDataTable();
     current_w_dept_id = localStorage.getItem("current_w_dept_id");
     current_w_dept_name = localStorage.getItem("current_w_dept_name");
@@ -356,6 +359,7 @@ async function Insert_Monthly_PE() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
         },
         body: JSON.stringify({ 'table_data': tableData, 'W_Department': W_Department }),
     })
@@ -379,10 +383,10 @@ function GetTableData() {
             if (cellValue == '') {
                 cellValue = 0;
             }
-            if (index == 0) {
+            if (index == 1) {
                 columnName = "Employee"
             }
-            if (index != 1 && index != 2 && index != 3) {
+            if (index != 0 && index != 4 && index != 2 && index != 3) {
                 if (columnName !== "") {
                     rowData['Period'] = Number(current_period_id);
                     rowData[columnName] = Number(cellValue);
@@ -401,7 +405,8 @@ document.getElementById("exportData").addEventListener('click', async function (
 
 async function getDataFromAPI() {
     try {
-        const W_deptID = 2;
+        current_dept = document.getElementById("Current_Department").value;
+        const W_deptID = current_dept;
         const response = await fetch(`${BASE_URL}/monthly_all_ded/export_template/${W_deptID}`);
         if (!response.ok) {
             throw new Error('Some Error while Exporting Template');
@@ -417,7 +422,7 @@ async function getDataFromAPI() {
 async function getAllDepartmentFromAPI() {
     try {
         const W_deptID = 2;
-        const response = await fetch(`${BASE_URL}/department/api/getall`);
+        const response = await fetch(`${BASE_URL}/department/getall`);
         if (!response.ok) {
             throw new Error('Some Error while Exporting Template');
         }
@@ -450,7 +455,7 @@ async function exportToExcel() {
         //     'Device_Reimbursment_11', 'Communication_12', 'Bonus_13', 'Other_Allowance_14', 'Loan_15', 'Advance_Salary_16',
         //     'EOBI_17', 'Income_Tax_18', 'Absent_Days_19', 'Device_Deduction_20', 'Over_Utilizaton_Mobile_21', 'Vehicle_or_Fuel_Deduction_22',
         //     'Pandamic_Deduction_23', 'Late_Days_24', 'Other_Deduction_25', 'Mobile_Installment_26', 'Food_Panda_27'];
-        const columns = ['Emp_ID', 'Emp_Name']
+        const columns = ['Emp_ID', 'Emp_Name', 'Department', 'Designation']
         data.Element.map(obj => {
             let element_col_name = `${obj.W_All_Ded_Element_ID__Element_Name}_${obj.W_All_Ded_Element_ID__Element_ID}`
             let element_col_name2 = element_col_name.replace(/ /g, "_");
@@ -462,9 +467,9 @@ async function exportToExcel() {
         // Extract values for each row
         const rows = data.Employee.map(obj => {
             // Fill the first two columns with Emp_ID and Emp_Name values
-            const row = [obj['Emp_ID'], obj['Emp_Name']];
+            const row = [obj['Emp_ID'], obj['Emp_Name'], obj['Dept_ID__Dept_Descr'], obj['Dsg_ID__DSG_Descr']];
             // Fill the rest of the columns with empty strings
-            for (let i = 2; i < 27; i++) {
+            for (let i = 4; i < 27; i++) {
                 row.push('');
             }
             return row;
@@ -504,6 +509,7 @@ async function Insert_Monthly_PE_By_Excel(file) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify({ 'table_data': tableData, 'W_Department': W_Department, 'Period': current_period_id }),
         })

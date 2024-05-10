@@ -1,4 +1,4 @@
-const BASE_URL = '/employee/api/';
+const BASE_URL = window.location.origin;
 var table;
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';
@@ -86,7 +86,7 @@ function handleCancelClick() {
 
 async function getAllEmployee() {
     try {
-        const response = await fetch(`${BASE_URL}getall`);
+        const response = await fetch(`${BASE_URL}/employee/getall`);
         if (!response.ok) {
             throw new Error('Failed to fetch departments');
         }
@@ -238,8 +238,12 @@ function handleInsertClick() {
 
 async function createEmployee(formData) {
     try {
-        const response = await fetch(`${BASE_URL}add`, {
+        const response = await fetch(`${BASE_URL}/employee/add`, {
             method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
             body: formData,
         });
         if (!response.ok) {
@@ -255,8 +259,12 @@ async function createEmployee(formData) {
 
 async function updateDesignation(id, formData) {
     try {
-        const response = await fetch(`${BASE_URL}update/${id}`, {
+        const response = await fetch(`${BASE_URL}/employee/update/${id}`, {
             method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
             body: formData,
         });
         if (!response.ok) {
@@ -275,8 +283,12 @@ async function updateDesignation(id, formData) {
 
 async function deleteDesignation(id) {
     try {
-        const response = await fetch(`${BASE_URL}delete/${id}`, {
+        const response = await fetch(`${BASE_URL}/employee/delete/${id}`, {
             method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
         });
         if (!response.ok) {
             throw new Error('Failed to delete department');
@@ -442,7 +454,7 @@ async function getAllDataFromDB(url) {
 }
 
 function fillFormDataFromDB(id) {
-    getAllDataFromDB(`employee/api/getbyid/${id}`).then((data => {
+    getAllDataFromDB(`employee/getbyid/${id}`).then((data => {
         console.log('emp data: ', data)
         document.getElementById("Emp_ID").value = data.Emp_ID
         document.getElementById("Emp_Name").value = data.Emp_Name
@@ -500,8 +512,8 @@ $(document).ready(function () {
     document.getElementById(INSERT_BUTTON_ID).addEventListener('click', handleInsertClick);
     document.getElementById(UPDATE_BUTTON_ID).addEventListener('click', handleUpdateClick);
     document.getElementById(CANCEL_BUTTON_ID).addEventListener('click', handleCancelClick);
-    fillDropDown('department/api/getall', 'Joining_Dept_ID', 'Dept_ID', 'Dept_Descr');
-    fillDropDown('designation/api/getall', 'Joining_Dsg_ID', 'DSG_ID', 'DSG_Descr');
-    fillDropDown('city/api/getall', 'CT_ID', 'CT_ID', 'CT_Descr');
+    fillDropDown('department/getall', 'Joining_Dept_ID', 'Dept_ID', 'Dept_Descr');
+    fillDropDown('designation/getall', 'Joining_Dsg_ID', 'DSG_ID', 'DSG_Descr');
+    fillDropDown('city/getall', 'CT_ID', 'CT_ID', 'CT_Descr');
     fillTableGrid()
 });

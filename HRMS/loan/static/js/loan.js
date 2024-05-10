@@ -1,4 +1,4 @@
-const BASE_URL = '/loan/api/';
+const BASE_URL = window.location.origin;
 var table;
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';
@@ -104,7 +104,7 @@ async function getAll(url) {
 }
 
 function fillEmployeeDropDown() {
-    getAll(`/employee/api/getall`).then((data) => {
+    getAll(`/employee/getall`).then((data) => {
         let temp = '';
         console.log('fillEmployeeDropDown: ', data)
         data.forEach(element => {
@@ -115,7 +115,7 @@ function fillEmployeeDropDown() {
 }
 
 function fillFinYearDropDown() {
-    getAll(`/payroll_period/api/getall`).then((data) => {
+    getAll(`/payroll_period/getall`).then((data) => {
         let temp = '';
         console.log('Fill payroll period dropdown: ', data)
         data.forEach(element => {
@@ -127,7 +127,7 @@ function fillFinYearDropDown() {
 
 async function getLeaveById(id) {
     try {
-        const response = await fetch(`${BASE_URL}getbyid/${id}`);
+        const response = await fetch(`${BASE_URL}/loan/getbyid/${id}`);
         if (!response.ok) {
             throw new Error('Failed to fetch Leave');
         }
@@ -141,7 +141,7 @@ async function getLeaveById(id) {
 
 async function createLeave(data) {
     try {
-        const response = await fetch(`${BASE_URL}add`, {
+        const response = await fetch(`${BASE_URL}/loan/add`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -164,7 +164,7 @@ async function createLeave(data) {
 
 async function updateLeave(id, data) {
     try {
-        const response = await fetch(`${BASE_URL}update/${id}`, {
+        const response = await fetch(`${BASE_URL}/loan/update/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -187,7 +187,7 @@ async function updateLeave(id, data) {
 
 async function deleteLeave(id) {
     try {
-        const response = await fetch(`${BASE_URL}delete/${id}`, {
+        const response = await fetch(`${BASE_URL}/loan/delete/${id}`, {
             method: 'DELETE',
         });
         if (!response.ok) {
@@ -201,7 +201,7 @@ async function deleteLeave(id) {
 }
 
 function fillTableGrid() {
-    getAll(`${BASE_URL}getall`).then((data) => {
+    getAll(`${BASE_URL}/loan/getall`).then((data) => {
         console.log("response: ", data);
         var counter = 1;
         table.clear().draw();

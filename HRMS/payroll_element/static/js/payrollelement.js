@@ -1,4 +1,4 @@
-const BASE_URL = 'http://127.0.0.1:8000/payroll_element/api/';
+const BASE_URL = window.location.origin;
 var table;
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';
@@ -71,7 +71,7 @@ function handleCancelClick() {
 
 async function getAllPayrollElement() {
     try {
-        const response = await fetch(`${BASE_URL}getall`);
+        const response = await fetch(`${BASE_URL}/payroll_element/getall`);
         if (!response.ok) {
             throw new Error('Failed to fetch Payroll Element');
         }
@@ -85,7 +85,7 @@ async function getAllPayrollElement() {
 
 async function getPayrollElementById(id) {
     try {
-        const response = await fetch(`${BASE_URL}/getbyid/${id}`);
+        const response = await fetch(`${BASE_URL}/payroll_element/getbyid/${id}`);
         if (!response.ok) {
             throw new Error('Failed to fetch Payroll Element');
         }
@@ -100,10 +100,11 @@ async function getPayrollElementById(id) {
 async function createPayrollElement(formData) {
     try {
         console.log('formData: ', formData)
-        const response = await fetch(`${BASE_URL}add/`, {
+        const response = await fetch(`${BASE_URL}/payroll_element/add/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify(formData),
         });
@@ -124,10 +125,11 @@ async function createPayrollElement(formData) {
 async function updatePayrollElement(id, formData) {
     try {
         console.log('formData: ', formData)
-        const response = await fetch(`${BASE_URL}update/${id}`, {
+        const response = await fetch(`${BASE_URL}/payroll_element/update/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify(formData),
         });
@@ -147,8 +149,12 @@ async function updatePayrollElement(id, formData) {
 
 async function deletePayrollElement(id) {
     try {
-        const response = await fetch(`${BASE_URL}delete/${id}`, {
+        const response = await fetch(`${BASE_URL}/payroll_element/delete/${id}`, {
             method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
         });
         if (!response.ok) {
             throw new Error('Failed to delete Payroll Element');

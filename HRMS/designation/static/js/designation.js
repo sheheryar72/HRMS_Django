@@ -1,4 +1,4 @@
-const BASE_URL = '/designation/api/';
+const BASE_URL = window.location.origin;
 var table;
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';
@@ -74,7 +74,7 @@ function handleCancelClick() {
 
 async function getAllDesignations() {
     try {
-        const response = await fetch(`${BASE_URL}getall`);
+        const response = await fetch(`${BASE_URL}/designation/getall`);
         if (!response.ok) {
             throw new Error('Failed to fetch designations');
         }
@@ -88,7 +88,7 @@ async function getAllDesignations() {
 
 async function getDesignationById(id) {
     try {
-        const response = await fetch(`${BASE_URL}${id}/`);
+        const response = await fetch(`${BASE_URL}/${id}/`);
         if (!response.ok) {
             throw new Error('Failed to fetch designation');
         }
@@ -102,10 +102,11 @@ async function getDesignationById(id) {
 
 async function createDesignation(designationData) {
     try {
-        const response = await fetch(`${BASE_URL}add`, {
+        const response = await fetch(`${BASE_URL}/designation/add`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify(designationData),
         });
@@ -125,10 +126,11 @@ async function createDesignation(designationData) {
 
 async function updateDesignation(id, designationData) {
     try {
-        const response = await fetch(`${BASE_URL}update/${id}`, {
+        const response = await fetch(`${BASE_URL}/designation/update/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify(designationData),
         });
@@ -148,8 +150,12 @@ async function updateDesignation(id, designationData) {
 
 async function deleteDesignation(id) {
     try {
-        const response = await fetch(`${BASE_URL}delete/${id}`, {
+        const response = await fetch(`${BASE_URL}/designation/delete/${id}`, {
             method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
         });
         if (!response.ok) {
             throw new Error('Failed to delete designation');

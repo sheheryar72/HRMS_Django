@@ -1,62 +1,91 @@
 from django.shortcuts import render
-from .models import *
-from .serializers import *
+from django.db import connection
 from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
+from .models import HR_Region
+from .serializers import HR_Region_Serializer
 
 def region_view(request):
+    print('region called')
     return render(request, 'region.html')
 
-def getall(request):
+@api_view(['GET'])
+def get_all_regions(request):
     try:
         regions = HR_Region.objects.all()
-        regions_serializer = HR_Region_Serializer(regions, many=True)
-        return Response(regions_serializer.data, status=200)
+        print('regions: ', regions)
+        print('regions uguuggug(): ', regions.count())
+
+        serializer = HR_Region_Serializer(regions, many=True)
+        return Response(serializer.data)
+
     except Exception as e:
         return Response({'error': str(e)}, status=500)
 
-def getby_ID(request, id):
+@api_view(['GET'])
+def get_region_by_id(request, region_id):
     try:
-        region = HR_Region.objects.get(pk=id)
-        region_serializer = HR_Region_Serializer(region)
-        return Response(region_serializer.data, status=200)
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM HR_Region WHERE CT_ID = %s", [region_id])
+            region = cursor.fetchone()
+
+        if region:
+            region_object = HR_Region(CT_ID=region[0], CT_Descr=region[1])
+            serializer = HR_Region_Serializer(region_object)
+            return Response(serializer.data)
+
+        return Response({'error': 'region not found'}, status=404)
+
     except Exception as e:
         return Response({'error': str(e)}, status=500)
 
-def add(request):
+@api_view(['POST'])
+def insert_region(request):
     try:
-        data = request.data.get('region_data', [])
-        region_serializer = HR_Region_Serializer(data=data)
-        if region_serializer.is_valid():
-            region_serializer.save()
-            return Response(region_serializer.data, status=201)
-        else:
-            return Response({'error': str(region_serializer.errors)}, status=400)
-    except Exception as e:
-        return Response({'error': str(e)}, status=500)
+        serializer = HR_Region_Serializer(data=request.data)
+        if serializer.is_valid():
+            new_region = serializer.save()
+            serialized_data = HR_Region_Serializer(new_region).data
+            return Response(serialized_data, status=status.HTTP_201_CREATED)
 
-def update(request, id):
+        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['PUT'])
+def update_region(request, region_id):
     try:
-        data = request.data.get('request_data', [])
-        region_data = HR_Region.objects.get(pk=id)
-        if region_data is None:
-            return Response({'error': 'Region not found'}, status=404)
-        region_serializer = HR_Region_Serializer(region_data, data=data)
-        if region_serializer.is_valid():
-            region_serializer.save()
-            return Response(region_serializer.data, status=200)
-        return Response({'error': str(e)}, status=400)
-    except Exception as e:
-        return Response({'error': str(e)}, status=500)
+        region = HR_Region.objects.get(pk=region_id)
+    except HR_Region.DoesNotExist:
+        return Response({'error': 'region not found'}, status=status.HTTP_404_NOT_FOUND)
 
-def delete(request, id):
     try:
-        region_data = HR_Region.objects.get(pk=id)
-        if region_data is None:
-            return Response({'error': 'Region not found'}, status=404)
-        HR_Region.objects.filter(pk=id).delete()    
-        return Response({'error'})
+        serializer = HR_Region_Serializer(region, data=request.data, partial=True)
+        if serializer.is_valid():
+            updated_region = serializer.save()
+            serialized_data = HR_Region_Serializer(updated_region).data
+            return Response(serialized_data, status=status.HTTP_200_OK)
+
+        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
     except Exception as e:
-        return Response({'error': str(e)}, status=500)
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+@api_view(['DELETE'])
+def delete_region(request, region_id):
+    try:
+        region = HR_Region.objects.get(pk=region_id)
+    except HR_Region.DoesNotExist:
+        return Response({'error': 'region not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    try:
+        region.delete()
+        return Response({'message': 'region deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

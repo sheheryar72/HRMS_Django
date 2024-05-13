@@ -121,6 +121,7 @@ async function updateCity(id, departmentData) {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify(departmentData),
         });

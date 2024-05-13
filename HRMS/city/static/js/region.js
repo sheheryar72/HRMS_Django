@@ -29,10 +29,10 @@ function initializeDataTable() {
 // Handle click on table row
 function handleTableRowClick() {
     const rowData = table.row($(this).closest('tr')).data();
-    const CT_ID = rowData[1];
-    const CT_Descr = rowData[2];
-    $('#CT_ID').val(CT_ID);
-    $('#CT_Descr').val(CT_Descr);
+    const REG_ID = rowData[1];
+    const REG_Descr = rowData[2];
+    $('#REG_ID').val(REG_ID);
+    $('#REG_Descr').val(REG_Descr);
     document.getElementById("insertFormData").classList.add("d-none");
     document.getElementById("updateFormData").classList.remove("d-none");
 }
@@ -41,10 +41,10 @@ function handleTableRowClick() {
 function handleDeleteButtonClick() {
     //alert()
     const rowData = table.row($(this).closest('tr')).data();
-    const CT_ID = rowData[1];
-    console.log('CT_ID: ', CT_ID)
+    const REG_ID = rowData[1];
+    console.log('REG_ID: ', REG_ID)
     if (confirm("Are you sure you want to delete this region?")) {
-        deleteregion(CT_ID).then(success => {
+        deleteregion(REG_ID).then(success => {
             if (success) {
                 displaySuccessMessage('region deleted successfully!');
                 fillTableGrid(); // Reload table after deletion
@@ -56,9 +56,9 @@ function handleDeleteButtonClick() {
 }
 
 function handleCancelClick() {
-    // document.getElementById("CT_ID").readOnly = false;
-    document.getElementById("CT_ID").value = '';
-    document.getElementById("CT_Descr").value = '';
+    // document.getElementById("REG_ID").readOnly = false;
+    document.getElementById("REG_ID").value = '';
+    document.getElementById("REG_Descr").value = '';
     document.getElementById("updateFormData").classList.add("d-none");
     document.getElementById("insertFormData").classList.remove("d-none");
 }
@@ -121,6 +121,7 @@ async function updateregion(id, departmentData) {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify(departmentData),
         });
@@ -161,7 +162,7 @@ function fillTableGrid() {
        
         for (var i = 0; i < data.length; i++) {
             var actionButton = createActionButton(); // Create action button element
-            var row = [counter, data[i].CT_ID, data[i].CT_Descr, actionButton.outerHTML];
+            var row = [counter, data[i].REG_ID, data[i].REG_Descr, actionButton.outerHTML];
             table.row.add(row).draw(false);
             counter++;
         }
@@ -208,26 +209,26 @@ function createActionButton() {
 }
 
 function handleInsertClick(){
-    const CT_ID = document.getElementById("CT_ID").value;
-    const CT_Descr = document.getElementById("CT_Descr").value;
+    const REG_ID = document.getElementById("REG_ID").value;
+    const REG_Descr = document.getElementById("REG_Descr").value;
 
     const departmentData = {
-        CT_ID: CT_ID,
-        CT_Descr: CT_Descr
+        REG_ID: REG_ID,
+        REG_Descr: REG_Descr
     }
     createregion(departmentData);
     
 }
 
 function handleUpdateClick(){
-    const CT_ID = document.getElementById("CT_ID").value;
-    const CT_Descr = document.getElementById("CT_Descr").value;
+    const REG_ID = document.getElementById("REG_ID").value;
+    const REG_Descr = document.getElementById("REG_Descr").value;
 
     const departmentData = {
-        CT_ID: CT_ID,
-        CT_Descr: CT_Descr
+        REG_ID: REG_ID,
+        REG_Descr: REG_Descr
     }
-    updateregion(CT_ID, departmentData);
+    updateregion(REG_ID, departmentData);
     fillTableGrid();
 }
 

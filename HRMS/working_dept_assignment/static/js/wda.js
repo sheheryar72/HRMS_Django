@@ -454,6 +454,7 @@ $(document).ready(function () {
 
 window.onload = function () {
     $(document).ready(function () {
+        // alert()
         getAllDepartment();
         getAllElement();
         //GetAllWDAByID(2);

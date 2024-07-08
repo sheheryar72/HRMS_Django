@@ -389,7 +389,7 @@ function GetAllWDAByID(W_Dept_ID) {
                 }
             },
             error: function (error) {
-                document.getElementById("errormsgid").innerHTML = error;
+                // document.getElementById("errormsgid").innerHTML = error;
                 $("#myModal").modal('show');
                 console.log("Error: ", error);
             }
@@ -457,7 +457,7 @@ window.onload = function () {
         // alert()
         getAllDepartment();
         getAllElement();
-        //GetAllWDAByID(2);
+        //GetAllWDAByID(2);-
     });
 };
 

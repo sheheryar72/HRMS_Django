@@ -34,8 +34,8 @@ from django.contrib.auth.models import User
 from employee.models import HR_Employees
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    Emp_ID = models.ForeignKey(HR_Employees, on_delete=models.CASCADE)
+    user_id = models.OneToOneField(User, on_delete=models.CASCADE)
+    Emp_ID_id = models.ForeignKey(HR_Employees, to_field='Emp_ID', db_column='Emp_ID_id', on_delete=models.CASCADE)
 
     class Meta:
         managed = True

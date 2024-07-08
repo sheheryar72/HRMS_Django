@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.db import connection
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from .models import UserLogin, UserProfile
 from django.http import JsonResponse
@@ -71,32 +72,44 @@ def authenticate_user(request):
 
 @csrf_exempt
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def authenticate_user2(request):
     try:
         username = request.data.get('username')
         password = request.data.get('password')
 
+        print('authenticate_user2')
+        print('authenticate_user2 request: ', request.data)
+
         # Check if both username and password are provided
         if not username or not password:
             return JsonResponse({'error': 'Both username and password are required.'}, status=400)
+    
+        print('username: ', username)
+        print('password: ', password)
 
         # Authenticate user
         user = authenticate(username=username, password=password)
+
+        print('user: ', user)
+
         # login(request, user)
         if user is not None:
             auth_login(request, user)  # This creates a session for the user
 
-
         if user is not None:
             # Get UserProfile associated with the authenticated user
-            user_profile = UserProfile.objects.filter(user__username=username).select_related("Emp_ID").first()
+            user_profile = UserProfile.objects.filter(user_id__username=username).select_related("Emp_ID_id").first()
+            
+            print('user_profile: ', user_profile)
+
             data = {
                 'Profile_ID': user_profile.id,
-                'Email': user_profile.Emp_ID.Email,
-                'Dept_ID': user_profile.Emp_ID.Joining_Dept_ID.Dept_ID,
-                'Dept_Descr': user_profile.Emp_ID.Joining_Dept_ID.Dept_Descr,
-                'Emp_ID': user_profile.Emp_ID.Emp_ID,
-                'Emp_Name': user_profile.Emp_ID.Emp_Name,
+                'Email': user_profile.Emp_ID_id.Email,
+                'Dept_ID': user_profile.Emp_ID_id.Joining_Dept_ID.Dept_ID,
+                'Dept_Descr': user_profile.Emp_ID_id.Joining_Dept_ID.Dept_Descr,
+                'Emp_ID': user_profile.Emp_ID_id.Emp_ID,
+                'Emp_Name': user_profile.Emp_ID_id.Emp_Name,
             }
             print('user_profile: ', data)
 

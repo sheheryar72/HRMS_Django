@@ -515,5 +515,7 @@ $(document).ready(function () {
     fillDropDown('department/getall', 'Joining_Dept_ID', 'Dept_ID', 'Dept_Descr');
     fillDropDown('designation/getall', 'Joining_Dsg_ID', 'DSG_ID', 'DSG_Descr');
     fillDropDown('city/getall', 'CT_ID', 'CT_ID', 'CT_Descr');
+    fillDropDown('grade/getall', 'Grade_ID', 'Grade_ID', 'Grade_Descr');
+    fillDropDown('region/getall', 'REG_ID', 'REG_ID', 'REG_Descr');
     fillTableGrid()
 });

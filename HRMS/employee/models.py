@@ -6,9 +6,10 @@
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
-from city.models import HR_City
+from city.models import HR_City, HR_Region
 from department.models import HR_Department
 from designation.models import HR_Designation
+from grade.models import HR_Grade 
 from datetime import date
 from datetime import datetime
 
@@ -54,6 +55,9 @@ class HR_Employees(models.Model):
     profileimage = models.ImageField(upload_to='profile/', default='profile/default.jpg')
     # mod_date = models.DateField(default=date.today)
     
+    Grade_ID = models.ForeignKey(HR_Grade, to_field='Grade_ID', db_column='Grade_ID', blank=True, null=True, on_delete=models.SET_NULL) 
+    REG_ID = models.ForeignKey(HR_Region, to_field='REG_ID', db_column='REG_ID', blank=True, null=True, on_delete=models.SET_NULL) 
+
     # New Fields
     Address = models.CharField(max_length=300, null=True, blank=True)
     Email = models.CharField(max_length=50, null=True, blank=True)

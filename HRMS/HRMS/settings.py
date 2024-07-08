@@ -150,7 +150,7 @@ DATABASES = {
     # 'erp_admin': {
     #     'ENGINE': 'mssql',
     #     'NAME': 'ERP_ADMIN',
-    #     'USER': 'tech',
+    #     'USER': 'tech',``
     #     'PASSWORD': 'tech',
     #     'HOST': '192.168.20.166',
     #     'PORT': '1433',  # Leave it as an empty string for the default port

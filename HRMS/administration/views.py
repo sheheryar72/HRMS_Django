@@ -11,7 +11,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from hr_login.models import *
 
-
 def view_userprivileges(request):
     return render(request, template_name='userprivileges.html')
 
@@ -102,13 +101,23 @@ def add_userprivileges2(request):
 
         print('add_userprivileges2 request: ', request.data)
 
-        new_user = User.objects.create_user(
-            username=User_Name,
-            password=User_Password,
-            is_active=User_Status
-        )
+        new_user = User.objects.filter(username=User_Name).first()
+        new_emp = HR_Employees.objects.filter(Emp_ID=Emp_ID).first()
 
-        newuser_profle = UserProfile.objects.create(user=new_user, Emp_ID=Emp_ID)
+        print('new_emp: ', new_emp)
+
+        if new_user is None:
+            new_user = User.objects.create_user(
+                username=User_Name,
+                password=User_Password,
+                is_active=User_Status
+            )
+
+        print('add_userprivileges2 new_user: ', new_user)
+
+        newuser_profle = UserProfile.objects.create(user_id=new_user, Emp_ID_id=new_emp)
+
+        print('add_userprivileges2 newuser_profle: ', newuser_profle)
 
         for obj in request.data.get('tableFormIDs', []):
             formID = obj.get('FormID')
@@ -182,9 +191,6 @@ def add_userprivileges(request):
         return Response({'error': f"Missing key in request data: {e}"}, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
 
 # @api_view(['POST'])
 # def add_userprivileges(request):

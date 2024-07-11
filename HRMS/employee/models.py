@@ -26,52 +26,56 @@ class TimeStampedModel(models.Model):
         abstract = True
 
 class HR_Employees(models.Model):
-    Emp_ID = models.AutoField(primary_key=True, db_column='Emp_ID')   
-    # Emp_ID = models.IntegerField(primary_key=True, db_column='Emp_ID')   
-    HR_Emp_ID = models.IntegerField(db_column='HR_Emp_ID')  
-    Emp_Name = models.CharField(db_column='Emp_Name', max_length=150, blank=True, null=True)  
-    Father_Name = models.CharField(db_column='Father_Name', max_length=150, blank=True, null=True)  
-    DateOfBirth = models.DateTimeField(db_column='DateOfBirth', blank=True, null=True)  
-    Gender = models.CharField(db_column='Gender', max_length=10, blank=True, null=True)  
-    Religion = models.CharField(db_column='Religion', max_length=15, blank=True, null=True)  
-    # CT_ID = models.IntegerField(db_column='CT_ID', blank=True, null=True)  
-    CT_ID = models.ForeignKey(HR_City, to_field='CT_ID', db_column='CT_ID', blank=True, null=True, on_delete=models.SET_NULL) 
-    # CT_ID = models.ForeignKey(HR_City, db_column='CT_ID', blank=True, null=True, on_delete=models.CASCADE)
-    CNIC_No = models.CharField(db_column='CNIC_No', max_length=15, blank=True, null=True)  
-    Marital_Status = models.CharField(db_column='Marital_Status', max_length=10, blank=True, null=True)  
-    Personal_Cell_No = models.CharField(db_column='Personal_Cell_No', max_length=12, blank=True, null=True)  
-    Official_Cell_No = models.CharField(db_column='Official_Cell_No', max_length=12, blank=True, null=True)  
-    Emergency_Cell_No = models.CharField(db_column='Emergency_Cell_No', max_length=12, blank=True, null=True)  
-    Joining_Date = models.DateTimeField(db_column='Joining_Date', blank=True, null=True)  
-    # Joining_Dsg_ID = models.IntegerField(db_column='Joining_Dsg_ID', blank=True, null=True)  
-    Joining_Dsg_ID = models.ForeignKey(HR_Designation, to_field='DSG_ID', db_column='Joining_Dsg_ID', blank=True, null=True, on_delete=models.SET_NULL) 
-    # Joining_Dept_ID = models.IntegerField(db_column='Joining_Dept_ID', blank=True, null=True)  
-    Joining_Dept_ID = models.ForeignKey(HR_Department, to_field='Dept_ID', db_column='Joining_Dept_ID', blank=True, null=True, on_delete=models.SET_NULL) 
-    Co_ID = models.IntegerField(db_column='Co_ID', blank=True, null=True)  
-    Emp_Status = models.BooleanField(db_column='Emp_Status', blank=True, null=True)  
-    Emp_ProfileImage = models.BinaryField(db_column='Emp_ProfileImage', blank=True, null=True)  
-    Emp_Documents_File = models.BinaryField(db_column='Emp_Documents_File', blank=True, null=True)  
-    # profileimage = models.ImageField(upload_to='profile/', default='employee/default.jpg')
-    profileimage = models.ImageField(upload_to='profile/', default='profile/default.jpg')
-    # mod_date = models.DateField(default=date.today)
-    
-    Grade_ID = models.ForeignKey(HR_Grade, to_field='Grade_ID', db_column='Grade_ID', blank=True, null=True, on_delete=models.SET_NULL) 
-    REG_ID = models.ForeignKey(HR_Region, to_field='REG_ID', db_column='REG_ID', blank=True, null=True, on_delete=models.SET_NULL) 
+    Emp_ID = models.AutoField(primary_key=True)   
+    HR_Emp_ID = models.IntegerField()  
+    Emp_Name = models.CharField(max_length=150, null=True, blank=True)  
+    Father_Name = models.CharField(max_length=150, blank=True, null=True)  
+    DateOfBirth = models.DateTimeField(blank=True, null=True)   
+    Gender = models.CharField(max_length=10, blank=True, null=True)  
+    Religion = models.CharField(max_length=15, blank=True, null=True) 
+    # Report_To = models.ForeignKey('self', to_field='Emp_ID', db_column='Report_To', blank=True, null=True, on_delete=models.SET_NULL) 
 
-    # New Fields
+    CT_ID = models.ForeignKey(HR_City, to_field='CT_ID', db_column='CT_ID', blank=True, null=True, on_delete=models.SET_NULL) 
+    CNIC_No = models.CharField(max_length=20, blank=True, null=True)  
+    Marital_Status = models.CharField(max_length=10, blank=True, null=True)  
+    Personal_Cell_No = models.CharField(max_length=20, blank=True, null=True)  
+    Official_Cell_No = models.CharField(max_length=20, blank=True, null=True)  
+    Emergency_Cell_No = models.CharField(max_length=20, blank=True, null=True)  
+    Joining_Date = models.DateTimeField(blank=True, null=True)  
+    Joining_Dsg_ID = models.ForeignKey(HR_Designation, to_field='DSG_ID', db_column='Joining_Dsg_ID', blank=True, null=True, on_delete=models.SET_NULL) 
+    Joining_Dept_ID = models.ForeignKey(HR_Department, to_field='Dept_ID', db_column='Joining_Dept_ID', blank=True, null=True, on_delete=models.SET_NULL) 
+    Co_ID = models.IntegerField(blank=True, null=True)  
+    # Emp_Status = models.BooleanField(blank=True, null=True)  
+    EMP_STATUS_CHOICES = (
+        (True, 'Active'),
+        (False, 'Inactive'),
+    )
+    Emp_Status = models.BooleanField(choices=EMP_STATUS_CHOICES, default=True)
+
+
+    ProfileImage = models.ImageField(upload_to='profile/', default='profile/default.jpg', null=True, blank=True)
+
     Address = models.CharField(max_length=300, null=True, blank=True)
     Email = models.CharField(max_length=50, null=True, blank=True)
     CNIC_Issue_Date = models.DateField(null=True, blank=True)
     CNIC_Exp_Date = models.DateField(null=True, blank=True)
     Confirmation_Date = models.DateField(null=True, blank=True)
 
+    Grade_ID = models.ForeignKey(HR_Grade, to_field='Grade_ID', db_column='Grade_ID', blank=True, null=True, on_delete=models.SET_NULL) 
+    REG_ID = models.ForeignKey(HR_Region, to_field='REG_ID', db_column='REG_ID', blank=True, null=True, on_delete=models.SET_NULL) 
+    TEL_EXT = models.CharField(max_length=10, null=True, blank=True)
+    Last_Working_Date = models.DateTimeField(blank=True, null=True)  
+    Report_To = models.IntegerField(null=True, blank=True)
+
+
     class Meta:
         managed = False
         db_table = 'HR_Employees'
+        ordering = ['Emp_Name']  
     
     def __str__(self):
-        return self.Emp_Name
-    
+        return f'{self.Emp_Name}' if self.Emp_Name else str(self.Emp_ID)
+
 class HR_Employees2(TimeStampedModel):
     Emp_Name = models.CharField(db_column='Emp_Name', max_length=150, blank=True, null=True)  
     Father_Name = models.CharField(db_column='Father_Name', max_length=150, blank=True, null=True)  

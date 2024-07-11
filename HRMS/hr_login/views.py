@@ -3,7 +3,7 @@ from django.db import connection
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from .models import UserLogin, UserProfile
+from .models import UserLogin, User_Profile
 from django.http import JsonResponse
 from django.http import HttpResponse
 from rest_framework import status
@@ -84,7 +84,7 @@ def authenticate_user2(request):
         # Check if both username and password are provided
         if not username or not password:
             return JsonResponse({'error': 'Both username and password are required.'}, status=400)
-    
+
         print('username: ', username)
         print('password: ', password)
 
@@ -99,7 +99,7 @@ def authenticate_user2(request):
 
         if user is not None:
             # Get UserProfile associated with the authenticated user
-            user_profile = UserProfile.objects.filter(user_id__username=username).select_related("Emp_ID_id").first()
+            user_profile = User_Profile.objects.filter(user_id__username=username).first()
             
             print('user_profile: ', user_profile)
 

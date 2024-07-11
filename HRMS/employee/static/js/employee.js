@@ -259,7 +259,7 @@ async function createEmployee(formData) {
 
 async function updateDesignation(id, formData) {
     try {
-        const response = await fetch(`${BASE_URL}/employee/update/${id}`, {
+        const response = await fetch(`${BASE_URL}/employee/`update`/${id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -268,7 +268,7 @@ async function updateDesignation(id, formData) {
             body: formData,
         });
         if (!response.ok) {
-            throw new Error('Failed to update department');
+            throw new Error('Failed to update employee');
         }
         //const data = await response.json();
         displaySuccessMessage('Designation updated successfully!');

@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework import status
 
 def dashboard_view(request):
-    # print('dashboard called')
+    # print('dashboard called')e
     return render(request, 'dashboard.html')
 
 @api_view(['GET'])

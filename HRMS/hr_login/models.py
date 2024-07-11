@@ -33,17 +33,20 @@ class UserLogin(models.Model):
 from django.contrib.auth.models import User
 from employee.models import HR_Employees
 
-class UserProfile(models.Model):
-    user_id = models.OneToOneField(User, on_delete=models.CASCADE)
+class User_Profile(models.Model):
     Emp_ID_id = models.ForeignKey(HR_Employees, to_field='Emp_ID', db_column='Emp_ID_id', on_delete=models.CASCADE)
+    user_id = models.OneToOneField(User, to_field='id', db_column='user_id', on_delete=models.CASCADE)
+    Temp_Password = models.CharField(max_length=100, blank=True, null=True)
+    Online = models.BooleanField(default=False)
 
     class Meta:
-        managed = True
+        managed = False
         db_table = 'User_Profile'
-
+        #ordering = ['Emp_ID_id__Emp_Name']  # Sort by Emp_Name of HR_Employees
+    
     def __str__(self):
-        return self.user.username
-
+        return str(self.user_id)
+    
 # class User_Profile(models.Model):
 #     user = models.OneToOneField(User, on_delete=models.CASCADE)
 #     # User_Emp_Code = models.CharField(max_length=10, blank=True, null=True)

@@ -227,7 +227,7 @@ function handleInsertClick(){
     const Cal_Type = document.getElementById("Cal_Type").value;
 
     const formData = {
-        Element_ID: Element_ID,
+        Element_ID: 0,
         Element_Name: Element_Name, 
         Element_Type: Element_Type,
         Element_Category: Element_Category,

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.db import connection
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from .models import HR_Employees
 from .serializers import HR_Employees_Serializer
@@ -9,7 +9,13 @@ from django.db.models import Max
 from django.db import transaction
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.permissions import AllowAny
+from django.utils import timezone
+from datetime import datetime
+from city.models import *
+from designation.models import *
+from department.models import *
 
 def Employees_view(request):
     print('Employees called')
@@ -91,62 +97,192 @@ def get_Employees_by_id(request, emp_id):
 #         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 
+# @api_view(['POST'])
+# @csrf_exempt
 @api_view(['POST'])
-def insert_Employees(request):
+# @permission_classes([AllowAny])
+
+def insert_employee(request):
     try:
-        print('request.data: ', request.data)
-        # Create a serializer instance with the request data
-        serializer = HR_Employees_Serializer(data=request.data)
+        print('insert_employee called!')
+        emp_data = request.data
+        print('emp_data: ', emp_data)
 
-        # Check if the serializer is valid
-        if serializer.is_valid():
-            # Save the serializer without committing to database
-            print('request data: ', request.data)
-            employee_instance = serializer.save()
+        # Create a new employee instance
+        employee = HR_Employees()
 
+        # Map all the fields from the request data with default values
+        employee.HR_Emp_ID = emp_data.get('HR_Emp_ID', None)
+        employee.Emp_Name = emp_data.get('Emp_Name', '')
+        employee.Father_Name = emp_data.get('Father_Name', '')
+        employee.Address = emp_data.get('Address', '')
+        employee.Emergency_Cell_No = emp_data.get('Emergency_Cell_No', '')
+        employee.Personal_Cell_No = emp_data.get('Personal_Cell_No', '')
+        employee.Official_Cell_No = emp_data.get('Official_Cell_No', '')
+        employee.Email = emp_data.get('Email', '')
+        employee.TEL_EXT = emp_data.get('TEL_EXT', '')
+        employee.Gender = emp_data.get('Gender', '')
+        employee.Marital_Status = emp_data.get('Marital_Status', '')
+        employee.CNIC_No = emp_data.get('CNIC_No', '')
+        employee.Religion = emp_data.get('Religion', '')
+        employee.Co_ID = emp_data.get('Co_ID', 1)  # Default value for Co_ID
 
-            # Handle the profileImage file upload
-            if 'profileImage' in request.FILES:
-                profile_image = request.FILES['profileImage']
-                print('profile_image: ', profile_image)
-                file_path = default_storage.save(f'profile/{profile_image.name}', ContentFile(profile_image.read()))
-                employee_instance.profileimage = file_path
+        # Handle foreign keys with default values
+        ct_id = emp_data.get('CT_ID')
+        if ct_id:
+            employee.CT_ID = HR_City.objects.get(pk=ct_id)
 
-            # Save the employee instance with the updated profileimage field
-            employee_instance.save()
+        joining_dsg_id = emp_data.get('Joining_Dsg_ID')
+        if joining_dsg_id:
+            employee.Joining_Dsg_ID = HR_Designation.objects.get(pk=joining_dsg_id)
 
-            # Return a success response
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        joining_dept_id = emp_data.get('Joining_Dept_ID')
+        if joining_dept_id:
+            employee.Joining_Dept_ID = HR_Department.objects.get(pk=joining_dept_id)
 
-        # Return a validation error response if the serializer is not valid
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # employee.Emp_Status = emp_data.get('Emp_Status', True)
+        
+        # Handle date fields
+        confirmation_date = emp_data.get('Confirmation_Date')
+        if confirmation_date:
+            employee.Confirmation_Date = timezone.datetime.strptime(confirmation_date, "%Y-%m-%d").date()
+        
+        cnic_issue_date = emp_data.get('CNIC_Issue_Date')
+        if cnic_issue_date:
+            employee.CNIC_Issue_Date = timezone.datetime.strptime(cnic_issue_date, "%Y-%m-%d").date()
+
+        cnic_exp_date = emp_data.get('CNIC_Exp_Date')
+        if cnic_exp_date:
+            employee.CNIC_Exp_Date = timezone.datetime.strptime(cnic_exp_date, "%Y-%m-%d").date()
+
+        date_of_birth = emp_data.get('DateOfBirth')
+        if date_of_birth:
+            employee.DateOfBirth = timezone.datetime.strptime(date_of_birth, "%Y-%m-%d").date()
+
+        # Handle profile image (if required)
+        # if 'ProfileImage' in request.FILES:
+        #     profile_image = request.FILES['ProfileImage']
+        #     ext = profile_image.name.split('.')[-1]  # Get the file extension
+        #     profile_image_name = f"{employee.Emp_ID}.{ext}"  # Construct the new filename
+        #     # Save new profile image with the empid name
+        #     employee.ProfileImage.save(profile_image_name, profile_image, save=False)
+
+        employee.save()
+
+        emp_serializer = HR_Employees_Serializer(employee)
+        return Response(emp_serializer.data, status=201)
 
     except Exception as e:
-        # Return a server error response if an exception occurs
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({'message': str(e)}, status=500)
 
-@api_view(['PUT'])
-def update_Employees(request, emp_id):
+# @api_view(['PUT'])
+# def update_employee(request, emp_id):
+#     print('update request data: ', request.data)
+#     try:
+#         employee = HR_Employees.objects.get(pk=emp_id)
+#     except HR_Employees.DoesNotExist:
+#         return Response({'error': 'Employee not found'}, status=status.HTTP_404_NOT_FOUND)
+
+#     try:
+#         # Use partial=True to update only provided fields
+#         serializer = HR_Employees_Serializer(employee, data=request.data, partial=True)
+
+#         if serializer.is_valid():
+#             updated_employee = serializer.save()
+
+#             # Handle file uploads separately if needed
+#             # if 'profileImage' in request.FILES:
+#             #     employee.profileimage = request.FILES['profileImage']
+#             employee.save()
+
+#             return Response(serializer.data, status=status.HTTP_200_OK)
+
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#     except Exception as e:
+#         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+
+@api_view(['POST'])
+def update_employee(request, emp_id):
     try:
+        emp_data = request.data
+        if emp_id is None:
+            return Response({'message': 'Bad request'}, status=400)
 
-        print('emp_id: ', emp_id)
-        print('request.data: ', request.data)
+        employee = HR_Employees.objects.filter(Emp_ID=emp_id).first()
 
-        Employees = HR_Employees.objects.get(pk=emp_id)
-    except HR_Employees.DoesNotExist:
-        return Response({'error': 'Employees not found'}, status=status.HTTP_404_NOT_FOUND)
+        if employee is None:
+            return Response({'message': 'Employee not found'}, status=404)
 
-    try:
-        serializer = HR_Employees_Serializer(Employees, data=request.data, partial=True)
-        if serializer.is_valid():
-            updated_Employees = serializer.save()
-            serialized_data = HR_Employees_Serializer(updated_Employees).data
-            return Response(serialized_data, status=status.HTTP_200_OK)
+        print('emp_data: ', emp_data)
 
-        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        # Map all the fields from the request data
+        employee.Emp_Name = emp_data.get('Emp_Name', employee.Emp_Name)
+        employee.Father_Name = emp_data.get('Father_Name', employee.Father_Name)
+        employee.Address = emp_data.get('Address', employee.Address)
+        employee.Emergency_Cell_No = emp_data.get('Emergency_Cell_No', employee.Emergency_Cell_No)
+        employee.Personal_Cell_No = emp_data.get('Personal_Cell_No', employee.Personal_Cell_No)
+        employee.Official_Cell_No = emp_data.get('Official_Cell_No', employee.Official_Cell_No)
+        employee.Email = emp_data.get('Email', employee.Email)
+        employee.TEL_EXT = emp_data.get('TEL_EXT', employee.TEL_EXT)
+        employee.Gender = emp_data.get('Gender', employee.Gender)
+        employee.Marital_Status = emp_data.get('Marital_Status', employee.Marital_Status)
+        employee.CNIC_No = emp_data.get('CNIC_No', employee.CNIC_No)
+        employee.Religion = emp_data.get('Religion', employee.Religion)
+        employee.Co_ID = emp_data.get('Co_ID', employee.Co_ID)
+
+        # Handle foreign keys
+        ct_id = emp_data.get('CT_ID')
+        if ct_id:
+            employee.CT_ID = HR_City.objects.get(pk=ct_id)
+
+        joining_dsg_id = emp_data.get('Joining_Dsg_ID')
+        if joining_dsg_id:
+            employee.Joining_Dsg_ID = HR_Designation.objects.get(pk=joining_dsg_id)
+
+        joining_dept_id = emp_data.get('Joining_Dept_ID')
+        if joining_dept_id:
+            employee.Joining_Dept_ID = HR_Department.objects.get(pk=joining_dept_id)
+
+        # Handle date fields
+        confirmation_date = emp_data.get('Confirmation_Date')
+        if confirmation_date:
+            employee.Confirmation_Date = timezone.datetime.strptime(confirmation_date, "%Y-%m-%d").date()
+
+        cnic_issue_date = emp_data.get('CNIC_Issue_Date')
+        if cnic_issue_date:
+            employee.CNIC_Issue_Date = timezone.datetime.strptime(cnic_issue_date, "%Y-%m-%d").date()
+
+        cnic_exp_date = emp_data.get('CNIC_Exp_Date')
+        if cnic_exp_date:
+            employee.CNIC_Exp_Date = timezone.datetime.strptime(cnic_exp_date, "%Y-%m-%d").date()
+
+        date_of_birth = emp_data.get('DateOfBirth')
+        if date_of_birth:
+            employee.DateOfBirth = timezone.datetime.strptime(date_of_birth, "%Y-%m-%d").date()
+
+        # Handle profile image
+        if 'ProfileImage' in request.FILES:
+            profile_image = request.FILES['ProfileImage']
+            ext = profile_image.name.split('.')[-1]  # Get the file extension
+            profile_image_name = f"{employee.HR_Emp_ID}.{ext}"  # Construct the new filename
+
+            # Delete old profile image if it exists
+            if employee.ProfileImage and default_storage.exists(employee.ProfileImage.name):
+                default_storage.delete(employee.ProfileImage.name)
+
+            # Save new profile image with the hr_empid name
+            employee.ProfileImage.save(profile_image_name, profile_image, save=False)
+
+        employee.save()
+
+        emp_serializer = HR_Employees_Serializer(employee)
+        return Response(emp_serializer.data, status=200)
 
     except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response({'message': str(e)}, status=500)
 
 @api_view(['DELETE'])
 def delete_Employees(request, emp_id):

@@ -297,8 +297,8 @@ $(document).ready(function () {
         alert(w_dept)
     }
 
-    // getAll_Dept_ByID(W_deptID);
-    // getAllDeptElemet(W_deptID);
+    getAll_Dept_ByID(W_deptID);
+    getAllDeptElemet(W_deptID);
     document.getElementById("CancelFormData").addEventListener('click', CancelFormAndGridData);
 })
 
@@ -441,6 +441,7 @@ async function getAllDepartmentFromAPI() {
 
 document.getElementById("Current_Department").addEventListener('click', function () {
     let W_deptID = this.value
+    // let W_deptID = 1
     getAll_Dept_ByID(W_deptID);
 })
 

@@ -1,5 +1,5 @@
 const BASE_URL = window.location.origin;
-var table;
+var table, city_array = [], region_array = [];
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';
 const CANCEL_BUTTON_ID = 'CancelFormData';
@@ -150,7 +150,7 @@ async function getAllEmployee() {
 //     for (let key in emp_data) {
 //         formData.append(key, emp_data[key]);
 //     }
-    
+
 //     console.log('formData: ', formData)
 
 //     createEmployee(formData);
@@ -184,7 +184,7 @@ function handleInsertClick() {
     const Emp_ID = Number(document.getElementById("Emp_ID").value);
     const Emp_Name = document.getElementById("Emp_Name").value;
     const DateOfBirth = document.getElementById("DateOfBirth").value;
-    const Gender = document.getElementById("G ender").value;
+    const Gender = document.getElementById("Gender").value;
     const Marital_Status = document.getElementById("Marital_Status").value;
     const HR_Emp_ID = Number(document.getElementById("HR_Emp_ID").value);
     const Father_Name = document.getElementById("Father_Name").value;
@@ -205,10 +205,10 @@ function handleInsertClick() {
     const CNIC_Issue_Date = document.getElementById("CNIC_Issue_Date").value;
     const CNIC_Exp_Date = document.getElementById("CNIC_Exp_Date").value;
 
-    console.log('profileImage: ', document.getElementById('profileImage').files[0])
+    // console.log('profileImage: ', document.getElementById('profileImage').files[0])
 
     let formData = new FormData();
-    formData.append('profileImage', document.getElementById('profileImage').files[0]);
+    // formData.append('profileImage', document.getElementById('profileImage').files[0]);
     formData.append('Emp_ID', Emp_ID);
     formData.append('HR_Emp_ID', HR_Emp_ID);
     formData.append('Emp_Name', Emp_Name);
@@ -226,14 +226,18 @@ function handleInsertClick() {
     formData.append('Official_Cell_No', Official_Cell_No);
     formData.append('Co_ID', Co_ID);
     formData.append('Joining_Dept_ID', Joining_Dept_ID);
-    formData.append('Emp_Status', Emp_Status);
+    formData.append('Emp_Status', true);
     formData.append('Email', Email);
     formData.append('Address', Address);
     formData.append('Confirmation_Date', Confirmation_Date);
     formData.append('CNIC_Issue_Date', CNIC_Issue_Date);
     formData.append('CNIC_Exp_Date', CNIC_Exp_Date);
 
-    createEmployee(formData);
+    if(HR_Emp_ID != '' && Emp_Name != '' && Joining_Date != '' && CT_ID != ''){
+        createEmployee(formData);
+    }else{
+        alert('please fill required field!')
+    }
 }
 
 async function createEmployee(formData) {
@@ -241,14 +245,17 @@ async function createEmployee(formData) {
         const response = await fetch(`${BASE_URL}/employee/add`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                // 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken')
             },
             body: formData,
         });
+        
         if (!response.ok) {
-            throw new Error('Failed to create employee');
+            const errorData = await response.json();  // Parse the JSON response to get the error message
+            throw new Error(errorData.message || 'Failed to create employee');  // Use the server's error message or a default one
         }
+
         displaySuccessMessage('Employee created successfully!');
         fillTableGrid();
     } catch (error) {
@@ -259,20 +266,21 @@ async function createEmployee(formData) {
 
 async function updateDesignation(id, formData) {
     try {
-        const response = await fetch(`${BASE_URL}/employee/`update`/${id}`, {
-            method: 'PUT',
+        const response = await fetch(`${BASE_URL}/employee/update/${id}`, {
+            method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                // 'Content-Type': 'application/json',
                 'X-CSRFToken': getCookie('csrftoken')
             },
             body: formData,
         });
         if (!response.ok) {
-            throw new Error('Failed to update employee');
+            const errorData = await response.json();  // Parse the JSON response to get the error message
+            throw new Error(errorData.message || 'Failed to create employee');  // Use the server's error message or a default one
         }
         //const data = await response.json();
         displaySuccessMessage('Designation updated successfully!');
-        fillTableGrid();
+        // fillTableGrid();
         //return data;
     } catch (error) {
         console.error('Error updating department:', error);
@@ -302,7 +310,7 @@ async function deleteDesignation(id) {
 
 function fillTableGrid() {
     getAllEmployee().then((data) => {
-        console.log("response: ", data);
+        // console.log("response: ", data);
         var counter = 1;
         table.clear().draw();
 
@@ -408,7 +416,7 @@ function handleUpdateClick() {
     formData.append('Official_Cell_No', Official_Cell_No);
     formData.append('Co_ID', Co_ID);
     formData.append('Joining_Dept_ID', Joining_Dept_ID);
-    formData.append('Emp_Status', Emp_Status);
+    formData.append('Emp_Status', true);
     formData.append('Email', Email);
     formData.append('Address', Address);
     formData.append('Confirmation_Date', Confirmation_Date);
@@ -467,6 +475,9 @@ function fillFormDataFromDB(id) {
         document.getElementById("CNIC_No").value = data.CNIC_No
         document.getElementById("Religion").value = data.Religion
         document.getElementById("CT_ID").value = data.CT_ID
+        const region = region_array.find(x => x.REG_ID == data.REG_ID);
+        console.log('region: ', region)
+        document.getElementById("REG_ID").innerHTML = `<option value="${region.REG_ID}">${region.REG_Descr}</option>` 
         document.getElementById("Emergency_Cell_No").value = data.Emergency_Cell_No
         document.getElementById("Joining_Date").value = moment(data.Joining_Date).format("YYYY-MM-DD");
         document.getElementById("Joining_Dsg_ID").value = data.Joining_Dsg_ID
@@ -485,18 +496,33 @@ function fillDropDown(dataName, dropdownId, valueField, displayTextField) {
     getAllDataFromDB(dataName).then((data) => {
         var temp = '';
         // console.log('data: ', data)
-        data.forEach(element => {
-            temp += `<option value="${element[valueField]}">${element[displayTextField]}</option>`;
-        });
+        if (dataName == 'city/getall') {
+            city_array = data
+        }  if (dataName == 'region/getall') {
+                region_array = data
+                // console.log('region_array: ', region_array)
+            } else{
+                data.forEach(element => {
+                    temp += `<option value="${element[valueField]}">${element[displayTextField]}</option>`;
+                });   
+            }
+             
         document.getElementById(dropdownId).innerHTML = temp;
     });
 }
 
+document.getElementById('CT_ID').addEventListener('change', function (e) {
+    console.log('city_array: ', city_array)
+    seleted_region = city_array.find(x => x.CT_ID == this.value)
+    console.log('seleted_region: ', seleted_region)
+    document.getElementById("REG_ID").innerHTML = `<option value="${seleted_region.REG_ID}">${seleted_region.REG_Descr}</option>`
+});
+
 document.getElementById('profileImage').addEventListener('change', function (e) {
     var reader = new FileReader();
-    reader.onload = function (e) {       
+    reader.onload = function (e) {
         document.getElementById('previewImage').setAttribute('src', e.target.result);
-    };  
+    };
     reader.readAsDataURL(this.files[0]);
 });
 

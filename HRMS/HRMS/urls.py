@@ -56,6 +56,7 @@ urlpatterns = [
     path('loan/', include('loan.urls')),
     path('wda/', include('working_dept_assignment.urls')),
     path('salaryupdate/', include('salary_update.urls')),
+    path('salaryprocess/', include('monthly_sal_process.urls')),
     path('monthly_all_ded/', include('monthly_all_ded.urls')),
     #path('report_builder/', include('report_builder.urls')),
 ]

@@ -7,7 +7,7 @@ from department.models import HR_Department
 
 class HR_Monthly_All_Ded(models.Model):
     Employee = models.ForeignKey(HR_Employees, db_column='Emp_ID', to_field='Emp_ID', on_delete=models.CASCADE)
-    Period = models.ForeignKey(HR_PAYROLL_PERIOD, db_column='Payroll_Period_ID', to_field='ID', on_delete=models.CASCADE)
+    Period = models.ForeignKey(HR_PAYROLL_PERIOD, db_column='Payroll_Period_ID', to_field='PAYROLL_ID', on_delete=models.CASCADE)
     Department = models.ForeignKey(HR_Department, db_column='Dept_ID', to_field='Dept_ID', on_delete=models.CASCADE)
     Basic_Salary_1 = models.IntegerField(blank=True, null=True)
     Medical_Allowance_2 = models.IntegerField(blank=True, null=True)

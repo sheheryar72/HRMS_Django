@@ -28,7 +28,7 @@ class HR_PAYROLL_MONTH(models.Model):
         return self.MNTH_ID
 
 class HR_PAYROLL_PERIOD(models.Model):
-    ID = models.AutoField(primary_key=True)
+    PAYROLL_ID = models.AutoField(primary_key=True)
     PERIOD_ID = models.IntegerField()
     # FYID = models.IntegerField()
     # MNTH_ID = models.IntegerField()

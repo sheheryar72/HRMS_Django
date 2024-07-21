@@ -30,7 +30,7 @@ class HR_Employees(models.Model):
     HR_Emp_ID = models.IntegerField()  
     Emp_Name = models.CharField(max_length=150, null=True, blank=True)  
     Father_Name = models.CharField(max_length=150, blank=True, null=True)  
-    DateOfBirth = models.DateTimeField(blank=True, null=True)   
+    DateOfBirth = models.DateField(blank=True, null=True)   
     Gender = models.CharField(max_length=10, blank=True, null=True)  
     Religion = models.CharField(max_length=15, blank=True, null=True) 
     # Report_To = models.ForeignKey('self', to_field='Emp_ID', db_column='Report_To', blank=True, null=True, on_delete=models.SET_NULL) 
@@ -41,7 +41,7 @@ class HR_Employees(models.Model):
     Personal_Cell_No = models.CharField(max_length=20, blank=True, null=True)  
     Official_Cell_No = models.CharField(max_length=20, blank=True, null=True)  
     Emergency_Cell_No = models.CharField(max_length=20, blank=True, null=True)  
-    Joining_Date = models.DateTimeField(blank=True, null=True)  
+    Joining_Date = models.DateField(blank=True, null=True)  
     Joining_Dsg_ID = models.ForeignKey(HR_Designation, to_field='DSG_ID', db_column='Joining_Dsg_ID', blank=True, null=True, on_delete=models.SET_NULL) 
     Joining_Dept_ID = models.ForeignKey(HR_Department, to_field='Dept_ID', db_column='Joining_Dept_ID', blank=True, null=True, on_delete=models.SET_NULL) 
     Co_ID = models.IntegerField(blank=True, null=True)  
@@ -64,7 +64,7 @@ class HR_Employees(models.Model):
     Grade_ID = models.ForeignKey(HR_Grade, to_field='Grade_ID', db_column='Grade_ID', blank=True, null=True, on_delete=models.SET_NULL) 
     REG_ID = models.ForeignKey(HR_Region, to_field='REG_ID', db_column='REG_ID', blank=True, null=True, on_delete=models.SET_NULL) 
     TEL_EXT = models.CharField(max_length=10, null=True, blank=True)
-    Last_Working_Date = models.DateTimeField(blank=True, null=True)  
+    Last_Working_Date = models.DateField(blank=True, null=True)  
     Report_To = models.IntegerField(null=True, blank=True)
 
 

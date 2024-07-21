@@ -3,6 +3,7 @@ var table;
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';
 const CANCEL_BUTTON_ID = 'CancelFormData';
+var region_array = [] 
 
 function initializeDataTable() {
     table = $('#GridID').DataTable({
@@ -59,6 +60,7 @@ function handleCancelClick() {
     // document.getElementById("CT_ID").readOnly = false;
     document.getElementById("CT_ID").value = '';
     document.getElementById("CT_Descr").value = '';
+    document.getElementById("REG_ID").selectedIndex = 0;
     document.getElementById("updateFormData").classList.add("d-none");
     document.getElementById("insertFormData").classList.remove("d-none");
 }
@@ -76,6 +78,26 @@ async function getAllCity() {
         return null;
     }
 }
+
+async function getAllRegion() {
+    try {
+        const response = await fetch(`${BASE_URL}/region/getall`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch City');
+        }
+        const data = await response.json();
+
+        var temp = ''
+        data.forEach(element => {
+            temp += `<option value='${element.REG_ID}'>${element.REG_Descr}</option>`
+        });
+        document.getElementById("REG_ID").innerHTML = temp
+    } catch (error) {
+        console.error('Error fetching City:', error);
+        return null;
+    }
+}
+
 
 async function getCityById(id) {
     try {
@@ -162,7 +184,7 @@ function fillTableGrid() {
        
         for (var i = 0; i < data.length; i++) {
             var actionButton = createActionButton(); // Create action button element
-            var row = [counter, data[i].CT_ID, data[i].CT_Descr, actionButton.outerHTML];
+            var row = [counter, data[i].CT_ID, data[i].CT_Descr, data[i].REG_Descr, actionButton.outerHTML];
             table.row.add(row).draw(false);
             counter++;
         }
@@ -211,11 +233,14 @@ function createActionButton() {
 function handleInsertClick(){
     const CT_ID = document.getElementById("CT_ID").value;
     const CT_Descr = document.getElementById("CT_Descr").value;
+    const REG_ID = document.getElementById("REG_ID").value;
 
     const departmentData = {
         CT_ID: CT_ID,
-        CT_Descr: CT_Descr
+        CT_Descr: CT_Descr,
+        REG_ID: REG_ID
     }
+
     createCity(departmentData);
     
 }
@@ -223,10 +248,12 @@ function handleInsertClick(){
 function handleUpdateClick(){
     const CT_ID = document.getElementById("CT_ID").value;
     const CT_Descr = document.getElementById("CT_Descr").value;
+    const REG_ID = document.getElementById("REG_ID").value;
 
     const departmentData = {
         CT_ID: CT_ID,
-        CT_Descr: CT_Descr
+        CT_Descr: CT_Descr,
+        REG_ID: REG_ID
     }
     updateCity(CT_ID, departmentData);
     fillTableGrid();
@@ -277,5 +304,6 @@ $(document).ready(function () {
     document.getElementById(INSERT_BUTTON_ID).addEventListener('click', handleInsertClick);
     document.getElementById(UPDATE_BUTTON_ID).addEventListener('click', handleUpdateClick);
     document.getElementById(CANCEL_BUTTON_ID).addEventListener('click', handleCancelClick);
+    getAllRegion()
     fillTableGrid()
 });

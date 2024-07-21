@@ -70,6 +70,7 @@ def authenticate_user(request):
     except Exception as e:
         return JsonResponse({'error': 'Authentication failed. Please check your credentials.'}, status=400)
 
+
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -78,53 +79,49 @@ def authenticate_user2(request):
         username = request.data.get('username')
         password = request.data.get('password')
 
-        print('authenticate_user2')
-        print('authenticate_user2 request: ', request.data)
+        print('authenticate_user2 request:', request.data)
 
-        # Check if both username and password are provided
         if not username or not password:
             return JsonResponse({'error': 'Both username and password are required.'}, status=400)
 
-        print('username: ', username)
-        print('password: ', password)
-
-        # Authenticate user
         user = authenticate(username=username, password=password)
 
-        print('user: ', user)
-
-        # login(request, user)
         if user is not None:
-            auth_login(request, user)  # This creates a session for the user
-
-        if user is not None:
-            # Get UserProfile associated with the authenticated user
+            auth_login(request, user)
             user_profile = User_Profile.objects.filter(user_id__username=username).first()
-            
-            print('user_profile: ', user_profile)
 
-            data = {
-                'Profile_ID': user_profile.id,
-                'Email': user_profile.Emp_ID_id.Email,
-                'Dept_ID': user_profile.Emp_ID_id.Joining_Dept_ID.Dept_ID,
-                'Dept_Descr': user_profile.Emp_ID_id.Joining_Dept_ID.Dept_Descr,
-                'Emp_ID': user_profile.Emp_ID_id.Emp_ID,
-                'Emp_Name': user_profile.Emp_ID_id.Emp_Name,
-            }
-            print('user_profile: ', data)
+            print('user_profile user_profile: ', user_profile)
 
-            if user_profile is not None:
-                # Authentication successful
+            if user_profile:
+                # print('user_profile:', user_profile)
+                # print('user_profile.Emp_ID_id:', user_profile.Emp_ID_id.Emp_ID)
+                # print('user_profile.Emp_ID_id.Email:', user_profile.Emp_ID_id.Email)
+                # print('user_profile.Emp_ID_id.Joining_Dept_ID:', user_profile.Emp_ID_id.Joining_Dept_ID)
+                # print('user_profile.Emp_ID_id.Joining_Dept_ID.Dept_ID:', user_profile.Emp_ID_id.Joining_Dept_ID.Dept_ID)
+                # print('user_profile.Emp_ID_id.Joining_Dept_ID.Dept_Descr:', user_profile.Emp_ID_id.Joining_Dept_ID.Dept_Descr)
+                # print('user_profile.Emp_ID_id.Emp_ID:', user_profile.Emp_ID_id.Emp_ID)
+                # print('user_profile.Emp_ID_id.Emp_Name:', user_profile.Emp_ID_id.Emp_Name)
+
+                data = {
+                    'Profile_ID': user_profile.id,
+                    # 'Email': user_profile.Emp_ID_id.Email,
+                    # 'Dept_ID': user_profile.Emp_ID_id.Joining_Dept_ID.Dept_ID,
+                    # 'Dept_Descr': user_profile.Emp_ID_id.Joining_Dept_ID.Dept_Descr,
+                    # 'Emp_ID': user_profile.Emp_ID_id.Emp_ID,
+                    # 'Emp_Name': user_profile.Emp_ID_id.Emp_Name,
+                }
+                print('user_profile data:', data)
+
                 return JsonResponse({'data': data, 'message': 'Login successful!'})
             else:
-                # UserProfile not found
                 return JsonResponse({'error': 'User profile not found.'}, status=400)
         else:
-            # Authentication failed
             return JsonResponse({'error': 'Invalid username or password.'}, status=400)
 
     except Exception as e:
+        print('Exception:', e)
         return JsonResponse({'error': 'Authentication failed. Please check your credentials.'}, status=400)
+
 
 # @csrf_exempt
 # @api_view(['POST'])

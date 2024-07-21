@@ -202,7 +202,7 @@ def get_allpayrollperiod(request, id):
 
         for item in queryData:
             single_pp = {
-                'ID': item.ID,
+                'ID': item.PAYROLL_ID,
                 'FYID': item.FYID.FYID,
                 'FinYear': item.FYID.FinYear,
                 'PERIOD_ID': item.PERIOD_ID,

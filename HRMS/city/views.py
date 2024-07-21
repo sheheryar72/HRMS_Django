@@ -33,8 +33,22 @@ def get_all_cities(request):
 
         #city_objects = [HR_City(CT_ID=city.CT_ID, CT_Descr=city.CT_Descr) for city in cities]
         #serializer = HR_CITY_Serializer(city_objects, many=True)
-        serializer = HR_CITY_Serializer(cities, many=True)
-        return Response(serializer.data)
+        # serializer = HR_CITY_Serializer(cities, many=True)
+        # return Response(serializer.data)
+
+        data = []
+
+        for city in cities:
+            data.append({
+                'CT_ID': city.CT_ID,
+                'CT_Descr': city.CT_Descr,
+                'REG_ID': city.REG_ID.REG_ID,
+                'REG_Descr': city.REG_ID.REG_Descr
+            })
+
+            # print('data: ', data)
+
+        return Response(data, status=200)
 
     except Exception as e:
         return Response({'error': str(e)}, status=500)

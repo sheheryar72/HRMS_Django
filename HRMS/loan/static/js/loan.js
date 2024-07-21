@@ -145,6 +145,7 @@ async function createLeave(data) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify(data),
         });
@@ -168,6 +169,7 @@ async function updateLeave(id, data) {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
             },
             body: JSON.stringify(data),
         });

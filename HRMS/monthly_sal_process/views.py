@@ -18,31 +18,127 @@ from django.db.models import Max
 def salaryprocess_view(request):
     return render(request, 'salaryprocess.html')
 
-@api_view(['GET'])
-def transfer_data_to_salary_process(request):
+# @api_view(['POST'])
+# def transfer_data_to_salary_process(request, period_id):
+#     print('transfer_data_to_salary_process called!')
+#     try:
+#         # Get the latest update master record IDs for each employee
+#         max_emp_mst_up_ids = HR_Emp_Sal_Update_Mstr.objects.values('Emp_ID').annotate(max_emp_mst_up_id=Max('Emp_Up_ID'))
+
+#         max_emp_mst_up_id_values = [item['max_emp_mst_up_id'] for item in max_emp_mst_up_ids]
+
+#         print('max_emp_mst_up_id_values: ', max_emp_mst_up_id_values)
+
+#         # Fetch the master and detail records
+#         max_emp_mst_records = HR_Emp_Sal_Update_Mstr.objects.filter(Emp_Up_ID__in=max_emp_mst_up_id_values)
+#         max_emp_dtl_records = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID__in=max_emp_mst_up_id_values)
+
+#         # print('max_emp_mst_records: ', max_emp_mst_records)
+#         # print('max_emp_dtl_records: ', max_emp_dtl_records)
+
+#         # Prepare data for master records
+#         mst_data = []
+#         for record in max_emp_mst_records:
+#             mst_data.append({
+#                 'Emp_Up_ID': record.Emp_Up_ID,
+#                 'Emp_Up_Date': record.Emp_Up_Date,
+#                 'Emp_Category': record.Emp_Category,
+#                 'Marital_Status': record.Marital_Status,
+#                 'No_of_Children': record.No_of_Children,
+#                 'Co_ID': record.Co_ID,
+#                 'GrossSalary': record.GrossSalary,
+#                 'Remarks': record.Remarks,
+#                 'Emp_ID': record.Emp_ID.Emp_ID,
+#                 'HR_Emp_ID': record.HR_Emp_ID,
+#                 'Grade_ID': record.Grade_ID.Grade_ID,
+#                 'Dsg_ID': record.Dsg_ID.DSG_ID,
+#                 'Dept_ID': record.Dept_ID.Dept_ID,
+#                 'Transfer_Type': record.Transfer_Type,
+#                 'Account_No': record.Account_No,
+#                 'Bank_Name': record.Bank_Name,
+#                 'Stop_Salary': record.Stop_Salary,
+#                 'Period_ID': period_id,
+#             })
+
+#         # Serialize and save master records
+#         mst_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(data=mst_data, many=True)
+
+
+#         if mst_serializer.is_valid():
+#             mst_serializer.save()
+#             print('mst_serializer.data: ', mst_serializer.data)
+#         else:
+#             return Response(mst_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#         # Prepare data for detail records
+#         dtl_data = []
+#         for record in max_emp_dtl_records:
+#             dtl_data.append({
+#                 'Emp_Up_ID': record.Emp_Up_ID.Emp_Up_ID,
+#                 'Amount': record.Amount,
+#                 'Element_ID': record.Element_ID.Element_ID,
+#                 'Element_Type': record.Element_Type,
+#                 'Element_Category': record.Element_Category,
+#                 'Emp_ID': record.Emp_ID.Emp_ID,
+#             })
+
+#         # Serialize and save detail records
+#         dtl_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(data=dtl_data, many=True)
+
+
+#         if dtl_serializer.is_valid():
+#             print('dtl_serializer.data: ', dtl_serializer.data)
+#             dtl_serializer.save()
+#         else:
+#             return Response(dtl_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#         return Response(data={"status": "yes"}, status=status.HTTP_200_OK)
+
+#     except Exception as e:
+#         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+     
+
+@api_view(['POST'])
+def transfer_data_to_salary_process(request, period_id):
+    print('transfer_data_to_salary_process called!')
     try:
-        # Get the maximum Emp_Up_ID for each Emp_ID
-        max_emp_up_ids = HR_Emp_Sal_Update_Mstr.objects.values('Emp_ID').annotate(max_emp_up_id=Max('Emp_Up_ID'))
+        max_emp_mst_up_ids = HR_Emp_Sal_Update_Mstr.objects.values('Emp_ID').annotate(max_emp_mst_up_id=Max('Emp_Up_ID'))
+        max_emp_mst_up_id_values = [item['max_emp_mst_up_id'] for item in max_emp_mst_up_ids]
 
-        # Extract the max Emp_Up_ID values
-        max_emp_up_id_values = [item['max_emp_up_id'] for item in max_emp_up_ids]
+        print('max_emp_mst_up_id_values: ', max_emp_mst_up_id_values)
 
-        # Get the records with the maximum Emp_Up_ID for each Emp_ID
-        max_emp_records = HR_Emp_Sal_Update_Mstr.objects.filter(Emp_Up_ID__in=max_emp_up_id_values)
+        max_emp_mst_records = HR_Emp_Sal_Update_Mstr.objects.filter(Emp_Up_ID__in=max_emp_mst_up_id_values)
+        max_emp_dtl_records = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID__in=max_emp_mst_up_id_values)
 
-        # Do whatever processing you need to do with max_emp_records
-        # For example, you can serialize and return them
-        # emp_serializer = HR_Emp_Sal_Update_Mstr_Serializer(max_emp_records, many=True)
-        # return Response(emp_serializer.data, status=status.HTTP_200_OK)
+        # print('max_emp_mst_records: ', max_emp_mst_records)
+        # print('max_emp_dtl_records: ', max_emp_dtl_records)
 
-        serializer = HR_Emp_Sal_Update_Mstr_Serializer(max_emp_records, many=True)
+        # Update Period_ID for mst records
+        for record in max_emp_mst_records:
+            record.Period_ID = period_id
+            record.save()
 
-        # Dummy response for illustration
-        return Response(data=serializer.data, status=status.HTTP_200_OK)
+        # Serialize and save the mst and dtl records
+        mst_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(data=max_emp_mst_records, many=True)
+        if mst_serializer.is_valid():
+            print('mst_serializer.data: ', mst_serializer.data)
+            mst_serializer.save()
+        else:
+            return Response(mst_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        dtl_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(data=max_emp_dtl_records, many=True)
+        if dtl_serializer.is_valid():
+            print('dtl_serializer.data: ', dtl_serializer.data)
+            dtl_serializer.save()
+        else:
+            return Response(dtl_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(data=mst_serializer.data, status=status.HTTP_200_OK)
 
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        
 @api_view(['GET'])
 def getall_payrollperiod(request):
     try:

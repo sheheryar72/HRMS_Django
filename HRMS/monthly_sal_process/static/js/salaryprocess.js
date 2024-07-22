@@ -635,17 +635,45 @@ function getall_payrollperiod() {
     });
 }
 
+
 document.getElementById("monthly_process_btn").addEventListener('click', function() {
     var userConfirmation = confirm("Do you want to run the monthly process?");
+    const period_id = document.getElementById("Period_ID").value;
 
     if (userConfirmation) {
         // Code to run the monthly process
         alert("Running the monthly process...");
+        transfer_data_to_salary_process(period_id);
         // Add your monthly process code here
     } else {
         alert("Monthly process was cancelled.");
     }
 });
+
+async function transfer_data_to_salary_process(period_id) {
+    try {
+        const response = await fetch(`${BASE_URL}/salaryprocess/transfer_data_to_salary_process/${period_id}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Failed to run salary process: ${errorData.error}`);
+        }
+
+        const data = await response.json();
+        console.log("data: ", data);
+        alert("Monthly process completed successfully!");
+    } catch (error) {
+        console.error("Error running salary process:", error.message);
+        alert("Error running salary process: " + error.message);
+    }
+}
+
+
 document.getElementById("elementGridIconId").addEventListener("click", function () {
     let Emp_Up_ID_ = Number(document.getElementById("Emp_Up_ID").value);
     let Emp_ID_ = Number(document.getElementById("Emp_ID").value);

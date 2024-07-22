@@ -3,7 +3,7 @@ from .views import transfer_data_to_salary_process, getall_payrollperiod, salary
 
 urlpatterns = [
     path('', salaryprocess_view, name='salaryprocess_view'),
-    path('transfer_data_to_salary_process/', transfer_data_to_salary_process, name='transfer_data_to_salary_process'),
+    path('transfer_data_to_salary_process/<int:period_id>/', transfer_data_to_salary_process, name='transfer_data_to_salary_process'),
     path('getllmaster/', getll_master, name='getll_master'),
     path('getall_payrollperiod/', getall_payrollperiod, name='getall_payrollperiod'),
     path('addsalarymaster/', add_salary_update, name='add_salary_update'),

@@ -14,9 +14,294 @@ from payroll_period.models import *
 from salary_update.models import HR_Emp_Sal_Update_Mstr, HR_Emp_Sal_Update_Dtl
 from salary_update.serializer import *
 from django.db.models import Max
+from django.db import models, transaction
+from django.db.models import F, Value, FloatField
+from django.db.models.functions import Cast
+from django.utils import timezone
+from django.db import connection
+from django.http import JsonResponse
+from grade.models import HR_Grade
+from designation.models import HR_Designation
+from department.models import HR_Department
+from django.db.models import Sum, F, Value
+from django.db import transaction
+from django.db.models import Sum, F, Value, Case, When
+
 
 def salaryprocess_view(request):
     return render(request, 'salaryprocess.html')
+
+def monthlysalaryupdate_view(request):
+    return render(request, 'monthlysalaryupdate.html')
+
+
+
+def hr_monthly_salary_process(payroll_id, fuel_rate):
+    # Fetch the payroll period start and end dates
+    try:
+        payroll_period = HR_PAYROLL_PERIOD.objects.get(PAYROLL_ID=payroll_id)
+        sdt = payroll_period.sdt
+        edt = payroll_period.edt
+    except HR_PAYROLL_PERIOD.DoesNotExist:
+        raise ValueError("Payroll period not found.")
+    
+    # Check if there is data to process
+    if not HR_Emp_Sal_Update_Mstr.objects.filter(
+        Emp_ID__Emp_Status=1,
+        stop_salary=False
+    ).exists():
+        raise ValueError("No data available for processing.")
+
+    with transaction.atomic():
+        # Process each employee
+        for emp in HR_Emp_Sal_Update_Mstr.objects.filter(
+            Emp_ID__Emp_Status=1,
+            stop_salary=False
+        ).values('emp_up_id', 'emp_id', 'hr_emp_id').distinct():
+            
+            emp_up_id = emp['Emp_Up_ID']
+            emp_id = emp['Emp_ID']
+            hr_emp_id = emp['HR_Emp_ID']
+            
+            # Create record in Monthly Salary Master
+            HR_Emp_Monthly_Sal_Mstr.objects.create(
+                Emp_Up_Date=sdt,
+                Emp_Category=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Emp_Category,
+                Marital_Status=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Marital_Status,
+                No_of_Children=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).No_of_Children,
+                Co_ID=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Co_ID,
+                GrossSalary=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).GrossSalary,
+                Remarks=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Remarks,
+                Emp_ID=HR_Employees.objects.get(Emp_ID=emp_id),
+                HR_Emp_ID=hr_emp_id,
+                Grade_ID=HR_Grade.objects.get(Grade_ID=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Grade_ID),
+                Dsg_ID=HR_Designation.objects.get(DSG_ID=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Dsg_ID),
+                Dept_ID=HR_Department.objects.get(Dept_ID=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Dept_ID),
+                Transfer_Type=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Transfer_Type,
+                Account_No=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Account_No,
+                Bank_Name=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Bank_Name,
+                Stop_Salary=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Stop_Salary,
+                Payroll_ID=HR_PAYROLL_PERIOD.objects.get(PAYROLL_ID=payroll_id)
+            )
+            
+            # Create records in Monthly Salary Detail
+            salary_details = HR_Emp_Sal_Update_Dtl.objects.filter(emp_id=emp_id)
+            for detail in salary_details:
+                HR_Emp_Monthly_Sal_Dtl.objects.create(
+                    Emp_Up_ID=HR_Emp_Monthly_Sal_Mstr.objects.get(Emp_Up_ID=emp_up_id),
+                    Amount=detail.Amount,
+                    Element_ID=HR_Payroll_Elements.objects.get(Element_ID=detail.Element_ID),
+                    Element_Type=detail.Element_Type,
+                    Element_Category=detail.Element_Category,
+                    Emp_ID=HR_Employees.objects.get(Emp_ID=emp_id)
+                )
+        
+        # Update Additional Elements if needed
+        additional_elements = HR_Payroll_Elements.objects.filter(element_category='Additional')
+        if additional_elements.exists():
+            for element in additional_elements:
+                if element.Cal_Type == 'Fixed':
+                    HR_Emp_Monthly_Sal_Dtl.objects.filter(
+                        Emp_ID__in=HR_Emp_Sal_Update_Mstr.objects.filter(emp_id=emp_id),
+                        Element_ID=element
+                    ).update(
+                        # Amount=Coalesce(F('Amount'), Value(0))
+                        Amount=Case(
+                            When(Amount__isnull=True, then=Value(0)),
+                            default=F('Amount')
+                        )
+                    )
+                elif element.Cal_Type == 'Variable':
+                    HR_Emp_Monthly_Sal_Dtl.objects.filter(
+                        Emp_ID__in=HR_Emp_Sal_Update_Mstr.objects.filter(emp_id=emp_id),
+                        Element_ID=element
+                    ).update(
+                        Amount=F('Amount') * fuel_rate
+                    )
+
+        # Update Monthly Salary Master with total salary details
+        HR_Emp_Monthly_Sal_Mstr.objects.filter(
+            Payroll_ID=payroll_id
+        ).update(
+              GrossSalary=Sum(
+                Case(
+                    When(hremp_monthly_sal_dtl_test__Amount__isnull=True, then=Value(0)),
+                    default=F('hremp_monthly_sal_dtl_test__Amount')
+                )
+            )
+            # GrossSalary=Coalesce(Sum('hremp_monthly_sal_dtl_test__Amount'), Value(0))
+        )
+
+
+
+@api_view(['GET'])
+def transfer_data_to_salary_process(request, payroll_id, fuel_rate):
+    print('transfer_data_to_salary_process called payroll_id: ', payroll_id)
+    try:
+        with connection.cursor() as cursor:
+            # fuel_rate = 280
+            # Call the stored procedure
+            cursor.execute("EXEC dbo.HR_Monthly_Salary_Process2 @m_Payroll_ID=%s, @m_Fuel_Rate=%s", [payroll_id, fuel_rate])
+            # Fetch the results if the stored procedure returns any
+            # results = cursor.fetchall()
+
+            rows_affected = cursor.rowcount
+            print(f"Rows affected: {rows_affected}")
+        
+        # Return the results as JSON
+        return JsonResponse({'results': "results"})
+    except Exception as e:
+        # Handle any exceptions that may occur
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+# @api_view(['GET'])
+# def getall_monthly_salary_mstr(request):
+#     try:
+#         queryset = HR_Emp_Monthly_Sal_Mstr.objects.all()
+#         serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(queryset, many=True)
+#         return Response(serializer.data, status=200)
+#     except Exception as e:
+#         return JsonResponse({'error': str(e)}, status=500)
+
+# @api_view(['POST'])
+# def transfer_data_to_salary_process(request, period_id):
+#     print('transfer_data_to_salary_process called!')
+#     try:
+#         max_emp_mst_up_ids = HR_Emp_Sal_Update_Mstr.objects.values('Emp_ID').annotate(max_emp_mst_up_id=Max('Emp_Up_ID'))
+#         max_emp_mst_up_id_values = [item['max_emp_mst_up_id'] for item in max_emp_mst_up_ids]
+
+#         print('max_emp_mst_up_id_values: ', max_emp_mst_up_id_values)
+
+#         max_emp_mst_records = HR_Emp_Sal_Update_Mstr.objects.filter(Emp_Up_ID__in=max_emp_mst_up_id_values)
+#         max_emp_dtl_records = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID__in=max_emp_mst_up_id_values)
+
+#         # print('max_emp_mst_records: ', max_emp_mst_records)
+#         # print('max_emp_dtl_records: ', max_emp_dtl_records)
+
+#         # Update Period_ID for mst records
+#         for record in max_emp_mst_records:
+#             record.Period_ID = period_id
+#             record.save()
+
+#         # Serialize and save the mst and dtl records
+#         mst_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(data=max_emp_mst_records, many=True)
+#         if mst_serializer.is_valid():
+#             print('mst_serializer.data: ', mst_serializer.data)
+#             mst_serializer.save()
+#         else:
+#             return Response(mst_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#         dtl_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(data=max_emp_dtl_records, many=True)
+#         if dtl_serializer.is_valid():
+#             print('dtl_serializer.data: ', dtl_serializer.data)
+#             dtl_serializer.save()
+#         else:
+#             return Response(dtl_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#         return Response(data=mst_serializer.data, status=status.HTTP_200_OK)
+
+#     except Exception as e:
+#         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+# def hr_monthly_salary_process(payroll_id: int, fuel_rate: float):
+#     with transaction.atomic():
+#         # Get the start and end dates for the payroll period
+#         payroll_period = HRPayPeriod.objects.get(payroll_id=payroll_id)
+#         sdt, edt = payroll_period.sdt, payroll_period.edt
+
+#         # Check for data existence
+#         data_exists = HREmpSalUpdateMstr.objects.filter(
+#             emp_id__emp_status=True,
+#             stop_salary__isnull=True
+#         ).exists()
+
+#         if data_exists:
+#             # Insert into HR_Emp_Monthly_Sal_Mstr_Test
+#             sal_update_mstrs = HREmpSalUpdateMstr.objects.filter(
+#                 emp_id__emp_status=True,
+#                 stop_salary__isnull=True
+#             )
+
+#             for sal_update in sal_update_mstrs:
+#                 HREmpMonthlySalMstrTest.objects.create(
+#                     payroll_id=payroll_id,
+#                     emp_up_id=sal_update.emp_up_id,
+#                     emp_up_date=sal_update.emp_up_date,
+#                     emp_id=sal_update.emp_id,
+#                     hr_emp_id=sal_update.hr_emp_id,
+#                     # Set other fields as needed
+#                 )
+
+#             # Insert into HR_Emp_Monthly_Sal_Dtl_Test
+#             sal_update_dtls = sal_update_mstrs.values('emp_id').distinct()
+#             for sal_update_dtl in sal_update_dtls:
+#                 details = HREmpSalUpdateDtl.objects.filter(emp_id=sal_update_dtl['emp_id'])
+#                 for detail in details:
+#                     HREmpMonthlySalDtlTest.objects.create(
+#                         payroll_id=payroll_id,
+#                         emp_up_id=sal_update.emp_up_id,
+#                         emp_id=sal_update.emp_id,
+#                         element_id=detail.element_id,
+#                         amount=detail.amount,
+#                         # Set other fields as needed
+#                     )
+
+#             # Process Fixed Additional
+#             fixed_additionals = HREmpMonthlySalDtlTest.objects.filter(
+#                 element_category='Fixed Additional'
+#             )
+
+#             for additional in fixed_additionals:
+#                 joining_date = HREmployee.objects.get(emp_id=additional.emp_id).joining_date
+#                 if joining_date:
+#                     joining_day_month = joining_date.day
+#                     last_day_month = edt.day
+#                     calc_days = last_day_month - joining_day_month
+
+#                     allowance_amount_new = (additional.amount / last_day_month) * calc_days
+#                     additional.amount = round(allowance_amount_new, 0)
+#                     additional.save()
+
+#                 last_working_date = HREmployee.objects.get(emp_id=additional.emp_id).last_working_date
+#                 if last_working_date:
+#                     start_day_month = sdt.day
+#                     end_day_month = last_working_date.day
+#                     calc_days = (end_day_month + 1) - start_day_month
+
+#                     allowance_amount_new = (additional.amount / end_day_month) * calc_days
+#                     additional.amount = round(allowance_amount_new, 0)
+#                     additional.save()
+
+#             # Process Additional
+#             additional_elements = HRPayrollElements.objects.filter(element_category='Additional')
+
+#             for element in additional_elements:
+#                 if element.cal_type == 'Fixed':
+#                     # Handle Fixed Calculation
+#                     pass
+#                 elif element.cal_type == 'Calculate':
+#                     # Handle Calculate
+#                     if element.element_id == 4:
+#                         # Your calculation logic
+#                         pass
+#                     elif element.element_id == 22:
+#                         HREmpMonthlySalDtlTest.objects.filter(
+#                             element_id=element.element_id,
+#                             amount__gt=0
+#                         ).update(
+#                             amount=Cast(
+#                                 Value(fuel_rate) * F('amount'),
+#                                 FloatField()
+#                             )
+#                         )
+#                     elif element.element_id == 19:
+#                         # Your calculation logic
+#                         pass
+
+
 
 # @api_view(['POST'])
 # def transfer_data_to_salary_process(request, period_id):
@@ -98,45 +383,7 @@ def salaryprocess_view(request):
 #         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
      
 
-@api_view(['POST'])
-def transfer_data_to_salary_process(request, period_id):
-    print('transfer_data_to_salary_process called!')
-    try:
-        max_emp_mst_up_ids = HR_Emp_Sal_Update_Mstr.objects.values('Emp_ID').annotate(max_emp_mst_up_id=Max('Emp_Up_ID'))
-        max_emp_mst_up_id_values = [item['max_emp_mst_up_id'] for item in max_emp_mst_up_ids]
-
-        print('max_emp_mst_up_id_values: ', max_emp_mst_up_id_values)
-
-        max_emp_mst_records = HR_Emp_Sal_Update_Mstr.objects.filter(Emp_Up_ID__in=max_emp_mst_up_id_values)
-        max_emp_dtl_records = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_Up_ID__in=max_emp_mst_up_id_values)
-
-        # print('max_emp_mst_records: ', max_emp_mst_records)
-        # print('max_emp_dtl_records: ', max_emp_dtl_records)
-
-        # Update Period_ID for mst records
-        for record in max_emp_mst_records:
-            record.Period_ID = period_id
-            record.save()
-
-        # Serialize and save the mst and dtl records
-        mst_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(data=max_emp_mst_records, many=True)
-        if mst_serializer.is_valid():
-            print('mst_serializer.data: ', mst_serializer.data)
-            mst_serializer.save()
-        else:
-            return Response(mst_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        dtl_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(data=max_emp_dtl_records, many=True)
-        if dtl_serializer.is_valid():
-            print('dtl_serializer.data: ', dtl_serializer.data)
-            dtl_serializer.save()
-        else:
-            return Response(dtl_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response(data=mst_serializer.data, status=status.HTTP_200_OK)
-
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
 
         
 @api_view(['GET'])
@@ -209,72 +456,113 @@ def add_salary_update(request):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+# @api_view(['POST'])
+# def update_salary_update(request, empupid):
+#         try:
+#             print("update_salary_update")
+#             print("empupid: ", empupid)
+#             print("masterData data: ", request.data.get("masterData", {}))
+#             print("detailList data: ", request.data.get('detailList', []))
+#             master_querysery = HR_Emp_Monthly_Sal_Mstr.objects.get(pk=empupid)
+#             detail_queryset = HR_Emp_Monthly_Sal_Mstr.objects.get(Emp_Up_ID=empupid)
+#             if master_querysery is None:
+#                 Response({'error': 'no salary found'}, status=status.HTTP_404_NOT_FOUND)
+            
+#             # if master_querysery and detail_queryset is not None:
+#             #     HR_Emp_Monthly_Sal_Mstr.objects.filter(Emp_Up_ID=empupid).delete()
+#             #     HR_Emp_Monthly_Sal_Dtl.objects.filter(Emp_Up_ID=empupid).delete()
+
+#             master_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(data=request.data.get("masterData", {}))
+#             # master_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(master_querysery, data=request.data.get("masterData", {}), partial=True)
+#             if master_serializer.is_valid():
+#                 master_serializer.save()
+#                 print("master updated")
+#                 print("master_serializer: ", master_serializer.data)
+#                 print("master_serializer.data.Emp_Up_ID: ", master_serializer.data['Emp_Up_ID'])
+#                 detailList = request.data.get('detailList', [])
+
+#                 for detail_data in detailList:
+#                     detail_data['Emp_Up_ID'] = master_serializer.data['Emp_Up_ID']
+#                     detail_data['Emp_ID'] = master_serializer.data['Emp_ID']
+        
+#                     # detail_queryset = HR_Emp_Monthly_Sal_Dtl.objects.get(Emp_ID=empupid)
+
+#                     detail_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(data=detail_data)
+#                     if detail_serializer.is_valid():
+#                         detail_serializer.save()
+#                         print("detail updated")
+#                     else:
+#                         return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#             return Response(master_serializer.data, status=status.HTTP_200_OK)
+#         except Exception as e:
+#             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 @api_view(['POST'])
 def update_salary_update(request, empupid):
-        try:
-            print("update salary")
-            print("empupid: ", empupid)
-            print("masterData data: ", request.data.get("masterData", {}))
-            print("detailList data: ", request.data.get('detailList', []))
-            master_querysery = HR_Emp_Monthly_Sal_Mstr.objects.get(pk=empupid)
-            detail_queryset = HR_Emp_Monthly_Sal_Mstr.objects.get(Emp_Up_ID=empupid)
-            if master_querysery is None:
-                Response({'error': 'no salary found'}, status=status.HTTP_404_NOT_FOUND)
-            
-            if master_querysery and detail_queryset is not None:
-                HR_Emp_Monthly_Sal_Mstr.objects.filter(Emp_Up_ID=empupid).delete()
-                HR_Emp_Monthly_Sal_Dtl.objects.filter(Emp_Up_ID=empupid).delete()
-
-            master_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(data=request.data.get("masterData", {}))
-            # master_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(master_querysery, data=request.data.get("masterData", {}), partial=True)
-            if master_serializer.is_valid():
-                master_serializer.save()
-                print("master updated")
-                print("master_serializer: ", master_serializer.data)
-                print("master_serializer.data.Emp_Up_ID: ", master_serializer.data['Emp_Up_ID'])
-                detailList = request.data.get('detailList', [])
-
-                for detail_data in detailList:
-                    detail_data['Emp_Up_ID'] = master_serializer.data['Emp_Up_ID']
-                    detail_data['Emp_ID'] = master_serializer.data['Emp_ID']
-        
-                    # detail_queryset = HR_Emp_Monthly_Sal_Dtl.objects.get(Emp_ID=empupid)
-
-                    detail_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(data=detail_data)
-                    if detail_serializer.is_valid():
-                        detail_serializer.save()
-                        print("detail updated")
-                    else:
-                        return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            return Response(master_serializer.data, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-@api_view(['PUT'])
-def update_salary_Update(request, pk):
     try:
-        master_instance = HR_Emp_Monthly_Sal_Mstr.objects.get(pk=pk)
-        master_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(instance=master_instance, data=request.data.get('masterData', {}))
-        if not master_serializer.is_valid():
-            return Response(master_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Fetch master data
+        try:
+            master_instance = HR_Emp_Monthly_Sal_Mstr.objects.get(pk=empupid)
+        except HR_Emp_Monthly_Sal_Mstr.DoesNotExist:
+            return Response({'error': 'No salary record found'}, status=status.HTTP_404_NOT_FOUND)
 
-        master_serializer.save()
+        # Handle master data update
+        master_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(master_instance, data=request.data.get("masterData", {}), partial=True)
+        if master_serializer.is_valid():
+            master_instance = master_serializer.save()
+            print("Master updated")
+            print("Master serializer data:", master_serializer.data)
+            print('master_instance.Emp_ID: ', master_instance.Emp_ID)
 
-        detail_querySet_list = HR_Emp_Monthly_Sal_Dtl.objects.filter(Emp_Up_ID=pk)
-        for detail_querySet in detail_querySet_list:
-            detail_request = next((item for item in request.data.get("detailList", []) if item['id'] == detail_querySet.id), None)
-            if detail_request:
-                detail_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(instance=detail_querySet, data=detail_request)
+            detailList = request.data.get('detailList', [])
+            for detail_data in detailList:
+                detail_data['Emp_Up_ID'] = master_instance.Emp_Up_ID
+                detail_data['Emp_ID'] = master_instance.Emp_ID.Emp_ID
+
+                # Handle detail data update
+                detail_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(data=detail_data)
                 if detail_serializer.is_valid():
                     detail_serializer.save()
+                    print("Detail updated")
                 else:
                     return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        return Response({"message": "Salary update updated successfully"}, status=status.HTTP_200_OK)
-    except HR_Emp_Monthly_Sal_Mstr.DoesNotExist:
-        return Response({'error': 'Master record not found'}, status=status.HTTP_404_NOT_FOUND)
+                
+            return Response(master_serializer.data, status=status.HTTP_200_OK)
+        else:
+            # Print serializer errors for debugging
+            print("Master serializer errors:", master_serializer.errors)
+            return Response(master_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        # Print exception for debugging
+        print("Exception:", str(e))
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+# @api_view(['PUT'])
+# def update_salary_Update(request, pk):
+#     try:
+#         master_instance = HR_Emp_Monthly_Sal_Mstr.objects.get(pk=pk)
+#         master_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(instance=master_instance, data=request.data.get('masterData', {}))
+#         if not master_serializer.is_valid():
+#             return Response(master_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#         master_serializer.save()
+
+#         detail_querySet_list = HR_Emp_Monthly_Sal_Dtl.objects.filter(Emp_Up_ID=pk)
+#         for detail_querySet in detail_querySet_list:
+#             detail_request = next((item for item in request.data.get("detailList", []) if item['id'] == detail_querySet.id), None)
+#             if detail_request:
+#                 detail_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(instance=detail_querySet, data=detail_request)
+#                 if detail_serializer.is_valid():
+#                     detail_serializer.save()
+#                 else:
+#                     return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+#         return Response({"message": "Salary update updated successfully"}, status=status.HTTP_200_OK)
+#     except HR_Emp_Monthly_Sal_Mstr.DoesNotExist:
+#         return Response({'error': 'Master record not found'}, status=status.HTTP_404_NOT_FOUND)
+#     except Exception as e:
+#         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])
 def getall_payroll_element_notin_su(request, empUpID, empID):
@@ -333,7 +621,7 @@ def getall_master_byid(request, empUpID, empID):
                 "Stop_Salary": data.Emp_Up_ID.Stop_Salary,
             }
             datas.append(item)
-        print("DAtas: ", datas)
+        # print("DAtas: ", datas)
         return Response(datas, status=status.HTTP_200_OK)
     except HR_Emp_Monthly_Sal_Dtl.DoesNotExist:
         return Response({'error': 'Salary not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -343,7 +631,7 @@ def getall_master_byid(request, empUpID, empID):
 @api_view(['GET'])
 def getll_master(request):
     try:
-        querySet = HR_Emp_Monthly_Sal_Mstr.objects.all()
+        querySet = HR_Emp_Monthly_Sal_Mstr.objects.prefetch_related('Emp_ID', 'Grade_ID', 'Dept_ID')
         print('querySet: ', querySet.count())
         datas = []
         for item in querySet:
@@ -357,7 +645,7 @@ def getll_master(request):
                 'Dept_Descr': item.Dept_ID.Dept_Descr
             }
             datas.append(data)
-        print('datas: ', datas)
+        # print('datas: ', datas)
         return Response(datas, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

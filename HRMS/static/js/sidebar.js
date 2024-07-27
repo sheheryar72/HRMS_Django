@@ -220,6 +220,8 @@ function onClickFunc(formID, formDescr) {
         window.open('/region/')
     } else if (formID === 18) {
         window.open('/salaryprocess/')
+    } else if (formID === 19) {
+        window.open('/salaryprocess/monthlysalaryupdate/')
     }
 }
 

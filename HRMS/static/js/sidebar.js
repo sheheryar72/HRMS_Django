@@ -218,9 +218,9 @@ function onClickFunc(formID, formDescr) {
         window.open('/monthly_all_ded/')
     } else if (formID === 17) {
         window.open('/region/')
-    } else if (formID === 18) {
+    } else if (formID === 22) {
         window.open('/salaryprocess/')
-    } else if (formID === 19) {
+    } else if (formID === 21) {
         window.open('/salaryprocess/monthlysalaryupdate/')
     }
 }

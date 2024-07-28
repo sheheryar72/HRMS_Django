@@ -15,13 +15,22 @@ async function getAllDataFromDB(url, name) {
     }
 }
 
-function getall_payrollperiod() {
-    getAllDataFromDB(`${BASE_URL}/salaryprocess/getall_payrollperiod`, 'Payroll Period').then((data) => {
+// function getall_payrollperiod() {
+//     getAllDataFromDB(`${BASE_URL}/salaryprocess/getall_payrollperiod`, 'Payroll Period').then((data) => {
+//         console.log("getall_payrollperiod response: ", data);
+//         var temp = '';
+//         for (var i = 0; i < data.length; i++) {
+//             temp += `<option value="${data[i].PAYROLL_ID}">${data[i].MNTH_NAME}</option>`
+//         }
+//         document.getElementById("Payroll_ID").innerHTML = temp;
+//     });
+// }
+
+function get_active_period() {
+    getAllDataFromDB(`${BASE_URL}/salaryprocess/get_active_period`, 'Payroll Period').then((data) => {
         console.log("getall_payrollperiod response: ", data);
-        var temp = '';
-        for (var i = 0; i < data.length; i++) {
-            temp += `<option value="${data[i].PAYROLL_ID}">${data[i].MNTH_NAME}</option>`
-        }
+        var temp = `<option value="${data.PAYROLL_ID}">${data.MNTH_NAME} - ${data.FinYear}</option>`
+        // var temp = `${data.MNTH_NAME} - ${data.FinYear}`
         document.getElementById("Payroll_ID").innerHTML = temp;
     });
 }
@@ -29,7 +38,7 @@ function getall_payrollperiod() {
 
 async function transfer_data_to_salary_process(payroll_id, fuel_rate) {
     try {
-        const response = await fetch(`${BASE_URL}/salaryprocess/hr_monthly_salary_process/${payroll_id}/${fuel_rate}`, {
+        const response = await fetch(`${BASE_URL}/salaryprocess/hr_monthly_salary_process/${payroll_id}/${fuel_rate}/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -67,5 +76,5 @@ document.getElementById("monthly_process_btn").addEventListener('click', functio
 
 
 $(document).ready(function () {
-    getall_payrollperiod();
+    get_active_period()
 });

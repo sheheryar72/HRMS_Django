@@ -38,6 +38,9 @@ def monthlysalaryupdate_view(request):
 
 def hr_monthly_salary_process(payroll_id, fuel_rate):
     # Fetch the payroll period start and end dates
+    print('hr_monthly_salary_process called! ')
+    print('hr_monthly_salary_process payroll_id! ', payroll_id)
+    print('hr_monthly_salary_process fuel_rate! ', fuel_rate)
     try:
         payroll_period = HR_PAYROLL_PERIOD.objects.get(PAYROLL_ID=payroll_id)
         sdt = payroll_period.sdt
@@ -403,6 +406,24 @@ def getall_payrollperiod(request):
 
         return Response(data=data, status=200)
 
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+
+@api_view(['GET'])
+def get_active_period(request):
+    try:
+        payroll_period = HR_PAYROLL_PERIOD.objects.filter(PERIOD_STATUS=True, FYID__FYID=1).select_related('MNTH_ID', 'FYID').first()
+
+        payroll_period.FYID.FinYear
+
+        data = {
+            'PAYROLL_ID': payroll_period.PAYROLL_ID,
+            'PERIOD_ID': payroll_period.PERIOD_ID,
+            'MNTH_NAME': payroll_period.MNTH_ID.MNTH_NAME,
+            'FinYear': payroll_period.FYID.FinYear
+        }
+
+        return Response(data=data, status=200)
     except Exception as e:
         return Response({'error': str(e)}, status=500)
 

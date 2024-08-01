@@ -26,6 +26,8 @@ from department.models import HR_Department
 from django.db.models import Sum, F, Value
 from django.db import transaction
 from django.db.models import Sum, F, Value, Case, When
+from django.db.models.functions import Coalesce
+from django.db import transaction
 
 
 def salaryprocess_view(request):
@@ -35,105 +37,655 @@ def monthlysalaryupdate_view(request):
     return render(request, 'monthlysalaryupdate.html')
 
 
+# def hr_monthly_salary_process(payroll_id, fuel_rate):
+#     # Fetch the payroll period start and end dates
+#     print('hr_monthly_salary_process called! ')
+#     print('hr_monthly_salary_process payroll_id! ', payroll_id)
+#     print('hr_monthly_salary_process fuel_rate! ', fuel_rate)
+#     try:
+#         payroll_period = HR_PAYROLL_PERIOD.objects.get(PAYROLL_ID=payroll_id)
+#         sdt = payroll_period.sdt
+#         edt = payroll_period.edt
+#     except HR_PAYROLL_PERIOD.DoesNotExist:
+#         raise ValueError("Payroll period not found.")
+    
+#     # Check if there is data to process
+#     if not HR_Emp_Sal_Update_Mstr.objects.filter(
+#         Emp_ID__Emp_Status=1,
+#         stop_salary=False
+#     ).exists():
+#         raise ValueError("No data available for processing.")
 
-def hr_monthly_salary_process(payroll_id, fuel_rate):
-    # Fetch the payroll period start and end dates
-    print('hr_monthly_salary_process called! ')
-    print('hr_monthly_salary_process payroll_id! ', payroll_id)
-    print('hr_monthly_salary_process fuel_rate! ', fuel_rate)
+#     with transaction.atomic():
+#         # Process each employee
+#         for emp in HR_Emp_Sal_Update_Mstr.objects.filter(
+#             Emp_ID__Emp_Status=1,
+#             stop_salary=False
+#         ).values('emp_up_id', 'emp_id', 'hr_emp_id').distinct():
+            
+#             emp_up_id = emp['Emp_Up_ID']
+#             emp_id = emp['Emp_ID']
+#             hr_emp_id = emp['HR_Emp_ID']
+            
+#             # Create record in Monthly Salary Master
+#             HR_Emp_Monthly_Sal_Mstr.objects.create(
+#                 Emp_Up_Date=sdt,
+#                 Emp_Category=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Emp_Category,
+#                 Marital_Status=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Marital_Status,
+#                 No_of_Children=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).No_of_Children,
+#                 Co_ID=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Co_ID,
+#                 GrossSalary=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).GrossSalary,
+#                 Remarks=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Remarks,
+#                 Emp_ID=HR_Employees.objects.get(Emp_ID=emp_id),
+#                 HR_Emp_ID=hr_emp_id,
+#                 Grade_ID=HR_Grade.objects.get(Grade_ID=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Grade_ID),
+#                 Dsg_ID=HR_Designation.objects.get(DSG_ID=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Dsg_ID),
+#                 Dept_ID=HR_Department.objects.get(Dept_ID=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Dept_ID),
+#                 Transfer_Type=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Transfer_Type,
+#                 Account_No=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Account_No,
+#                 Bank_Name=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Bank_Name,
+#                 Stop_Salary=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Stop_Salary,
+#                 Payroll_ID=HR_PAYROLL_PERIOD.objects.get(PAYROLL_ID=payroll_id)
+#             )
+            
+#             # Create records in Monthly Salary Detail
+#             salary_details = HR_Emp_Sal_Update_Dtl.objects.filter(emp_id=emp_id)
+#             for detail in salary_details:
+#                 HR_Emp_Monthly_Sal_Dtl.objects.create(
+#                     Emp_Up_ID=HR_Emp_Monthly_Sal_Mstr.objects.get(Emp_Up_ID=emp_up_id),
+#                     Amount=detail.Amount,
+#                     Element_ID=HR_Payroll_Elements.objects.get(Element_ID=detail.Element_ID),
+#                     Element_Type=detail.Element_Type,
+#                     Element_Category=detail.Element_Category,
+#                     Emp_ID=HR_Employees.objects.get(Emp_ID=emp_id)
+#                 )
+        
+#         # Update Additional Elements if needed
+#         additional_elements = HR_Payroll_Elements.objects.filter(element_category='Additional')
+#         if additional_elements.exists():
+#             for element in additional_elements:
+#                 if element.Cal_Type == 'Fixed':
+#                     HR_Emp_Monthly_Sal_Dtl.objects.filter(
+#                         Emp_ID__in=HR_Emp_Sal_Update_Mstr.objects.filter(emp_id=emp_id),
+#                         Element_ID=element
+#                     ).update(
+#                         # Amount=Coalesce(F('Amount'), Value(0))
+#                         Amount=Case(
+#                             When(Amount__isnull=True, then=Value(0)),
+#                             default=F('Amount')
+#                         )
+#                     )
+#                 elif element.Cal_Type == 'Variable':
+#                     HR_Emp_Monthly_Sal_Dtl.objects.filter(
+#                         Emp_ID__in=HR_Emp_Sal_Update_Mstr.objects.filter(emp_id=emp_id),
+#                         Element_ID=element
+#                     ).update(
+#                         Amount=F('Amount') * fuel_rate
+#                     )
+
+#         # Update Monthly Salary Master with total salary details
+#         HR_Emp_Monthly_Sal_Mstr.objects.filter(
+#             Payroll_ID=payroll_id
+#         ).update(
+#               GrossSalary=Sum(
+#                 Case(
+#                     When(hremp_monthly_sal_dtl_test__Amount__isnull=True, then=Value(0)),
+#                     default=F('hremp_monthly_sal_dtl_test__Amount')
+#                 )
+#             )
+#             # GrossSalary=Coalesce(Sum('hremp_monthly_sal_dtl_test__Amount'), Value(0))
+#         )
+
+from django.http import HttpResponse
+
+
+
+
+def hr_monthly_salary_process(request, payroll_id, fuel_rate):
     try:
         payroll_period = HR_PAYROLL_PERIOD.objects.get(PAYROLL_ID=payroll_id)
-        sdt = payroll_period.sdt
-        edt = payroll_period.edt
     except HR_PAYROLL_PERIOD.DoesNotExist:
-        raise ValueError("Payroll period not found.")
-    
-    # Check if there is data to process
-    if not HR_Emp_Sal_Update_Mstr.objects.filter(
-        Emp_ID__Emp_Status=1,
-        stop_salary=False
-    ).exists():
-        raise ValueError("No data available for processing.")
+        return HttpResponse("Payroll period does not exist", status=404)
 
-    with transaction.atomic():
-        # Process each employee
-        for emp in HR_Emp_Sal_Update_Mstr.objects.filter(
-            Emp_ID__Emp_Status=1,
-            stop_salary=False
-        ).values('emp_up_id', 'emp_id', 'hr_emp_id').distinct():
-            
-            emp_up_id = emp['Emp_Up_ID']
-            emp_id = emp['Emp_ID']
-            hr_emp_id = emp['HR_Emp_ID']
-            
-            # Create record in Monthly Salary Master
-            HR_Emp_Monthly_Sal_Mstr.objects.create(
-                Emp_Up_Date=sdt,
-                Emp_Category=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Emp_Category,
-                Marital_Status=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Marital_Status,
-                No_of_Children=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).No_of_Children,
-                Co_ID=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Co_ID,
-                GrossSalary=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).GrossSalary,
-                Remarks=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Remarks,
-                Emp_ID=HR_Employees.objects.get(Emp_ID=emp_id),
-                HR_Emp_ID=hr_emp_id,
-                Grade_ID=HR_Grade.objects.get(Grade_ID=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Grade_ID),
-                Dsg_ID=HR_Designation.objects.get(DSG_ID=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Dsg_ID),
-                Dept_ID=HR_Department.objects.get(Dept_ID=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Dept_ID),
-                Transfer_Type=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Transfer_Type,
-                Account_No=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Account_No,
-                Bank_Name=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Bank_Name,
-                Stop_Salary=HR_Emp_Sal_Update_Mstr.objects.get(emp_id=emp_id).Stop_Salary,
-                Payroll_ID=HR_PAYROLL_PERIOD.objects.get(PAYROLL_ID=payroll_id)
-            )
-            
-            # Create records in Monthly Salary Detail
-            salary_details = HR_Emp_Sal_Update_Dtl.objects.filter(emp_id=emp_id)
-            for detail in salary_details:
-                HR_Emp_Monthly_Sal_Dtl.objects.create(
-                    Emp_Up_ID=HR_Emp_Monthly_Sal_Mstr.objects.get(Emp_Up_ID=emp_up_id),
-                    Amount=detail.Amount,
-                    Element_ID=HR_Payroll_Elements.objects.get(Element_ID=detail.Element_ID),
-                    Element_Type=detail.Element_Type,
-                    Element_Category=detail.Element_Category,
-                    Emp_ID=HR_Employees.objects.get(Emp_ID=emp_id)
-                )
-        
-        # Update Additional Elements if needed
-        additional_elements = HR_Payroll_Elements.objects.filter(element_category='Additional')
-        if additional_elements.exists():
-            for element in additional_elements:
-                if element.Cal_Type == 'Fixed':
-                    HR_Emp_Monthly_Sal_Dtl.objects.filter(
-                        Emp_ID__in=HR_Emp_Sal_Update_Mstr.objects.filter(emp_id=emp_id),
-                        Element_ID=element
-                    ).update(
-                        # Amount=Coalesce(F('Amount'), Value(0))
-                        Amount=Case(
-                            When(Amount__isnull=True, then=Value(0)),
-                            default=F('Amount')
-                        )
-                    )
-                elif element.Cal_Type == 'Variable':
-                    HR_Emp_Monthly_Sal_Dtl.objects.filter(
-                        Emp_ID__in=HR_Emp_Sal_Update_Mstr.objects.filter(emp_id=emp_id),
-                        Element_ID=element
-                    ).update(
-                        Amount=F('Amount') * fuel_rate
-                    )
+    # Delete existing data in destination tables
+    HR_Emp_Monthly_Sal_Mstr.objects.filter(Payroll_ID=payroll_period).delete()
+    HR_Emp_Monthly_Sal_Dtl.objects.filter(Payroll_ID=payroll_period).delete()
 
-        # Update Monthly Salary Master with total salary details
-        HR_Emp_Monthly_Sal_Mstr.objects.filter(
-            Payroll_ID=payroll_id
-        ).update(
-              GrossSalary=Sum(
-                Case(
-                    When(hremp_monthly_sal_dtl_test__Amount__isnull=True, then=Value(0)),
-                    default=F('hremp_monthly_sal_dtl_test__Amount')
-                )
-            )
-            # GrossSalary=Coalesce(Sum('hremp_monthly_sal_dtl_test__Amount'), Value(0))
+    # Fetch data for bulk create
+    salary_updates = HR_Emp_Sal_Update_Mstr.objects.filter(Stop_Salary=0).select_related('Emp_ID', 'Dsg_ID', 'Dept_ID', 'Grade_ID')
+    salary_details = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_ID__in=salary_updates.values('Emp_ID')).select_related('Emp_Up_ID', 'Element_ID', 'Emp_ID')
+
+    # Insert into HR_Emp_Monthly_Sal_Mstr
+    salary_masters = [
+        HR_Emp_Monthly_Sal_Mstr(
+            Payroll_ID=payroll_period,
+            Emp_Up_ID=obj.Emp_Up_ID,
+            Emp_Up_Date=obj.Emp_Up_Date,
+            Emp_ID=obj.Emp_ID,
+            Emp_Category=obj.Emp_Category,
+            HR_Emp_ID=obj.HR_Emp_ID,
+            Marital_Status=obj.Marital_Status,
+            No_of_Children=obj.No_of_Children,
+            Dsg_ID=obj.Dsg_ID,
+            Dept_ID=obj.Dept_ID,
+            Grade_ID=obj.Grade_ID,
+            Co_ID=obj.Co_ID,
+            Remarks=obj.Remarks,
+            GrossSalary=obj.GrossSalary,
+            MDays=30,
+            WDAYS=0,
+            ADAYS=0,
+            JLDAYS=0,
+            Transfer_Type=obj.Transfer_Type,
+            Account_No=obj.Account_No,
+            Bank_Name=obj.Bank_Name,
+            Stop_Salary=obj.Stop_Salary
         )
+        for obj in salary_updates
+    ]
+    HR_Emp_Monthly_Sal_Mstr.objects.bulk_create(salary_masters)
+
+    # Insert into HR_Emp_Monthly_Sal_Dtl
+    salary_details_bulk = [
+        HR_Emp_Monthly_Sal_Dtl(
+            Payroll_ID=payroll_period,
+            Emp_Up_ID=obj.Emp_Up_ID.Emp_Up_ID,
+            Emp_ID=obj.Emp_ID,
+            Element_ID=obj.Element_ID,
+            Amount=obj.Amount,
+            Element_Type=obj.Element_Type,
+            Element_Category=obj.Element_Category
+        )
+        for obj in salary_details
+    ]
+    HR_Emp_Monthly_Sal_Dtl.objects.bulk_create(salary_details_bulk)
+
+    # Update Fixed Additional Elements
+    for detail in HR_Emp_Monthly_Sal_Dtl.objects.filter(Element_Category='Fixed Additional'):
+        emp = HR_Employees.objects.get(Emp_ID=detail.Emp_ID.Emp_ID)
+        joining_date = emp.Joining_Date
+        last_working_date = emp.Last_Working_Date
+
+        if joining_date and last_working_date:
+            total_days = (last_working_date - joining_date).days
+            if total_days > 0:
+                working_days = (30 - (joining_date - payroll_period.Payroll_Start_Date).days) # Assuming `Payroll_Start_Date` is the start date of the payroll period
+                new_amount = (detail.Amount / total_days) * working_days
+            else:
+                new_amount = 0
+
+            detail.Amount = new_amount
+            detail.save()
+
+    return JsonResponse({'results': "Procedure executed successfully!"})
+
+
+
+# @api_view(['GET'])
+# def transfer_data_to_salary_process(request, payroll_id, fuel_rate):
+#     print('transfer_data_to_salary_process called payroll_id: ', payroll_id)
+#     try:
+#         with connection.cursor() as cursor:
+
+#             query = f'''
+
+
+
+# DECLARE @Payroll_ID As Int
+# 	SET @Payroll_ID = 12
+
+# 	DECLARE @Fuel_Rate As Int
+# 	SET @Fuel_Rate = 270
+
+# 	DECLARE @Emp_UP_ID_Cursor_1 cursor
+# 	DECLARE @Emp_ID_Cursor_2 cursor
+
+# 	DECLARE @Emp_ID_Additional_Cursor_3 CURSOR
+# 	DECLARE @DATA_EXIST AS INT
+
+# 	DECLARE @CHK_FIXED_ADDITIONAL AS Int
+
+# 	DECLARE @CHK_ADDITIONAL AS Int
+	
+
+# 	DECLARE @Emp_UP_ID AS INT
+# 	DECLARE @Emp_ID AS INT
+# 	DECLARE @CNT AS INT
+# 	DECLARE @HR_EMP_ID AS INT
+
+# 	DECLARE @SDT AS DATE
+# 	DECLARE @EDT AS DATE
+
+# 	SET @DATA_EXIST = (SELECT COUNT(HR_EMP_ID) AS CNT FROM (
+# 							SELECT Max(HESUM.Emp_Up_ID) As [Emp_UP_ID], HESUM.Emp_ID, HESUM.HR_EMP_ID
+# 							  FROM HR_Emp_Sal_Update_Mstr HESUM, HR_EMPLOYEES HE
+# 							  WHERE 1 = 1
+# 							  AND HESUM.EMP_ID = HE.EMP_ID
+# 							  AND HE.Emp_Status  = 1
+# 							  AND (HESUM.STOP_SALARY IS NULL OR HESUM.Stop_Salary  = 0)
+# 							  GROUP BY HESUM.EMP_ID, HESUM.HR_EMP_ID) AS ABC
+# 						)	
+
+# 	IF (@DATA_EXIST > 0)
+# 		BEGIN
+# 			SET @Emp_UP_ID_Cursor_1 = CURSOR FOR 
+# 										SELECT Max(HESUM.Emp_Up_ID) As [Emp_UP_ID], HESUM.Emp_ID, HESUM.HR_EMP_ID
+# 										FROM HR_Emp_Sal_Update_Mstr HESUM, HR_EMPLOYEES HE
+# 										WHERE 1 = 1
+# 										AND HESUM.EMP_ID = HE.EMP_ID
+# 										AND HE.Emp_Status  = 1
+# 										AND (HESUM.STOP_SALARY IS NULL OR HESUM.Stop_Salary  = 0)
+# 										GROUP BY HESUM.EMP_ID, HESUM.HR_EMP_ID
+
+# 			OPEN @Emp_UP_ID_Cursor_1
+# 			FETCH NEXT FROM @Emp_UP_ID_Cursor_1 INTO @Emp_UP_ID, @Emp_ID, @HR_EMP_ID
+# 			WHILE @@FETCH_STATUS = 0
+# 			BEGIN	
+
+# 				SET @EDT = (SELECT EDT FROM HR_PAYROLL_PERIOD_V WHERE PAYROLL_ID = @PAYROLL_ID)
+
+# 				--Month Salary Master File
+# 				--========================
+
+# 				INSERT INTO [HR_Emp_Monthly_Sal_Mstr_Test] (
+# 				[Payroll_ID], [Emp_Up_ID] ,[Emp_Up_Date] ,[Emp_ID] ,[Emp_Category] ,[HR_Emp_ID] ,[Marital_Status] 
+# 				,[No_of_Children] ,[Dsg_ID] ,[Dept_ID] ,[Grade_ID] ,[Co_ID] ,[Remarks] ,[GrossSalary]
+# 				,[MDays], [WDAYS], [ADAYS], [JLDAYS], [Transfer_Type] ,[Account_No] ,[Bank_Name] ,[Stop_Salary]
+# 				)	
+# 				Select @Payroll_ID, Emp_Up_ID ,Emp_Up_Date ,Emp_ID ,Emp_Category ,HR_Emp_ID ,Marital_Status
+# 				,No_of_Children ,Dsg_ID ,Dept_ID ,Grade_ID ,Co_ID ,Remarks ,GrossSalary
+# 				,Day(@EDT), 0, 0, 0, Transfer_Type ,Account_No ,Bank_Name ,Stop_Salary
+# 				FROM HR_Emp_Sal_Update_Mstr
+# 				WHERE EMP_ID = @EMP_ID
+
+# 				--Month Salary Detail File
+# 				--========================
+
+# 				INSERT INTO [HR_Emp_Monthly_Sal_Dtl_Test] (
+# 				[Payroll_ID], [Emp_Up_ID], [Emp_ID], [Element_ID], [Amount], [Element_Type], [Element_Category]
+# 				)	
+# 				Select @Payroll_ID, Emp_Up_ID, Emp_ID, Element_ID, Amount, Element_Type, Element_Category
+# 				FROM HR_Emp_Sal_Update_Dtl
+# 				WHERE 1 = 1 
+# 				AND EMP_ID = @EMP_ID
+
+# 				FETCH NEXT FROM @Emp_UP_ID_Cursor_1 INTO @Emp_UP_ID, @Emp_ID, @HR_EMP_ID
+# 			END
+# 			CLOSE @Emp_UP_ID_Cursor_1
+# 			DEALLOCATE @Emp_UP_ID_Cursor_1
+# 		END
+
+# 	--Working For Fixed Additional
+
+# 	SET @CHK_FIXED_ADDITIONAL = (SELECT COUNT(*) AS FA_CNT FROM HR_Emp_Monthly_Sal_Dtl_Test
+# 	WHERE Element_Category = 'Fixed Additional')
+
+# 	IF (@CHK_FIXED_ADDITIONAL > 0)
+# 		BEGIN
+# 			DECLARE @Emp_UP_ID_C2 AS INT
+# 			DECLARE @EMP_ID_C2 AS INT
+# 			DECLARE @Element_ID AS INT
+# 			DECLARE @Allowance_Amount AS FLOAT
+# 			DECLARE @Element_Type AS VARCHAR(50)
+# 			DECLARE @Element_Category AS VARCHAR(50)
+
+# 			SET @SDT = (SELECT SDT FROM HR_PAYROLL_PERIOD_V WHERE PAYROLL_ID = @PAYROLL_ID)
+# 			SET @EDT = (SELECT EDT FROM HR_PAYROLL_PERIOD_V WHERE PAYROLL_ID = @PAYROLL_ID)
+
+# 			DECLARE @GET_JOINING_DATE AS DATE
+# 			DECLARE @GET_Last_Working_Date AS DATE
+
+# 			DECLARE @Allowance_Amount_NEW AS FLOAT
+# 			DECLARE @JOINING_DAY_MONTH AS INT
+# 			DECLARE @Start_DAY_MONTH AS INT
+# 			DECLARE @END_DAY_MONTH AS INT
+# 			DECLARE @LAST_DAY_MONTH  AS INT
+# 			DECLARE @CALC_DAYS AS INT
+
+# 			SET @Emp_ID_Cursor_2 = CURSOR FOR 
+# 										SELECT Emp_UP_ID, EMP_ID, Element_ID, Amount, Element_Type, Element_Category	
+# 										From HR_Emp_Monthly_Sal_Dtl_Test
+# 										Where 1 = 1 
+# 										AND Payroll_ID = 12 --@Payroll_ID 
+# 										AND Element_Category = 'Fixed Additional'
+# 										ORDER BY EMP_ID, Element_ID
+				
+# 			OPEN @Emp_ID_Cursor_2
+# 			FETCH NEXT FROM @Emp_ID_Cursor_2 INTO @Emp_UP_ID_C2, @EMP_ID_C2, @Element_ID, @Allowance_Amount, @Element_Type, @Element_Category
+# 			WHILE @@FETCH_STATUS = 0
+# 				BEGIN	
+
+# 					SET @GET_JOINING_DATE = (SELECT JOINING_DATE FROM HR_EMPLOYEES WHERE EMP_ID = @EMP_ID_C2
+# 											AND JOINING_DATE BETWEEN @SDT AND @EDT)
+
+# 					IF (LEN(@GET_JOINING_DATE) > 0)
+# 						BEGIN
+
+# 							SET @JOINING_DAY_MONTH = (SELECT DAY(@GET_JOINING_DATE))
+# 							SET @LAST_DAY_MONTH = (SELECT DAY(@EDT))
+# 							SET @CALC_DAYS = (@LAST_DAY_MONTH - @JOINING_DAY_MONTH)
+
+# 							SET @Allowance_Amount_NEW = ((@Allowance_Amount/@LAST_DAY_MONTH) * @CALC_DAYS)
+
+# 							UPDATE HR_Emp_Monthly_Sal_Dtl_Test SET AMOUNT = ROUND(@Allowance_Amount_NEW,0)
+# 							WHERE PAYROLL_ID = @PAYROLL_ID
+# 							AND EMP_UP_ID = @Emp_UP_ID_C2
+# 							AND EMP_ID = @EMP_ID_C2
+# 							AND ELEMENT_ID = @Element_ID
+# 						END
+
+# 					SET @GET_Last_Working_Date = (SELECT Last_Working_Date FROM HR_EMPLOYEES WHERE EMP_ID = @EMP_ID_C2
+# 											AND Last_Working_Date BETWEEN @SDT AND @EDT)
+
+# 					IF (LEN(@GET_Last_Working_Date) > 0)
+# 						BEGIN
+
+# 							SET @Start_DAY_MONTH = (SELECT DAY(@SDT))
+# 							SET @LAST_DAY_MONTH = (SELECT DAY(@GET_Last_Working_Date))
+# 							SET @END_DAY_MONTH = (SELECT DAY(@EDT))
+# 							SET @CALC_DAYS = ((@LAST_DAY_MONTH + 1) - @Start_DAY_MONTH)
+
+# 							SET @Allowance_Amount_NEW = ((@Allowance_Amount/@END_DAY_MONTH) * @CALC_DAYS)
+
+# 							--select @EMP_ID_C2, @GET_Last_Working_Date, @Start_DAY_MONTH, @END_DAY_MONTH, @LAST_DAY_MONTH, @CALC_DAYS, @Allowance_Amount_NEW
+
+# 							UPDATE HR_Emp_Monthly_Sal_Dtl_Test SET AMOUNT = ROUND(@Allowance_Amount_NEW,0)
+# 							WHERE PAYROLL_ID = @PAYROLL_ID
+# 							AND EMP_UP_ID = @Emp_UP_ID_C2
+# 							AND EMP_ID = @EMP_ID_C2
+# 							AND ELEMENT_ID = @Element_ID
+# 						END
+
+# 					FETCH NEXT FROM @Emp_ID_Cursor_2 INTO @Emp_UP_ID_C2, @EMP_ID_C2, @Element_ID, @Allowance_Amount, @Element_Type, @Element_Category
+# 				END
+
+# 			CLOSE @Emp_ID_Cursor_2
+# 			DEALLOCATE @Emp_ID_Cursor_2
+# 		END
+	
+# 	--Working For Additional
+
+# 	SET @CHK_ADDITIONAL = (SELECT COUNT(*) AS A_CNT FROM HR_Payroll_Elements 
+# 							WHERE Element_Category = 'Additional')
+# 	--SELECT @CHK_ADDITIONAL
+# 	IF (@CHK_ADDITIONAL > 0)
+# 		BEGIN
+# 			DECLARE @Element_ID_C3 AS INT
+# 			DECLARE @Element_Type_C3 AS Varchar(50)
+# 			DECLARE @Element_Category_C3 AS Varchar(50)
+# 			DECLARE @CAL_TYPE AS VARCHAR(50)
+
+# 			DECLARE @ELEMENT_NAME_ID AS VARCHAR(50)
+
+# 			DECLARE @SDT_C3 AS DATE
+# 			DECLARE @EDT_C3 AS DATE
+
+
+# 			SET @SDT_C3 = (SELECT SDT FROM HR_PAYROLL_PERIOD_V WHERE PAYROLL_ID = @PAYROLL_ID)
+# 			SET @EDT_C3 = (SELECT EDT FROM HR_PAYROLL_PERIOD_V WHERE PAYROLL_ID = @PAYROLL_ID)
+
+# 			--DECLARE @GET_JOINING_DATE AS DATE
+# 				--SELECT * FROM HR_PAYROLL_ELEMENTS WHERE Element_Category = 'Additional'
+# 			SET @Emp_ID_Additional_Cursor_3 = CURSOR FOR 
+# 										SELECT ELEMENT_ID, CONCAT(REPLACE(Element_Name, ' ', '_'),'_',ELEMENT_ID) AS ELEMENT_NAME_ID, 
+# 										ELEMENT_TYPE, ELEMENT_CATEGORY, CAL_TYPE	
+# 										From HR_PAYROLL_ELEMENTS
+# 										Where 1 = 1 
+# 										AND Element_Category = 'Additional'
+# 										--AND CAL_TYPE = 'Fixed'
+# 										ORDER BY Element_ID
+				
+# 			OPEN @Emp_ID_Additional_Cursor_3
+# 			FETCH NEXT FROM @Emp_ID_Additional_Cursor_3 INTO @Element_ID_C3, @ELEMENT_NAME_ID, @Element_Type_C3, 
+# 															@Element_Category_C3, @CAL_TYPE
+# 			WHILE @@FETCH_STATUS = 0
+# 				BEGIN	
+# 					DECLARE @sql NVARCHAR(MAX)
+# 					IF (@CAL_TYPE = 'Fixed')
+# 						BEGIN
+# 							SET @sql = N'
+# 										INSERT INTO HR_Emp_Monthly_Sal_Dtl_Test (
+# 										[Payroll_ID], [Emp_Up_ID], [Emp_ID], [Element_ID], [Amount], [Element_Type], 
+# 										[Element_Category]
+# 										)	
+# 										SELECT HMAD.Payroll_ID, HEMSM.EMP_UP_ID, HMAD.Emp_ID,  ' + CAST(@Element_ID_C3 AS NVARCHAR) + ' AS ' + QUOTENAME(CAST(@Element_ID_C3 AS NVARCHAR)) + ', ' + (@ELEMENT_NAME_ID) + ' AS ' + @ELEMENT_NAME_ID + ', '''+
+# 										(@Element_Type_C3)  + ''' AS ' + @Element_Type_C3 + ', '''	+	(@Element_Category_C3)  + ''' AS ' + @Element_Category_C3 + '
+# 										FROM HR_Monthly_All_Ded HMAD
+# 										JOIN HR_Emp_Monthly_Sal_Mstr_TEST HEMSM
+# 										ON HMAD.EMP_ID = HEMSM.EMP_ID
+# 										WHERE HMAD.Payroll_ID = ' + Cast(@Payroll_ID As NVARCHAR) + '
+# 										AND ' + QUOTENAME(@ELEMENT_NAME_ID) + ' > 0'										
+# 										EXEC sp_executesql @sql
+# 						END
+
+
+
+# 					IF (@CAL_TYPE = 'Calculate')
+# 						BEGIN
+# 							SET @LAST_DAY_MONTH = (SELECT DAY(@EDT))
+
+# 							IF (@Element_ID_C3 = 4)  
+# 								BEGIN
+# 								SET @sql = N'	
+# 										INSERT INTO HR_Emp_Monthly_Sal_Dtl_Test (
+# 										[Payroll_ID], [Emp_Up_ID], [Emp_ID], [Element_ID], [Amount], [Element_Type], 
+# 										[Element_Category]
+# 										)
+# 										SELECT HMAD.Payroll_ID, HEMSM.EMP_UP_ID, HMAD.Emp_ID,  ' + CAST(@Element_ID_C3 AS NVARCHAR) + ' AS ' + QUOTENAME(CAST(@Element_ID_C3 AS NVARCHAR)) + ', ' + '
+# 										Round((((HEMSM.GrossSalary /' + CAST(@LAST_DAY_MONTH AS NVARCHAR)  + ')/8) * ' +  CAST(@ELEMENT_NAME_ID  AS NVARCHAR) + '),0) AS ' + @ELEMENT_NAME_ID + ', '''+
+# 										(@Element_Type_C3)  + ''' AS ' + @Element_Type_C3 + ', '''	+	(@Element_Category_C3)  + ''' AS ' + @Element_Category_C3 + '
+# 										FROM HR_Monthly_All_Ded HMAD
+# 										JOIN HR_Emp_Monthly_Sal_Mstr_TEST HEMSM
+# 										ON HMAD.EMP_ID = HEMSM.EMP_ID
+# 										WHERE HMAD.Payroll_ID = ' + CAST(@Payroll_ID AS NVARCHAR) + '
+# 										AND ' + QUOTENAME(@ELEMENT_NAME_ID) + ' > 0'	
+# 										--select @sql
+# 										EXEC sp_executesql @sql
+# 								END
+
+# 							IF (@Element_ID_C3 = 22)  
+# 								BEGIN
+# 									SET @sql = N'	
+# 											INSERT INTO HR_Emp_Monthly_Sal_Dtl_Test (
+# 											[Payroll_ID], [Emp_Up_ID], [Emp_ID], [Element_ID], [Amount], [Element_Type], 
+# 											[Element_Category]
+# 											)
+# 											SELECT HMAD.Payroll_ID, HEMSM.EMP_UP_ID, HMAD.Emp_ID,  ' + CAST(@Element_ID_C3 AS NVARCHAR) + ' AS ' + QUOTENAME(CAST(@Element_ID_C3 AS NVARCHAR)) + ', ' + '
+# 											Round((' + CAST(@Fuel_Rate  AS NVARCHAR) + ' * ' +  CAST(@ELEMENT_NAME_ID  AS NVARCHAR) + '),0) AS ' + @ELEMENT_NAME_ID + ', '''+
+# 											(@Element_Type_C3)  + ''' AS ' + @Element_Type_C3 + ', '''	+	(@Element_Category_C3)  + ''' AS ' + @Element_Category_C3 + '
+# 											FROM HR_Monthly_All_Ded HMAD
+# 											JOIN HR_Emp_Monthly_Sal_Mstr_TEST HEMSM
+# 											ON HMAD.EMP_ID = HEMSM.EMP_ID
+# 											WHERE HMAD.Payroll_ID = ' + CAST(@Payroll_ID AS NVARCHAR) + '
+# 											AND ' + QUOTENAME(@ELEMENT_NAME_ID) + ' > 0'	
+# 											--select @sql
+# 											EXEC sp_executesql @sql
+# 								END
+# 								IF (@Element_ID_C3 = 19)  
+# 								BEGIN
+# 								SET @sql = N'	
+# 										INSERT INTO HR_Emp_Monthly_Sal_Dtl_Test (
+# 										[Payroll_ID], [Emp_Up_ID], [Emp_ID], [Element_ID], [Amount], [Element_Type], 
+# 										[Element_Category]
+# 										)
+# 										SELECT HMAD.Payroll_ID, HEMSM.EMP_UP_ID, HMAD.Emp_ID,  ' + CAST(@Element_ID_C3 AS NVARCHAR) + ' AS ' + QUOTENAME(CAST(@Element_ID_C3 AS NVARCHAR)) + ', ' + '
+# 										Round(((HEMSM.GrossSalary /' + CAST(@LAST_DAY_MONTH AS NVARCHAR)  + ') * ' +  CAST(@ELEMENT_NAME_ID  AS NVARCHAR) + '),0) AS ' + @ELEMENT_NAME_ID + ', '''+
+# 										(@Element_Type_C3)  + ''' AS ' + @Element_Type_C3 + ', '''	+	(@Element_Category_C3)  + ''' AS ' + @Element_Category_C3 + '
+# 										FROM HR_Monthly_All_Ded HMAD
+# 										JOIN HR_Emp_Monthly_Sal_Mstr_TEST HEMSM
+# 										ON HMAD.EMP_ID = HEMSM.EMP_ID
+# 										WHERE HMAD.Payroll_ID = ' + CAST(@Payroll_ID AS NVARCHAR) + '
+# 										AND ' + QUOTENAME(@ELEMENT_NAME_ID) + ' > 0'	
+# 										--select @sql
+# 										EXEC sp_executesql @sql
+# 								END
+# 						END
+
+
+# 					FETCH NEXT FROM @Emp_ID_Additional_Cursor_3 INTO @Element_ID_C3, @ELEMENT_NAME_ID, @Element_Type_C3, 
+# 															      @Element_Category_C3, @CAL_TYPE
+
+# 					UPDATE HR_Emp_Monthly_Sal_Mstr_Test
+# 					SET          HR_Emp_Monthly_Sal_Mstr_Test.ADays = Absent_Days_19
+# 					FROM     HR_Emp_Monthly_Sal_Mstr_Test INNER JOIN
+# 									  HR_Monthly_All_Ded ON HR_Emp_Monthly_Sal_Mstr_Test.Payroll_ID = HR_Monthly_All_Ded.Payroll_ID 
+# 									  AND HR_Emp_Monthly_Sal_Mstr_Test.Emp_ID = HR_Monthly_All_Ded.Emp_ID
+# 				END
+
+# 			CLOSE @Emp_ID_Additional_Cursor_3
+# 			DEALLOCATE @Emp_ID_Additional_Cursor_3
+# 		END
+
+
+# 	DECLARE @Emp_JOINING_LWD_ABSENT_Cursor_4 AS CURSOR
+
+# 	DECLARE @Emp_UP_ID_C4 AS INT
+# 	DECLARE @Emp_ID_C4 AS INT
+# 	DECLARE @HR_EMP_ID_C4 AS INT
+# 	DECLARE @TYPE AS VARCHAR(10)
+# 	DECLARE @JL_DATE AS DATE
+
+# 	DECLARE @COUNT_EMP_DOJ_LWD AS INT
+
+# 	SET @SDT = (SELECT SDT FROM HR_PAYROLL_PERIOD_V WHERE PAYROLL_ID = @PAYROLL_ID)
+# 	SET @EDT = (SELECT EDT FROM HR_PAYROLL_PERIOD_V WHERE PAYROLL_ID = @PAYROLL_ID)
+
+# 	SET @COUNT_EMP_DOJ_LWD = (SELECT COUNT(*) FROM (	SELECT Max(HESUM.Emp_Up_ID) As [Emp_UP_ID], HESUM.Emp_ID, HESUM.HR_EMP_ID, 
+# 													HEDLV.TYPE, HEDLV.JL_DATE
+# 													FROM HR_Emp_Sal_Update_Mstr HESUM, HR_EMP_DOJ_LWD_V  HEDLV
+# 													WHERE 1 = 1
+# 													AND HESUM.EMP_ID = HEDLV.EMP_ID
+# 													AND HEDLV.Emp_Status  = 1
+# 													AND (HESUM.STOP_SALARY IS NULL OR HESUM.Stop_Salary  = 0)
+# 													AND HEDLV.JL_DATE BETWEEN @SDT AND @EDT
+# 													AND DAY(HEDLV.JL_DATE) NOT IN(DAY(@SDT), DAY(@EDT))
+# 													GROUP BY HESUM.EMP_ID, HESUM.HR_EMP_ID, HEDLV.TYPE, HEDLV.JL_DATE) AS ABC)
+
+# 	IF (@COUNT_EMP_DOJ_LWD > 0)
+# 		BEGIN
+# 		SET @Emp_JOINING_LWD_ABSENT_Cursor_4 = CURSOR FOR 
+# 														SELECT Max(HESUM.Emp_Up_ID) As [Emp_UP_ID], HESUM.Emp_ID, HESUM.HR_EMP_ID, 
+# 														HEDLV.TYPE, HEDLV.JL_DATE
+# 														FROM HR_Emp_Sal_Update_Mstr HESUM, HR_EMP_DOJ_LWD_V  HEDLV
+# 														WHERE 1 = 1
+# 														AND HESUM.EMP_ID = HEDLV.EMP_ID
+# 														AND HEDLV.Emp_Status  = 1
+# 														AND (HESUM.STOP_SALARY IS NULL OR HESUM.Stop_Salary  = 0)
+# 														AND HEDLV.JL_DATE BETWEEN @SDT AND @EDT
+# 														AND DAY(HEDLV.JL_DATE) NOT IN(DAY(@SDT), DAY(@EDT))
+# 														GROUP BY HESUM.EMP_ID, HESUM.HR_EMP_ID, HEDLV.TYPE, HEDLV.JL_DATE
+# 														ORDER BY Max(HESUM.Emp_Up_ID), HESUM.EMP_ID
+
+# 			OPEN @Emp_JOINING_LWD_ABSENT_Cursor_4
+# 			FETCH NEXT FROM @Emp_JOINING_LWD_ABSENT_Cursor_4 INTO @Emp_UP_ID_C4, @Emp_ID_C4, @HR_EMP_ID_C4, @TYPE, @JL_DATE
+# 			WHILE @@FETCH_STATUS = 0
+# 			BEGIN	
+
+# 			DECLARE @GROSS_SALARY AS FLOAT
+# 			DECLARE @JLDays as int
+# 			SET @JLDays = 0
+# 			SET @GROSS_SALARY = (SELECT GROSSSALARY FROM HR_Emp_Monthly_Sal_Mstr_Test 
+# 								WHERE Emp_UP_ID = @Emp_UP_ID_C4
+# 								AND EMP_ID = @Emp_ID_C4
+# 								AND PAYROLL_ID = @Payroll_ID)
+
+# 			DECLARE @CHK_ABSENT_MONHLY_DED_AMT AS FLOAT
+# 			SET @CHK_ABSENT_MONHLY_DED_AMT = 0
+# 			SET @CHK_ABSENT_MONHLY_DED_AMT = (SELECT SUM(AMOUNT) FROM HR_Emp_Monthly_Sal_DTL_Test 
+# 												WHERE @Emp_UP_ID = @Emp_UP_ID_C4
+# 												AND EMP_ID = @Emp_ID_C4
+# 												AND PAYROLL_ID =@Payroll_ID
+# 												AND ELEMENT_ID = 19)
+
+# 				IF (LEN(@JL_DATE) > 0 AND @TYPE = 'DOJ')
+# 					BEGIN
+
+# 						SET @JOINING_DAY_MONTH = (SELECT DAY(@JL_DATE))
+# 						SET @LAST_DAY_MONTH = (SELECT DAY(@EDT))
+# 						SET @CALC_DAYS = (@LAST_DAY_MONTH - (@LAST_DAY_MONTH - @JOINING_DAY_MONTH))
+
+# 						SET @Allowance_Amount_NEW = ROUND(((@GROSS_SALARY/@LAST_DAY_MONTH) * @CALC_DAYS),0)
+
+# 						UPDATE HR_Emp_Monthly_Sal_Mstr_Test Set JLDays = @CALC_DAYS + @JLDays
+# 						WHERE PAYROLL_ID = @PAYROLL_ID
+# 						AND EMP_UP_ID = @Emp_UP_ID_C4
+# 						AND EMP_ID = @EMP_ID_C4
+
+# 						IF (@CHK_ABSENT_MONHLY_DED_AMT > 0) 
+# 							BEGIN
+# 								SET @Allowance_Amount_NEW = @Allowance_Amount_NEW + @CHK_ABSENT_MONHLY_DED_AMT
+
+# 								UPDATE HR_Emp_Monthly_Sal_Dtl_Test SET AMOUNT = ROUND(@Allowance_Amount_NEW,0)
+# 								WHERE PAYROLL_ID = @PAYROLL_ID
+# 								AND EMP_UP_ID = @Emp_UP_ID_C4
+# 								AND EMP_ID = @EMP_ID_C4
+# 								AND ELEMENT_ID = 19
+# 							END
+# 						ELSE
+# 							BEGIN
+# 								INSERT INTO [HR_Emp_Monthly_Sal_Dtl_Test] (
+# 								[Payroll_ID], [Emp_Up_ID], [Emp_ID], [Element_ID], [Amount], [Element_Type], [Element_Category]
+# 								) VALUES
+# 								(@Payroll_ID, @Emp_UP_ID_C4, @EMP_ID_C4, 19, @Allowance_Amount_NEW, 'Deduction', 'Additional')
+# 							END						
+
+# 					END
+
+
+# 					IF (LEN(@JL_DATE) > 0 AND @TYPE = 'LWD')
+# 						BEGIN
+
+# 							SET @JOINING_DAY_MONTH = (SELECT DAY(@JL_DATE))
+# 							SET @LAST_DAY_MONTH = (SELECT DAY(@EDT))
+# 							SET @END_DAY_MONTH = (SELECT DAY(@JL_DATE))
+
+# 							SET @CALC_DAYS = ((@LAST_DAY_MONTH - @END_DAY_MONTH))
+
+# 							UPDATE HR_Emp_Monthly_Sal_Mstr_Test Set JLDays = @CALC_DAYS
+# 							WHERE PAYROLL_ID = @PAYROLL_ID
+# 							AND EMP_UP_ID = @Emp_UP_ID_C4
+# 							AND EMP_ID = @EMP_ID_C4
+
+# 							SET @Allowance_Amount_NEW = ROUND(((@GROSS_SALARY/@LAST_DAY_MONTH) * @CALC_DAYS),0)
+
+# 						IF (@CHK_ABSENT_MONHLY_DED_AMT > 0) 
+# 							BEGIN
+# 								SET @Allowance_Amount_NEW = @Allowance_Amount_NEW + @CHK_ABSENT_MONHLY_DED_AMT
+
+# 								UPDATE HR_Emp_Monthly_Sal_Dtl_Test SET AMOUNT = ROUND(@Allowance_Amount_NEW,0)
+# 								WHERE PAYROLL_ID = @PAYROLL_ID
+# 								AND EMP_UP_ID = @Emp_UP_ID_C4
+# 								AND EMP_ID = @EMP_ID_C4
+# 								AND ELEMENT_ID = 19
+# 							END
+# 						ELSE
+# 							BEGIN
+# 								INSERT INTO [HR_Emp_Monthly_Sal_Dtl_Test] (
+# 								[Payroll_ID], [Emp_Up_ID], [Emp_ID], [Element_ID], [Amount], [Element_Type], [Element_Category]
+# 								) VALUES
+# 								(@Payroll_ID, @Emp_UP_ID_C4, @EMP_ID_C4, 19, @Allowance_Amount_NEW, 'Deduction', 'Additional')
+# 							END
+
+# 						END
+
+# 			FETCH NEXT FROM @Emp_JOINING_LWD_ABSENT_Cursor_4 INTO @Emp_UP_ID_C4, @Emp_ID_C4, @HR_EMP_ID_C4, @TYPE, @JL_DATE
+# 			END
+# 		CLOSE @Emp_JOINING_LWD_ABSENT_Cursor_4
+# 		DEALLOCATE @Emp_JOINING_LWD_ABSENT_Cursor_4
+# 	END
+
+# 	UPDATE HR_Emp_Monthly_Sal_Mstr_Test Set WDays = (MDAYS - (ADAYS + JLDays))
+# 	WHERE PAYROLL_ID = @PAYROLL_ID
+
+# '''
+
+#             cursor.execute(query)
+#             return Response({'status': 'Data transferred successfully.'})
+
+#     except Exception as e:
+#         return Response({'status': 'Error occurred.', 'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
 
 
@@ -142,20 +694,45 @@ def transfer_data_to_salary_process(request, payroll_id, fuel_rate):
     print('transfer_data_to_salary_process called payroll_id: ', payroll_id)
     try:
         with connection.cursor() as cursor:
-            # fuel_rate = 280
-            # Call the stored procedure
-            cursor.execute("EXEC dbo.HR_Monthly_Salary_Process2 @m_Payroll_ID=%s, @m_Fuel_Rate=%s", [payroll_id, fuel_rate])
-            # Fetch the results if the stored procedure returns any
-            # results = cursor.fetchall()
-
+            # Execute the stored procedure
+            # cursor.execute("EXEC dbo.HR_Monthly_Salary_Process @m_Payroll_ID=%s, @m_Fuel_Rate=%s", [payroll_id, fuel_rate])
+            # Fetch the number of rows affected
+            
             rows_affected = cursor.rowcount
             print(f"Rows affected: {rows_affected}")
-        
-        # Return the results as JSON
-        return JsonResponse({'results': "results"})
+
+            # You can also fetch results if needed, for debugging or logging
+            # results = cursor.fetchall()
+
+        # Return a success response
+        return JsonResponse({'results': f"Procedure executed successfully. Rows affected: {rows_affected}"})
     except Exception as e:
-        # Handle any exceptions that may occur
-        return JsonResponse({'error': str(e)}, status=500)
+        # Log the error internally (consider using Django logging)
+        print(f"Error executing stored procedure: {str(e)}")
+
+        # Return a success response but include the error message
+        return JsonResponse({'results': 'Procedure executed with errors', 'error': str(e)}, status=500)
+
+
+# @api_view(['GET'])
+# def transfer_data_to_salary_process(request, payroll_id, fuel_rate):
+#     print('transfer_data_to_salary_process called payroll_id: ', payroll_id)
+#     try:
+#         with connection.cursor() as cursor:
+#             # fuel_rate = 280
+#             # Call the stored procedure
+#             cursor.execute("EXEC dbo.HR_Monthly_Salary_Process2 @m_Payroll_ID=%s, @m_Fuel_Rate=%s", [payroll_id, fuel_rate])
+#             # Fetch the results if the stored procedure returns any
+#             # results = cursor.fetchall()
+
+#             rows_affected = cursor.rowcount
+#             print(f"Rows affected: {rows_affected}")
+        
+#         # Return the results as JSON
+#         return JsonResponse({'results': "results"})
+#     except Exception as e:
+#         # Handle any exceptions that may occur
+#         return JsonResponse({'error': str(e)}, status=500)
 
 
 # @api_view(['GET'])

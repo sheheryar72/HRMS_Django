@@ -246,7 +246,7 @@ async function getAllDeptElemet() {
 
         console.log('data: ', data)
 
-        current_period_id = data.Period.ID
+        current_period_id = data.Period.PAYROLL_ID
         document.getElementById("Period").value = data.Period.MNTH_NAME;
         document.getElementById("Department").value = data.Department.Dept_Descr;
 
@@ -260,7 +260,7 @@ async function getAllDeptElemet() {
 
         document.getElementById("InserRowID").innerHTML = '';
         data.Employee.forEach(emp => {
-            console.log('emp: ', emp)
+            // console.log('emp: ', emp)
             let element_columns = '';
             element_columns += `<tr><td class="text-center"><input type="number" value="${emp.Element_ID}" class="form-control form-control-sm" style="width: 100%;"></td>`;
             element_columns += `<tr><td class="text-center"><input type="number" value="${emp.Element_Name}" class="form-control form-control-sm" style="width: 100%;"></td>`;

@@ -7,6 +7,7 @@ urlpatterns = [
     path('monthlysalaryupdate/', monthlysalaryupdate_view, name='salaryprocess_view'),
     path('transfer_data_to_salary_process/<int:payroll_id>/<str:fuel_rate>/', transfer_data_to_salary_process, name='transfer_data_to_salary_process'),
     path('hr_monthly_salary_process/<int:payroll_id>/<str:fuel_rate>/', hr_monthly_salary_process, name='hr_monthly_salary_process'),
+    path('execute_salary_process/<int:payroll_id>/<str:fuel_rate>/', execute_salary_process, name='execute_salary_process'),
     path('getllmaster/', getll_master, name='getll_master'),
     path('getall_payrollperiod/', getall_payrollperiod, name='getall_payrollperiod'),
     path('get_active_period/', get_active_period, name='get_active_period'),

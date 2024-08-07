@@ -21,35 +21,44 @@ from .models import HR_Element_Grade_Combination
 def Index(request):
     return render(request, 'monthly_all_ded.html')
 
-def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
-    # print("W_DeptID: ", W_DeptID)
-    # print("DeptID: ", DeptID)
-    print("getAll_W_Dept_By_DeptID")
-    try:
-        # pdb.set_trace()
-        # print('getAll_W_Dept_By_DeptID called')
-        w_dept_queryset = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=W_DeptID, Dept_ID=DeptID).prefetch_related('W_All_Ded_Dept_ID', 'W_All_Ded_Element_ID', 'Dept_ID')
-        # print('w_dept_queryset: ', w_dept_queryset)
-        # emp_queryset = HR_Employees.objects.filter(Joining_Dept_ID=DeptID)
-        
-        # emp_queryset = HR_Emp_Sal_Update_Mstr.objects.filter(Dept_ID=DeptID).select_related("Emp_ID")
 
-        emp_queryset = HR_Emp_Salary_Grade_V.objects.filter(Dept_ID=DeptID).distinct()
+def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
+    print("getAll_W_Dept_By_DeptID")
+    
+    try:
+        # Fetch relevant data from the database
+        w_dept_queryset = HR_W_All_Ded_Department.objects.filter(
+            W_All_Ded_Dept_ID=W_DeptID,
+            Dept_ID=DeptID
+        ).prefetch_related(
+            'W_All_Ded_Dept_ID', 'W_All_Ded_Element_ID', 'Dept_ID'
+        )
+        
+        emp_queryset = HR_Emp_Salary_Grade_V.objects.filter(
+            Dept_ID=DeptID
+        ).distinct()
 
         print('emp_queryset: ', emp_queryset)
 
-        print('deprt: ', DeptID)
-        
-        month_pp_queryset = HR_Monthly_All_Ded.objects.filter(Department=DeptID)
+        month_pp_queryset = HR_Monthly_All_Ded.objects.filter(
+            Department=DeptID
+        )
 
-        month_pp_serializer = HR_Monthly_All_Ded_Serializer(month_pp_queryset, many=True)
+        # print('month_pp_queryset: ', month_pp_queryset)
 
-        # print('month_pp_serializer: ', month_pp_serializer.data)
+        month_pp_serializer = HR_Monthly_All_Ded_Serializer(
+            month_pp_queryset, many=True
+        )
 
-        print('count 1: ', emp_queryset.count())
-        print('count 2: ', month_pp_queryset.count())
-        print('count 3: ', w_dept_queryset.count())
+        # print('count 1: ', emp_queryset.count())
+        # print('count 2: ', month_pp_queryset.count())
+        # print('count 3: ', w_dept_queryset.count())
 
+        # print('count 1: ', emp_queryset)
+        # print('count 2: ', month_pp_queryset)
+        # print('count 3: ', w_dept_queryset)
+
+        # Prepare the data for response
         data = []
         data2 = []
         data4 = []
@@ -62,36 +71,28 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
                 'HR_Emp_ID': item.HR_Emp_ID,
                 'Grade_ID': item.Grade_ID,
                 'Grade_Descr': item.Grade_Descr,
-                # 'Element_Amount': 0
-                'Element_Amount': month_pp_serializer.data[count] if month_pp_serializer.data else []
+                'Element_Amount': month_pp_serializer.data[count] if count < len(month_pp_serializer.data) else []
             }
-            # single_emp = {
-            #     'Emp_ID': item.Emp_ID.Emp_ID,
-            #     'Emp_Name': item.Emp_ID.Emp_Name,
-            #     'Element_Amount': month_pp_serializer.data[count] if month_pp_serializer.data else []
-            # }
-            # print('count: ', count)
-            # print('month_pp_serializer: ', month_pp_serializer.data[count])
+
             count += 1
             data.append(single_emp)
 
             # print('Employee data: ', data)
 
             a1 = w_dept_queryset.values_list('W_All_Ded_Element_ID__Element_ID', flat=True).distinct()
-            # print('a1: ', a1)
-
-            grade_comb = HR_Element_Grade_Combination.objects.filter(Grade_ID=item.Grade_ID, Element_ID__in=a1)
-            # grade_comb = HR_Element_Grade_Combination.objects.filter(Grade_ID=item.Grade_ID, Element_ID__in=(27))
-            # print('grade_comb: ', grade_comb)
+            grade_comb = HR_Element_Grade_Combination.objects.filter(
+                Grade_ID=item.Grade_ID,
+                Element_ID__in=a1
+            )
+            
             for j in grade_comb:
                 data4.append({
                     'Emp_ID': item.Emp_ID,
                     'Element_ID': j.Element_ID.Element_ID,
-                    'Grade_ID': j.Grade_ID.Grade_ID,  
+                    'Grade_ID': j.Grade_ID.Grade_ID
                 })
 
-
-        print('data4: ', data4)
+        # print('data4: ', data4)
 
         for item in w_dept_queryset:
             single_w_dept = {
@@ -100,22 +101,115 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
             }
             data2.append(single_w_dept)
 
-            # print('Element data2: ', data2)
+        data3 = [
+            {"Employee": data},
+            {"Element": data2},
+            {"Emp_Element_Status": data4}
+        ]
 
-        data3 = []
-
-        data3.append({"Employee": data})
-        data3.append({"Element": data2})
-        data3.append({"Emp_Element_Status": data4})
-        # data3.append({"Monthly_Payromm_Element": month_pp_serializer.data})
-
-        # print('data3: ', data3)
-
-        # print('data3: ', data3)
-        # return Response(data3, status=200)
         return JsonResponse(data3, safe=False)
+    
     except Exception as e:
+        print(f"Error: {str(e)}")  # Print the error for debugging purposes
         return Response({'error': str(e)}, status=500)
+
+
+# def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
+#     # print("W_DeptID: ", W_DeptID)
+#     # print("DeptID: ", DeptID)
+#     print("getAll_W_Dept_By_DeptID")
+#     try:
+#         # pdb.set_trace()
+#         # print('getAll_W_Dept_By_DeptID called')
+#         w_dept_queryset = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=W_DeptID, Dept_ID=DeptID).prefetch_related('W_All_Ded_Dept_ID', 'W_All_Ded_Element_ID', 'Dept_ID')
+#         # print('w_dept_queryset: ', w_dept_queryset)
+#         # emp_queryset = HR_Employees.objects.filter(Joining_Dept_ID=DeptID)
+        
+#         # emp_queryset = HR_Emp_Sal_Update_Mstr.objects.filter(Dept_ID=DeptID).select_related("Emp_ID")
+
+#         emp_queryset = HR_Emp_Salary_Grade_V.objects.filter(Dept_ID=DeptID).distinct()
+
+#         print('emp_queryset: ', emp_queryset)
+
+#         print('deprt: ', DeptID)
+        
+#         month_pp_queryset = HR_Monthly_All_Ded.objects.filter(Department=DeptID)
+
+#         month_pp_serializer = HR_Monthly_All_Ded_Serializer(month_pp_queryset, many=True)
+
+#         # print('month_pp_serializer: ', month_pp_serializer.data)
+
+#         print('count 1: ', emp_queryset.count())
+#         print('count 2: ', month_pp_queryset.count())
+#         print('count 3: ', w_dept_queryset.count())
+
+#         data = []
+#         data2 = []
+#         data4 = []
+
+#         count = 0
+#         for item in emp_queryset:
+#             single_emp = {
+#                 'Emp_ID': item.Emp_ID,
+#                 'Emp_Name': item.Emp_Name,
+#                 'HR_Emp_ID': item.HR_Emp_ID,
+#                 'Grade_ID': item.Grade_ID,
+#                 'Grade_Descr': item.Grade_Descr,
+#                 # 'Element_Amount': 0
+#                 'Element_Amount': month_pp_serializer.data[count] if month_pp_serializer.data else []
+#             }
+
+#             # single_emp = {
+#             #     'Emp_ID': item.Emp_ID.Emp_ID,
+#             #     'Emp_Name': item.Emp_ID.Emp_Name,
+#             #     'Element_Amount': month_pp_serializer.data[count] if month_pp_serializer.data else []
+#             # }
+#             # print('count: ', count)
+#             # print('month_pp_serializer: ', month_pp_serializer.data[count])
+#             count += 1
+#             data.append(single_emp)
+
+#             print('Employee data: ', data)
+
+#             a1 = w_dept_queryset.values_list('W_All_Ded_Element_ID__Element_ID', flat=True).distinct()
+#             # print('a1: ', a1)
+
+#             grade_comb = HR_Element_Grade_Combination.objects.filter(Grade_ID=item.Grade_ID, Element_ID__in=a1)
+#             # grade_comb = HR_Element_Grade_Combination.objects.filter(Grade_ID=item.Grade_ID, Element_ID__in=(27))
+#             # print('grade_comb: ', grade_comb)
+#             for j in grade_comb:
+#                 data4.append({
+#                     'Emp_ID': item.Emp_ID,
+#                     'Element_ID': j.Element_ID.Element_ID,
+#                     'Grade_ID': j.Grade_ID.Grade_ID,  
+#                 })
+
+
+#         print('data4: ', data4)
+
+#         for item in w_dept_queryset:
+#             single_w_dept = {
+#                 'Element_ID': item.W_All_Ded_Element_ID.Element_ID,
+#                 'Element_Name': item.W_All_Ded_Element_ID.Element_Name
+#             }
+#             data2.append(single_w_dept)
+
+#             # print('Element data2: ', data2)
+
+#         data3 = []
+
+#         data3.append({"Employee": data})
+#         data3.append({"Element": data2})
+#         data3.append({"Emp_Element_Status": data4})
+#         # data3.append({"Monthly_Payromm_Element": month_pp_serializer.data})
+
+#         # print('data3: ', data3)
+
+#         # print('data3: ', data3)
+#         # return Response(data3, status=200)
+#         return JsonResponse(data3, safe=False)
+#     except Exception as e:
+#         return Response({'error': str(e)}, status=500)
 
 
 def test2(request, W_DeptID, DeptID):
@@ -195,8 +289,8 @@ def getAll_W_Dept_By_W_DeptID(request, W_DeptID):
         dept_data = {'Dept_ID': dept_queryset.Dept_ID, 'Dept_Descr': dept_queryset.Dept_Descr}
 
         # Get payroll period details
-        payroll_period_queryset = HR_PAYROLL_PERIOD.objects.filter(PERIOD_STATUS=True).values('ID', 'MNTH_ID__MNTH_ID', 'MNTH_ID__MNTH_NAME').first()
-        payroll_period = {'ID': payroll_period_queryset['ID'], 'MNTH_ID': payroll_period_queryset['MNTH_ID__MNTH_ID'], 'MNTH_NAME': payroll_period_queryset['MNTH_ID__MNTH_NAME']}
+        payroll_period_queryset = HR_PAYROLL_PERIOD.objects.filter(PERIOD_STATUS=True).values('PAYROLL_ID', 'MNTH_ID__MNTH_ID', 'MNTH_ID__MNTH_NAME').first()
+        payroll_period = {'PAYROLL_ID': payroll_period_queryset['PAYROLL_ID'], 'MNTH_ID': payroll_period_queryset['MNTH_ID__MNTH_ID'], 'MNTH_NAME': payroll_period_queryset['MNTH_ID__MNTH_NAME']}
 
         # Prepare the response data
         response_data = {'Employee': employees_data, 'Element': elements_data, 'Period': payroll_period, 'Department': dept_data}
@@ -210,7 +304,7 @@ def get_current_pp(request):
         pp_instance = HR_PAYROLL_PERIOD.objects.get(PERIOD_STATUS=True)
         print('pp_instance: ', pp_instance)
         data = {}
-        data["PERIOD_ID"] = pp_instance.ID
+        data["PERIOD_ID"] = pp_instance.PAYROLL_ID
         data["MNTH_NAME"] = pp_instance.MNTH_ID.MNTH_NAME
         data["FinYear"] = pp_instance.FYID.FinYear
         # pp_serializer = HR_PAYROLL_PERIOD_Serializer(pp_instance)

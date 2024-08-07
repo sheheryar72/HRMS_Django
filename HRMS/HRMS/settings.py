@@ -64,6 +64,7 @@ EXTERNAL_APPS = [
     'working_dept_assignment',
     'monthly_all_ded',
     'monthly_sal_process',
+    'monthly_payroll_sheet',
 ]
 
 INSTALLED_APPS += EXTERNAL_APPS

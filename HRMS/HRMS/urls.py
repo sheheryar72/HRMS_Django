@@ -58,6 +58,7 @@ urlpatterns = [
     path('salaryupdate/', include('salary_update.urls')),
     path('salaryprocess/', include('monthly_sal_process.urls')),
     path('monthly_all_ded/', include('monthly_all_ded.urls')),
+    path('payrollsheet/', include('monthly_payroll_sheet.urls')),
     #path('report_builder/', include('report_builder.urls')),
 ]
 # + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -222,6 +222,8 @@ function onClickFunc(formID, formDescr) {
         window.open('/salaryprocess/')
     } else if (formID === 21) {
         window.open('/salaryprocess/monthlysalaryupdate/')
+    } else if (formID === 23) {
+        window.open('/payrollsheet/')
     }
 }
 

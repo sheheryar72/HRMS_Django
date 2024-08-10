@@ -23,6 +23,8 @@ class HR_Emp_Sal_Update_Mstr(models.Model):
     Account_No = models.CharField(max_length=20, null=True)
     Bank_Name = models.CharField(max_length=100, null=True)
     Stop_Salary = models.BooleanField(default=False)
+    Last_GrossSalary = models.FloatField(blank=True, null=True)
+    Last_Increment_Amt = models.FloatField(blank=True, null=True)
 
     class Meta:
         managed = False

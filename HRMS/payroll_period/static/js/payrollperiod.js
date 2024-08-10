@@ -141,7 +141,7 @@ function createActionButton() {``
     periodDetailLink.innerText = "Period Details";
 
     dropdownMenu.appendChild(editLink);
-    dropdownMenu.appendChild(deleteLink);
+    // dropdownMenu.appendChild(deleteLink);
     // dropdownMenu.appendChild(periodDetailLink);
 
     dropdown.appendChild(button);

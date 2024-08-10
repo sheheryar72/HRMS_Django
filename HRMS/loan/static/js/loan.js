@@ -249,7 +249,7 @@ function createActionButton() {
     deleteLink.innerText = "Delete";
 
     dropdownMenu.appendChild(editLink);
-    dropdownMenu.appendChild(deleteLink);
+    // dropdownMenu.appendChild(deleteLink);
 
     dropdown.appendChild(button);
     dropdown.appendChild(dropdownMenu);

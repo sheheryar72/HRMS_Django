@@ -36,6 +36,9 @@ class HR_PAYROLL_PERIOD(models.Model):
     MNTH_ID = models.ForeignKey(HR_PAYROLL_MONTH, to_field='MNTH_ID',  db_column='MNTH_ID', on_delete=models.CASCADE)
     FYID = models.ForeignKey(HR_FinYearMstr, to_field='FYID',  db_column='FYID', on_delete=models.CASCADE)
     # PERIOD_YEAR = models.CharField(max_length=20)
+    PAYROLL_FINAL = models.BooleanField()
+    PAYSHEET_FINAL = models.BooleanField()
+
 
     class Meta:
         managed = False

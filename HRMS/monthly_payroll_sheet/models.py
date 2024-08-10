@@ -41,6 +41,7 @@ class HR_MONTHLY_PAY_SHEET(models.Model):
     Other_Deduction_25 = models.IntegerField(blank=True, null=True)
     Mobile_Installment_26 = models.IntegerField(blank=True, null=True)
     Food_Panda_27 = models.IntegerField(blank=True, null=True)
+    Conveyance_Liters_Allowance_28 = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = True

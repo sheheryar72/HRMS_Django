@@ -49,6 +49,25 @@ def execute_salary_process(request, payroll_id, fuel_rate):
     }
 
     try:
+
+        # payroll_period = HR_PAYROLL_PERIOD.objects.filter(PAYROLL_ID=payroll_id).select_related('MNTH_ID', 'FYID').first()
+        
+        # if not payroll_period:
+        #     return JsonResponse({
+        #         'ResponseCode': 404,
+        #         'Message': 'Payroll period not found',
+        #         'Data': None
+        #     })
+        
+        # print('PAYROLL_FINAL: ', payroll_period.PAYROLL_FINAL)
+
+        # if not payroll_period.PAYROLL_FINAL:
+        #     return JsonResponse({
+        #         'ResponseCode': 500,
+        #         'Message': 'Payroll is not finalized',
+        #         'Data': None
+        #     })
+
         response = requests.get(api_url, params=params, headers=headers, verify=False)  
 
         if response.status_code == 200:
@@ -562,12 +581,15 @@ def get_active_period(request):
 
         payroll_period.FYID.FinYear
 
+        # if payroll_period:
         data = {
             'PAYROLL_ID': payroll_period.PAYROLL_ID,
             'PERIOD_ID': payroll_period.PERIOD_ID,
             'MNTH_NAME': payroll_period.MNTH_ID.MNTH_NAME,
             'FinYear': payroll_period.FYID.FinYear
         }
+
+        print('get_active_period: ', data)
 
         return Response(data=data, status=200)
     except Exception as e:

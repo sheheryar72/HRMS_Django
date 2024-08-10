@@ -35,6 +35,43 @@ function get_active_period() {
     });
 }
 
+
+// async function transfer_data_to_salary_process(payroll_id, fuel_rate) {
+//     try {
+//         const response = await fetch(`${BASE_URL}/salaryprocess/execute_salary_process/${payroll_id}/${fuel_rate}/`, {
+//             method: 'GET',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//         });
+
+//         // Handle response based on status code
+//         if (response.status === 404) {
+//             throw new Error('Payroll period not found');
+//         }
+
+//         if (response.status === 400) {
+//             // Handle specific client errors if you use 400 for payroll not finalized
+//             const errorData = await response.json();
+//             throw new Error(`Payroll is not finalized: ${errorData.Message}`);
+//         }
+
+//         if (!response.ok) {
+//             const errorData = await response.json();
+//             throw new Error(`Failed to run salary process: ${errorData.Message}`);
+//         }
+
+//         // Parse successful response
+//         const data = await response.json();
+//         console.log("data: ", data);
+//         alert("Monthly process completed successfully!");
+//     } catch (error) {
+//         console.error("Error running salary process:", error.message);
+//         alert("Error running salary process: " + error.message);
+//     }
+// }
+
+
 async function transfer_data_to_salary_process(payroll_id, fuel_rate) {
     try {
         const response = await fetch(`${BASE_URL}/salaryprocess/execute_salary_process/${payroll_id}/${fuel_rate}/`, {
@@ -43,6 +80,11 @@ async function transfer_data_to_salary_process(payroll_id, fuel_rate) {
                 'Content-Type': 'application/json',
             },
         });
+
+        if (response.status == 506) {
+            const errorData = await response.json();
+            throw new Error(`Payroll is not finalized: ${errorData.error}`);
+        }
 
         if (!response.ok) {
             const errorData = await response.json();

@@ -457,6 +457,14 @@ document.getElementById("Emp_ID").addEventListener("change", function () {
     mapEmployeeDate(this.value);
 })
 
+document.getElementById("Last_GrossSalary").addEventListener("focusout", function(){
+    document.getElementById("GrossSalary").value = Number(this.value) + Number(document.getElementById("Last_Increment_Amt").value);
+})
+
+document.getElementById("Last_Increment_Amt").addEventListener("focusout", function(){
+    document.getElementById("GrossSalary").value = Number(this.value) + Number(document.getElementById("Last_GrossSalary").value);
+})
+
 // function mapEmployeeDate(empID) {
 
 //     console.log('listofEmployeeNotInSalUpdate: ', listofEmployeeNotInSalUpdate);
@@ -631,21 +639,26 @@ document.getElementById("elementGridIconId").addEventListener("click", function 
 document.getElementById("calculateGrossSalary").addEventListener('click', function () {
 
     const grossSalary = Number(document.getElementById("GrossSalary").value);
+    const Last_GrossSalary = Number(document.getElementById("Last_GrossSalary").value);
+    const Last_Increment_Amt = Number(document.getElementById("Last_Increment_Amt").value);
+
+    var total_gross = Last_GrossSalary +  Last_Increment_Amt
+
     // debugger
     var totalRows = Number($('#InserRowID1 tr').length);
 
     // alert('totalRows: ', totalRows)
-    if (grossSalary != 0 && totalRows != 0) {
+    if (grossSalary != 0 && totalRows != 0 && Last_GrossSalary != 0 && total_gross != 0) {
         $("#bmGridID1 tbody tr").each(function () {
             const elementID = Number($(this).find("td:eq(0) input").attr("id"));
+            const _amount =  (total_gross / 100) * 65;
+            const basic_sal = (_amount / 100) * 90;
             if (elementID == 1) {
-                const amount = (grossSalary / 100) * 58.5;
-                $(this).find("td:eq(2) input").val(amount);
+                $(this).find("td:eq(2) input").val(basic_sal);
             }
             if (elementID == 2) {
-                const amount = (grossSalary / 100) * 6.5;
-
-                $(this).find("td:eq(2) input").val(amount);
+                const medical_sal = (_amount / 100) * 10;
+                $(this).find("td:eq(2) input").val(medical_sal);
             }
             if (elementID == 5) {
                 const amount = (grossSalary / 100) * 29;
@@ -665,6 +678,8 @@ document.getElementById("calculateGrossSalary").addEventListener('click', functi
                 $(this).find("td:eq(2) input").val(130);
             }
         });
+    }else{
+        alert("Kidnly check your Gross Salary and Increment Amount")
     }
 
     calculateTotal();
@@ -790,6 +805,10 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
         document.getElementById("Remarks").value = data[0].Remarks;
         document.getElementById("GrossSalary").value = data[0].GrossSalary;
 
+        document.getElementById("Last_GrossSalary").value = data[0].Last_GrossSalary;
+        document.getElementById("Last_Increment_Amt").value = data[0].Last_Increment_Amt;
+
+
         document.getElementById("Transfer_Type").value = data[0].Transfer_Type;
         document.getElementById("Account_No").value =  data[0].Account_No;
         document.getElementById("Bank_Name").value =  data[0].Bank_Name;
@@ -863,7 +882,7 @@ function handleTableRowClick2() {
             `<tr>
                             <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                             <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
-                            <td><input type="text" value="" /></td></tr>`;
+                            <td><input class="allowanceInput" type="text" value="" /></td></tr>`;
         $("#InserRowID1").append(temp);
     }
     if (ElemenT_TYPE == "Deduction") {
@@ -871,7 +890,7 @@ function handleTableRowClick2() {
             `<tr>
                             <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                             <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
-                            <td><input type="text" value="" /></td></tr>`;
+                            <td><input class="allowanceInput" type="text" value="" /></td></tr>`;
         $("#InserRowID2").append(temp);
     }
 

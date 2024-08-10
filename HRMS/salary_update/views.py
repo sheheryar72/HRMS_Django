@@ -186,6 +186,8 @@ def getall_master_byid(request, empUpID, empID):
                 "Account_No": data.Emp_Up_ID.Account_No,
                 "Bank_Name": data.Emp_Up_ID.Bank_Name,
                 "Stop_Salary": data.Emp_Up_ID.Stop_Salary,
+                "Last_GrossSalary": data.Emp_Up_ID.Last_GrossSalary,
+                "Last_Increment_Amt": data.Emp_Up_ID.Last_Increment_Amt,
             }
             datas.append(item)
         print("DAtas: ", datas)

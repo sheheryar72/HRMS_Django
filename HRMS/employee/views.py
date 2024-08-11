@@ -3,7 +3,7 @@ from django.db import connection
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
-from .models import HR_Employees
+from .models import HR_Employees, GroupOfCompanies, GroupOfCompaniesSerializer
 from .serializers import HR_Employees_Serializer
 from django.db.models import Max
 from django.db import transaction
@@ -16,6 +16,7 @@ from datetime import datetime
 from city.models import *
 from designation.models import *
 from department.models import *
+from rest_framework import generics
 
 def Employees_view(request):
     print('Employees called')
@@ -298,4 +299,7 @@ def delete_Employees(request, emp_id):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-    
+class GroupOfCompaniesListView(generics.ListCreateAPIView):
+    queryset = GroupOfCompanies.objects.all()
+    serializer_class = GroupOfCompaniesSerializer
+

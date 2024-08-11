@@ -8,5 +8,6 @@ urlpatterns = [
     path('add', insert_employee, name='insert_Employees'),
     path('update/<int:emp_id>', update_employee, name='update_Employees'),
     path('delete/<int:emp_id>', delete_Employees, name='delete_Employees'),
+    path('group-of-companies/', GroupOfCompaniesListView.as_view(), name='group-of-companies-list'),
 ]
 

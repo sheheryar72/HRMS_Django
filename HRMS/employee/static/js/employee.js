@@ -395,10 +395,10 @@ function handleUpdateClick() {
     const CNIC_Issue_Date = document.getElementById("CNIC_Issue_Date").value;
     const CNIC_Exp_Date = document.getElementById("CNIC_Exp_Date").value;
 
-    console.log('profileImage: ', document.getElementById('profileImage').files[0])
+    // console.log('profileImage: ', document.getElementById('profileImage').files[0])
 
     let formData = new FormData();
-    formData.append('profileImage', document.getElementById('profileImage').files[0]);
+    // formData.append('profileImage', document.getElementById('profileImage').files[0]);
     formData.append('Emp_ID', Emp_ID);
     formData.append('HR_Emp_ID', HR_Emp_ID);
     formData.append('Emp_Name', Emp_Name);
@@ -472,7 +472,7 @@ function fillFormDataFromDB(id) {
         document.getElementById("Personal_Cell_No").value = data.Personal_Cell_No
         document.getElementById("HR_Emp_ID").value = data.HR_Emp_ID
         document.getElementById("Father_Name").value = data.Father_Name
-        document.getElementById("CNIC_No").value = data.CNIC_No
+        document.getElementById("CNIC_No").value = data.CNIC_No 
         document.getElementById("Religion").value = data.Religion
         document.getElementById("CT_ID").value = data.CT_ID
         const region = region_array.find(x => x.REG_ID == data.REG_ID);
@@ -485,9 +485,9 @@ function fillFormDataFromDB(id) {
         document.getElementById("Co_ID").value = data.Co_ID
         document.getElementById("Joining_Dept_ID").value = data.Joining_Dept_ID
         document.getElementById("Emp_Status").value = data.Emp_Status
-        console.log('data.profileimage: ', data.profileimage)
+        // console.log('data.profileimage: ', data.profileimage)
         // document.getElementById("profileImage").value = data.profileimage
-        document.getElementById("profileImage").src = "/media/media/profile/salman.jpg";
+        // document.getElementById("profileImage").src = "/media/media/profile/salman.jpg";
 
     }));
 }
@@ -518,13 +518,13 @@ document.getElementById('CT_ID').addEventListener('change', function (e) {
     document.getElementById("REG_ID").innerHTML = `<option value="${seleted_region.REG_ID}">${seleted_region.REG_Descr}</option>`
 });
 
-document.getElementById('profileImage').addEventListener('change', function (e) {
-    var reader = new FileReader();
-    reader.onload = function (e) {
-        document.getElementById('previewImage').setAttribute('src', e.target.result);
-    };
-    reader.readAsDataURL(this.files[0]);
-});
+// document.getElementById('profileImage').addEventListener('change', function (e) {
+//     var reader = new FileReader();
+//     reader.onload = function (e) {
+//         document.getElementById('previewImage').setAttribute('src', e.target.result);
+//     };
+//     reader.readAsDataURL(this.files[0]);
+// });
 
 // window.onload = function(){
 //     document.getElementById('previewImage').setAttribute('src', "{% static 'profile/avatar.png' %}");
@@ -543,5 +543,6 @@ $(document).ready(function () {
     fillDropDown('city/getall', 'CT_ID', 'CT_ID', 'CT_Descr');
     fillDropDown('grade/getall', 'Grade_ID', 'Grade_ID', 'Grade_Descr');
     fillDropDown('region/getall', 'REG_ID', 'REG_ID', 'REG_Descr');
+    fillDropDown('employee/group-of-companies', 'REG_ID', 'REG_ID', 'REG_Descr');
     fillTableGrid()
 });

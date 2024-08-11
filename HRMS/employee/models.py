@@ -13,6 +13,8 @@ from grade.models import HR_Grade
 from datetime import date
 from datetime import datetime
 
+from rest_framework import serializers
+
 # issue in venv so delete that file and make again
 
 # to_field is the master table referecnce id
@@ -76,16 +78,41 @@ class HR_Employees(models.Model):
     def __str__(self):
         return f'{self.Emp_Name}' if self.Emp_Name else str(self.Emp_ID)
 
-class HR_Employees2(TimeStampedModel):
-    Emp_Name = models.CharField(db_column='Emp_Name', max_length=150, blank=True, null=True)  
-    Father_Name = models.CharField(db_column='Father_Name', max_length=150, blank=True, null=True)  
+
+class GroupOfCompanies(models.Model):
+    CoID = models.AutoField(primary_key=True)
+    CoName = models.CharField(max_length=100)
+    Server_Name = models.CharField(max_length=100)
+    DB_Name = models.CharField(max_length=100)
+    db_UserName = models.CharField(max_length=100)
+    db_Password = models.CharField(max_length=100)
+    Active = models.BooleanField(default=False)
+    CoImage = models.CharField(max_length=100)
+    CoColor = models.CharField(max_length=100)
 
     class Meta:
         managed = True
-        db_table = 'HR_Employees2'
+        db_table = 'GroupOfCompanies'
     
     def __str__(self):
         return self.Emp_Name
+
+class GroupOfCompaniesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GroupOfCompanies
+        fields = '__all__'
+
+# class HR_Employees2(TimeStampedModel):
+#     Emp_Name = models.CharField(db_column='Emp_Name', max_length=150, blank=True, null=True)  
+#     Father_Name = models.CharField(db_column='Father_Name', max_length=150, blank=True, null=True)  
+
+#     class Meta:
+#         managed = True
+#         db_table = 'HR_Employees2'
     
+#     def __str__(self):
+#         return self.Emp_Name
+    
+
 
 

@@ -37,6 +37,8 @@ def salaryprocess_view(request):
 def monthlysalaryupdate_view(request):
     return render(request, 'monthlysalaryupdate.html')
 
+
+
 def execute_salary_process(request, payroll_id, fuel_rate):
     print('execute_salary_process')
     api_url = 'https://localhost:44339/api/SalaryUpdate/ExecuteSalaryProcess'
@@ -89,6 +91,8 @@ def execute_salary_process(request, payroll_id, fuel_rate):
             'Message': f'Error occurred: {str(e)}',
             'Data': None
         })
+
+
 
 def hr_monthly_salary_process(request, payroll_id, fuel_rate):
     try:

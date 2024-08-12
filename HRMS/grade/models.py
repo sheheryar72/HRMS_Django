@@ -3,6 +3,7 @@ from django.db import models
 class HR_Grade(models.Model):
     Grade_ID = models.AutoField(primary_key=True)
     Grade_Descr = models.CharField(max_length=100, blank=True)
+    Grade_Name = models.CharField(max_length=100, blank=True)
 
     class Meta: 
         db_table = 'HR_Grade'

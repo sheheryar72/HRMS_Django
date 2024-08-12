@@ -32,8 +32,10 @@ function handleTableRowClick() {
     const rowData = table.row($(this).closest('tr')).data();
     const CT_ID = rowData[1];
     const CT_Descr = rowData[2];
+    const REG_ID = rowData[3];
     $('#CT_ID').val(CT_ID);
     $('#CT_Descr').val(CT_Descr);
+    $('#REG_ID').val(REG_ID);
     document.getElementById("insertFormData").classList.add("d-none");
     document.getElementById("updateFormData").classList.remove("d-none");
 }

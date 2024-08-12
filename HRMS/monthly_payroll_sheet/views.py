@@ -9,9 +9,62 @@ from django.db.models.functions import Coalesce
 from django.db import transaction
 from django.http import HttpResponse
 import requests
+from django.views.decorators.http import require_http_methods
+from django.db import connection
+import pyodbc
 
 def payroll_sheet_view(request):
     return render(request=request, template_name='payrollsheet.html')
+
+
+
+@require_http_methods(["GET"])
+def get_monthly_pay_sheet(request):
+    try:
+        # Define the raw SQL query to fetch data from the view
+        query = """
+        SELECT
+            Payroll_ID, Emp_Up_ID, Emp_ID, Emp_Name, Gender, Religion, CNIC_No, 
+            Marital_Status, Joining_Date, Emp_Status, HR_Emp_ID, CO_ID, CoName,
+            REG_ID, REG_Descr, CT_ID, CT_Descr, Dept_ID, Dept_Descr, Dsg_ID, 
+            DSG_Descr, Grade_ID, Grade_Descr, PERIOD_ID, FYID, FinYear, MNTH_ID, 
+            MNTH_NO, MNTH_NAME, MNTH_SHORT_NAME, PERIOD_STATUS, FYStatus, Yr, 
+            SDT, EDT, FYSDT, FYEDT, MDays, WDays, ADays, JLDays, Basic_Salary_1, 
+            Medical_Allowance_2, Conveyance_Fixed_Allowance_3, House_Rent_Allowance_5, 
+            Utilities_Allowance_6, Communication_12, Conveyance_Liters_Allowance_28, 
+            Tot_Gross_Salary, Meal_Allowance_7, Bike_Maintainence_9, 
+            Overtime_Allowance_4, Arrears_8, Incentives_Tech_10, Device_Reimbursment_11, 
+            Incentives_KPI_13, Other_Allowance_14, Tot_Allowances, 
+            Tot_Net_Gross_Allowances, Loan_15, Advance_Salary_16, EOBI_17, 
+            Income_Tax_18, Absent_Days_19, Device_Deduction_20, 
+            Over_Utilization_Mobile_21, Vehicle_Fuel_Deduction_22, 
+            Pandamic_Deduction_23, Late_Days_24, Other_Deduction_25, 
+            Mobile_Installment_26, Food_Panda_27, Tot_Deductions, Tot_AC_To_WD, 
+            Tot_Net_Salary, Transfer_Type, Account_No, Bank_Name
+        FROM HR_MONTHLY_PAY_SHEET_V
+        """
+
+        # Execute the query
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            
+            # Fetch column names
+            columns = [column[0] for column in cursor.description]
+
+            # Fetch all rows and convert to dictionaries
+            rows = cursor.fetchall()
+            data = [dict(zip(columns, row)) for row in rows]
+
+        return JsonResponse({
+            'status': 'success',
+            'data': data
+        })
+
+    except pyodbc.Error as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
 
 
 def execute_monthly_pay_sheet(request, payroll_id):

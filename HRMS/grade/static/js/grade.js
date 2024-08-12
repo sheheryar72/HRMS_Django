@@ -31,8 +31,10 @@ function handleTableRowClick() {
     const rowData = table.row($(this).closest('tr')).data();
     const Grade_ID = rowData[1];
     const Grade_Descr = rowData[2];
+    const Grade_Name = rowData[3];
     $('#Grade_ID').val(Grade_ID);
     $('#Grade_Descr').val(Grade_Descr);
+    $('#Grade_Name').val(Grade_Name);
     document.getElementById("updateFormData").classList.remove("d-none");
     document.getElementById("insertFormData").classList.add("d-none");
 }
@@ -59,6 +61,7 @@ function handleCancelClick() {
     // document.getElementById("Grade_ID").readOnly = false;
     document.getElementById("Grade_ID").value = '';
     document.getElementById("Grade_Descr").value = '';
+    document.getElementById("Grade_Name").value = '';
     document.getElementById("updateFormData").classList.add("d-none");
     document.getElementById("insertFormData").classList.remove("d-none");
 }
@@ -166,7 +169,7 @@ function fillTableGrid() {
        
         for (var i = 0; i < data.length; i++) {
             var actionButton = createActionButton(); // Create action button element
-            var row = [counter, data[i].Grade_ID, data[i].Grade_Descr, actionButton.outerHTML];
+            var row = [counter, data[i].Grade_ID, data[i].Grade_Descr, data[i].Grade_Name, actionButton.outerHTML];
             table.row.add(row).draw(false);
             counter++;
         }
@@ -215,10 +218,12 @@ function createActionButton() {
 function handleInsertClick(){
     const Grade_ID = document.getElementById("Grade_ID").value;
     const Grade_Descr = document.getElementById("Grade_Descr").value;
+    const Grade_Name = document.getElementById("Grade_Name").value;
 
     const departmentData = {
         Grade_ID: Grade_ID,
-        Grade_Descr: Grade_Descr
+        Grade_Descr: Grade_Descr,
+        Grade_Name: Grade_Name
     }
     createDesignation(departmentData);
     
@@ -227,10 +232,12 @@ function handleInsertClick(){
 function handleUpdateClick(){
     const Grade_ID = document.getElementById("Grade_ID").value;
     const Grade_Descr = document.getElementById("Grade_Descr").value;
+    const Grade_Name = document.getElementById("Grade_Name").value;
 
     const departmentData = {
         Grade_ID: Grade_ID,
-        Grade_Descr: Grade_Descr
+        Grade_Descr: Grade_Descr,
+        Grade_Name: Grade_Name
     }
     updateDesignation(Grade_ID, departmentData);
     fillTableGrid();

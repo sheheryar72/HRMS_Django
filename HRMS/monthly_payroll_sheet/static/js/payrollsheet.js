@@ -26,7 +26,7 @@ function get_active_period() {
 
 async function transfer_data_to_salary_process(payroll_id) {
     try {
-        const response = await fetch(`${BASE_URL}/payrollsheet/execute_monthly_pay_sheet/${payroll_id}/`, {
+        const response = await fetch(`${BASE_URL}/payrollsheet/monthly-pay-sheet/`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -42,7 +42,7 @@ async function transfer_data_to_salary_process(payroll_id) {
         console.log("data: ", data);
 
         // Populate table with data
-        populateTable(data.Data);
+        populateTable(data.data);
 
         alert("Monthly process completed successfully!");
     } catch (error) {

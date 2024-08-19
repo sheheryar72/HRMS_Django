@@ -41,13 +41,13 @@ function handleDeleteButtonClick() {
     const rowData = table.row($(this).closest('tr')).data();
     const Dept_ID = rowData[1];
     // console.log('Dept_ID: ', Dept_ID)
-    if (confirm("Are you sure you want to delete this department?")) {
+    if (confirm("Are you sure you want to delete this Employee?")) {
         deleteDesignation(Dept_ID).then(success => {
             if (success) {
-                displaySuccessMessage('Designation deleted successfully!');
+                displaySuccessMessage('Employee deleted successfully!');
                 fillTableGrid(); // Reload table after deletion
             } else {
-                displayErrorMessage('Failed to delete department. Please try again.');
+                displayErrorMessage('Failed to delete Employee. Please try again.');
             }
         });
     }
@@ -77,7 +77,7 @@ function handleCancelClick() {
     document.getElementById("Confirmation_Date").value = '';
     document.getElementById("CNIC_Issue_Date").value = '';
     document.getElementById("CNIC_Exp_Date").value = '';
-    document.getElementById("previewImage").src = "{% get_media_prefix %}profile/avatar.png"
+    // document.getElementById("previewImage").src = "{% get_media_prefix %}profile/avatar.png"
 
     document.getElementById("updateFormData").classList.add("d-none");
     document.getElementById("insertFormData").classList.remove("d-none");
@@ -233,7 +233,10 @@ function handleInsertClick() {
     formData.append('CNIC_Issue_Date', CNIC_Issue_Date);
     formData.append('CNIC_Exp_Date', CNIC_Exp_Date);
 
-    if(HR_Emp_ID != '' && Emp_Name != '' && Joining_Date != '' && CT_ID != ''){
+    if(HR_Emp_ID != '' && Emp_Name != '' && Joining_Date != '' && CT_ID != '' && DateOfBirth != '' && Joining_Dept_ID != ''
+        && Joining_Dsg_ID != '' && CNIC_No != '' && CNIC_Issue_Date != '' && CNIC_Exp_Date != '' && Gender != '' 
+    && Marital_Status != '' && Co_ID != '')
+    {
         createEmployee(formData);
     }else{
         alert('please fill required field!')
@@ -259,8 +262,8 @@ async function createEmployee(formData) {
         displaySuccessMessage('Employee created successfully!');
         fillTableGrid();
     } catch (error) {
-        console.error('Error creating employee:', error);
-        displayErrorMessage('Failed to create employee. Please try again.');
+        console.error('Error creating Employee:', error);
+        displayErrorMessage('Failed to create Employee. Please try again.');
     }
 }
 
@@ -276,15 +279,16 @@ async function updateDesignation(id, formData) {
         });
         if (!response.ok) {
             const errorData = await response.json();  // Parse the JSON response to get the error message
-            throw new Error(errorData.message || 'Failed to create employee');  // Use the server's error message or a default one
+            throw new Error(errorData.message || 'Failed to create Employee');  // Use the server's error message or a default one
         }
         //const data = await response.json();
-        displaySuccessMessage('Designation updated successfully!');
+        displaySuccessMessage('Employee updated successfully!');
+        fillTableGrid();
         // fillTableGrid();
         //return data;
     } catch (error) {
-        console.error('Error updating department:', error);
-        displayErrorMessage('Failed to update department. Please try again.');
+        console.error('Error updating Employee:', error);
+        displayErrorMessage('Failed to update Employee. Please try again.');
         return null;
     }
 }
@@ -381,6 +385,7 @@ function handleUpdateClick() {
     const CNIC_No = document.getElementById("CNIC_No").value;
     const Religion = document.getElementById("Religion").value;
     const CT_ID = Number(document.getElementById("CT_ID").value);
+    const REG_ID = Number(document.getElementById("REG_ID").value);
     const Personal_Cell_No = document.getElementById("Personal_Cell_No").value;
     const Official_Cell_No = document.getElementById("Official_Cell_No").value;
     const Emergency_Cell_No = document.getElementById("Emergency_Cell_No").value;
@@ -410,6 +415,7 @@ function handleUpdateClick() {
     formData.append('CNIC_No', CNIC_No);
     formData.append('Religion', Religion);
     formData.append('CT_ID', CT_ID);
+    formData.append('REG_ID', REG_ID);
     formData.append('Emergency_Cell_No', Emergency_Cell_No);
     formData.append('Joining_Date', Joining_Date);
     formData.append('Joining_Dsg_ID', Joining_Dsg_ID);
@@ -423,8 +429,14 @@ function handleUpdateClick() {
     formData.append('CNIC_Issue_Date', CNIC_Issue_Date);
     formData.append('CNIC_Exp_Date', CNIC_Exp_Date);
 
+    if(HR_Emp_ID != '' && Emp_Name != '' && Joining_Date != '' && CT_ID != '' && DateOfBirth != '' && Joining_Dept_ID != ''
+        && Joining_Dsg_ID != '' && CNIC_No != '' && CNIC_Issue_Date != '' && CNIC_Exp_Date != '' && Gender != '' 
+    && Marital_Status != '' && Co_ID != '')
+    {
     updateDesignation(Emp_ID, formData);
-    fillTableGrid();
+    }else{
+        alert('please fill required field!')
+    }
 }
 
 function displaySuccessMessage(message) {
@@ -475,9 +487,12 @@ function fillFormDataFromDB(id) {
         document.getElementById("CNIC_No").value = data.CNIC_No 
         document.getElementById("Religion").value = data.Religion
         document.getElementById("CT_ID").value = data.CT_ID
+        // console.log('region_array region: ', region_array)
         const region = region_array.find(x => x.REG_ID == data.REG_ID);
-        console.log('region: ', region)
-        document.getElementById("REG_ID").innerHTML = `<option value="${region.REG_ID}">${region.REG_Descr}</option>` 
+        // console.log('region: ', region)
+        if(region != undefined){
+            document.getElementById("REG_ID").innerHTML = `<option value="${region.REG_ID}">${region.REG_Descr}</option>` 
+        }
         document.getElementById("Emergency_Cell_No").value = data.Emergency_Cell_No
         document.getElementById("Joining_Date").value = moment(data.Joining_Date).format("YYYY-MM-DD");
         document.getElementById("Joining_Dsg_ID").value = data.Joining_Dsg_ID
@@ -495,12 +510,12 @@ function fillFormDataFromDB(id) {
 function fillDropDown(dataName, dropdownId, valueField, displayTextField) {
     getAllDataFromDB(dataName).then((data) => {
         var temp = '';
-        // console.log('data: ', data)
+        console.log('dataName: ', dataName)
         if (dataName == 'city/getall') {
             city_array = data
         }  if (dataName == 'region/getall') {
                 region_array = data
-                // console.log('region_array: ', region_array)
+                console.log('region_array: ', region_array)
             } else{
                 data.forEach(element => {
                     temp += `<option value="${element[valueField]}">${element[displayTextField]}</option>`;
@@ -543,6 +558,6 @@ $(document).ready(function () {
     fillDropDown('city/getall', 'CT_ID', 'CT_ID', 'CT_Descr');
     fillDropDown('grade/getall', 'Grade_ID', 'Grade_ID', 'Grade_Descr');
     fillDropDown('region/getall', 'REG_ID', 'REG_ID', 'REG_Descr');
-    fillDropDown('employee/group-of-companies', 'REG_ID', 'REG_ID', 'REG_Descr');
+    fillDropDown('employee/group-of-companies', 'Co_ID', 'CoID', 'CoName');
     fillTableGrid()
 });

@@ -63,6 +63,10 @@
     tbody#InserRowID2 input {
         width: -webkit-fill-available;
     }
+    .text-danger {
+        color: red;
+        font-size: 15px;
+    }
 </style>
 
 <div class="container">
@@ -88,44 +92,49 @@
                             <input type="number" class="form-control" id="Emp_ID_" placeholder="Salary Update ID"
                                 readonly>
                         </div>
-                        <label for="input1" class="col-sm-2 col-form-label">Salary Date</label>
+                        <label for="input1" class="col-sm-2 col-form-label">Salary Date<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
                             <input type="date" class="form-control" id="Emp_Up_Date" placeholder="Salary Date">
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input5" class="col-sm-2 col-form-label">Employee</label>
+                        <label for="input5" class="col-sm-2 col-form-label">Employee<span class="text-danger"> *</span></label>
                         <div class="col-sm-6">
                             <select class="form-control form-control-sm" id="Emp_ID">
                             </select>
                         </div>
-                        <label for="input5" class="col-sm-2 col-form-label">HR Emp Code</label>
+                        <label for="input5" class="col-sm-2 col-form-label">HR Emp Code<span class="text-danger"> *</span></label>
                         <div class="col-sm-2">
                             <input type="number" class="form-control form-control-sm" id="HR_Emp_ID"
                                 placeholder="HR Code" readonly />
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input5" class="col-sm-2 col-form-label">Designation</label>
-                        <div class="col-sm-10">
+                        <label for="input5" class="col-sm-2 col-form-label">Designation<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
                             <select class="form-control form-control-sm" id="DSG_ID">
+                            </select>
+                        </div>
+                        <label for="input5" class="col-sm-2 col-form-label">Company<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control form-control-sm" id="CO_ID">
                             </select>
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input5" class="col-sm-2 col-form-label">Department</label>
+                        <label for="input5" class="col-sm-2 col-form-label">Department<span class="text-danger"> *</span></label>
                         <div class="col-sm-10">
                             <select class="form-control form-control-sm" id="Dept_ID">
                             </select>
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input5" class="col-sm-2 col-form-label">Grade</label>
+                        <label for="input5" class="col-sm-2 col-form-label">Grade<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
                             <select class="form-control form-control-sm" id="Grade_ID">
                             </select>
                         </div>
-                        <label for="input5" class="col-sm-2 col-form-label">Emp Category</label>
+                        <label for="input5" class="col-sm-2 col-form-label">Emp Category<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
                             <select class="form-control form-control-sm" id="Emp_Category">
                                 <option value="Manager">Manager</option>
@@ -135,7 +144,7 @@
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input5" class="col-sm-2 col-form-label">Marital Status</label>
+                        <label for="input5" class="col-sm-2 col-form-label">Marital Status<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
                             <select class="form-control form-control-sm" id="Marital_Status">
                                 <option value="Single">Single</option>
@@ -148,7 +157,7 @@
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input6" class="col-sm-2 col-form-label">Transfer Type</label>
+                        <label for="input6" class="col-sm-2 col-form-label">Transfer Type<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
                             <select class="form-control form-control-sm" id="Transfer_Type">
                                 <option value="0">Bank Transter</option>
@@ -156,13 +165,13 @@
                                 <option value="2">Cash</option>
                             </select>
                         </div>
-                        <label for="input6" class="col-sm-2 col-form-label">Account No</label>
+                        <label for="input6" class="col-sm-2 col-form-label">Account No<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
                             <input type="number" class="form-control" id="Account_No" placeholder="Account No">
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input6" class="col-sm-2 col-form-label">Bank Name</label>
+                        <label for="input6" class="col-sm-2 col-form-label">Bank Name<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
                             <input type="text" class="form-control" id="Bank_Name" placeholder="Bank Name">
                         </div>
@@ -175,17 +184,17 @@
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input6" class="col-sm-2 col-form-label">Last Gross Salary</label>
+                        <label for="input6" class="col-sm-2 col-form-label">Last Gross Salary<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
                             <input type="number" class="form-control" id="Last_GrossSalary" placeholder="Last Gross Salary">
                         </div>
-                        <label for="input6" class="col-sm-2 col-form-label">Last Increment Amount</label>
+                        <label for="input6" class="col-sm-2 col-form-label">Last Increment Amount<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
                             <input type="number" class="form-control form-control-sm" id="Last_Increment_Amt" placeholder="Last Increment Amount" />
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input5" class="col-sm-2 col-form-label">Gross Salary</label>
+                        <label for="input5" class="col-sm-2 col-form-label">Gross Salary<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
                             <input type="number" class="form-control" id="GrossSalary" placeholder="Gross Salary" readonly>
                         </div>
@@ -268,7 +277,9 @@
                 <tbody id="InserRowID1" class="ElementGridClass">
                 </tbody>
             </table>
-            <h5 id="totalAllowance" style="text-align: end;">Total Allowance: 100</h5>
+            <h5 id="totalAllowance_fixed_gross" style="text-align: end;">Total Allowance Fixed Gross: 0</h5>
+            <h5 id="totalAllowance_fixed_additional" style="text-align: end;">Total Allowance Fixed Additional: 0</h5>
+            <h5 id="totalAllowance" style="text-align: end;">Total Allowance: 0</h5>
         </div>
 
     </div>
@@ -289,7 +300,7 @@
                 <tbody id="InserRowID2" class="ElementGridClass">
                 </tbody>
             </table>
-            <h5 id="totalDeduction" style="text-align: end;">Total Deduction: 100</h5>
+            <h5 id="totalDeduction" style="text-align: end;">Total Deduction: 0</h5>
         </div>
 
     </div>

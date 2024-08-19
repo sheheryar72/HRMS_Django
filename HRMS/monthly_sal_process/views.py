@@ -38,6 +38,42 @@ def monthlysalaryupdate_view(request):
     return render(request, 'monthlysalaryupdate.html')
 
 
+def execute_salary_process2(request, payroll_id, fuel_rate):
+    print('execute_salary_process2 called')
+    api_url = 'http://localhost:5000/ExecuteSalaryProcess/'
+    payload = {
+        'm_Payroll_ID': payroll_id,
+        'm_Fuel_Rate': fuel_rate
+    }
+
+    try:
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(api_url, json=payload, headers=headers, verify=False)
+
+        print(f'Response Status Code: {response.status_code}')
+        print(f'Response Content: {response.content.decode()}')
+
+        # If the response status code is 200 OK
+        if response.status_code == 200:
+            response_data = response.json()
+            return JsonResponse({
+                'ResponseCode': response_data.get('ResponseCode', 500),
+                'Message': response_data.get('Message', 'Failed to execute'),
+                'Data': response_data.get('Data', None)
+            })
+        else:
+            return JsonResponse({
+                'ResponseCode': response.status_code,
+                'Message': 'Failed to execute external API',
+                'Data': None
+            })
+    except requests.RequestException as e:
+        return JsonResponse({
+            'ResponseCode': 500,
+            'Message': f'Error occurred: {str(e)}',
+            'Data': None
+        })
+
 
 def execute_salary_process(request, payroll_id, fuel_rate):
     print('execute_salary_process')

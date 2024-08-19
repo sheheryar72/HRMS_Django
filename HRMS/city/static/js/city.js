@@ -33,11 +33,28 @@ function handleTableRowClick() {
     const CT_ID = rowData[1];
     const CT_Descr = rowData[2];
     const REG_ID = rowData[3];
+
     $('#CT_ID').val(CT_ID);
-    $('#CT_Descr').val(CT_Descr);
-    $('#REG_ID').val(REG_ID);
+    $('#CT_Descr').val(CT_Descr);   
+    // $('#REG_ID').val(REG_ID);
+
+    // Set the REG_ID dropdown based on the visible text
+    setDropdownText("REG_ID", REG_ID);
+
     document.getElementById("insertFormData").classList.add("d-none");
     document.getElementById("updateFormData").classList.remove("d-none");
+}
+
+function setDropdownText(dropdownId, text) {
+    var dropdown = document.getElementById(dropdownId);
+    var options = dropdown.options;
+
+    for (var i = 0; i < options.length; i++) {
+        if (options[i].text === text) {
+            dropdown.selectedIndex = i;
+            break;
+        }
+    }
 }
 
 // Handle click on delete button in table row

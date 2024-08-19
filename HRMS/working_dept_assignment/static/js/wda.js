@@ -202,7 +202,7 @@ function getWDAByID(W_ID) {
     $.ajax({
         type: 'GET',
         url: `${BASE_URL}/wda/getall/${W_ID}`,
-        headers: {
+        headers: {  
             "Content-type": "application/json; charset=UTF-8",
             'X-CSRFToken': getCookie('csrftoken')
             // "authorization": authorization,
@@ -276,11 +276,12 @@ function getAllDepartment() {
         },
         success: function (response) {
             listofDepartments = response;
-            console.log('response: ', response);
+            console.log('getAllDepartment response: ', response);
             let temp = '', temp2 = '';
             for (var i = 0; i < response.length; i++) {
                 temp2 += `<option value="${response[i].Dept_ID}">${response[i].Dept_Descr}</option>`;
             }
+
             document.getElementById("singleSelection").innerHTML = temp2;
             document.getElementById("Working_Dept_ID").innerHTML = temp2;
             // document.getElementById("searchDeptID").innerHTML = temp2;

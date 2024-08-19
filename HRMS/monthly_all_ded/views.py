@@ -34,6 +34,8 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
             'W_All_Ded_Dept_ID', 'W_All_Ded_Element_ID', 'Dept_ID'
         )
         
+        print('w_dept_queryset: ', w_dept_queryset)
+
         emp_queryset = HR_Emp_Salary_Grade_V.objects.filter(
             Dept_ID=DeptID
         ).distinct()
@@ -44,11 +46,15 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
             Department=DeptID
         )
 
+        print('month_pp_queryset: ', month_pp_queryset)
+
         # print('month_pp_queryset: ', month_pp_queryset)
 
         month_pp_serializer = HR_Monthly_All_Ded_Serializer(
             month_pp_queryset, many=True
         )
+
+        print('month_pp_serializer: ', month_pp_serializer)
 
         # print('count 1: ', emp_queryset.count())
         # print('count 2: ', month_pp_queryset.count())
@@ -110,8 +116,8 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
         return JsonResponse(data3, safe=False)
     
     except Exception as e:
-        print(f"Error: {str(e)}")  # Print the error for debugging purposes
-        return Response({'error': str(e)}, status=500)
+        print(f"Error: {str(e)}")  
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 # def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):

@@ -128,10 +128,15 @@ def insert_employee(request):
         employee.Religion = emp_data.get('Religion', '')
         employee.Co_ID = emp_data.get('Co_ID', 1)  # Default value for Co_ID
 
-        # Handle foreign keys with default values
+        # Handle foreign keys with default values      
+
         ct_id = emp_data.get('CT_ID')
         if ct_id:
             employee.CT_ID = HR_City.objects.get(pk=ct_id)
+
+        reg_id = emp_data.get('REG_ID')
+        if reg_id:
+            employee.REG_ID = HR_Region.objects.get(pk=reg_id)
 
         joining_dsg_id = emp_data.get('Joining_Dsg_ID')
         if joining_dsg_id:
@@ -238,6 +243,13 @@ def update_employee(request, emp_id):
         ct_id = emp_data.get('CT_ID')
         if ct_id:
             employee.CT_ID = HR_City.objects.get(pk=ct_id)
+
+        reg_id = emp_data.get('REG_ID')
+
+        print('update reg_id: ', reg_id)
+
+        if reg_id:
+            employee.REG_ID = HR_Region.objects.get(pk=reg_id)
 
         joining_dsg_id = emp_data.get('Joining_Dsg_ID')
         if joining_dsg_id:

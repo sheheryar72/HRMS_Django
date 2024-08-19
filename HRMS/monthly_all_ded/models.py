@@ -11,9 +11,9 @@ class HR_Monthly_All_Ded(models.Model):
     Department = models.ForeignKey(HR_Department, db_column='Dept_ID', to_field='Dept_ID', on_delete=models.CASCADE)
     Basic_Salary_1 = models.FloatField(blank=True, null=True)
     Medical_Allowance_2 = models.FloatField(blank=True, null=True)
-    Conveyance_Allowance_3 = models.FloatField(blank=True, null=True)
+    Conveyance_Fixed_Allowance_3 = models.FloatField(blank=True, null=True)
     Overtime_Allowance_4 = models.FloatField(blank=True, null=True)
-    House_Rent_Allowanc_5 = models.FloatField(blank=True, null=True)
+    House_Rent_Allowance_5 = models.FloatField(blank=True, null=True)
     Utilities_Allowance_6 = models.FloatField(blank=True, null=True)
     Meal_Allowance_7 = models.FloatField(blank=True, null=True)
     Arrears_8 = models.FloatField(blank=True, null=True)
@@ -107,8 +107,8 @@ class HR_Emp_Salary_Grade_V(models.Model):
     Dept_ID = models.IntegerField()
 
     class Meta:
-        managed = False  # Mark the model as read-only
-        db_table = 'HR_Emp_Salary_Grade_V'  # Specify the view name
+        managed = False  
+        db_table = 'HR_Emp_Salary_Grade_V'
 
     def __str__(self):
         return self.Emp_Name

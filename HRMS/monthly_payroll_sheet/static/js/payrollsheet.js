@@ -44,7 +44,7 @@ async function transfer_data_to_salary_process(payroll_id) {
         // Populate table with data
         populateTable(data.data);
 
-        alert("Monthly process completed successfully!");
+        alert("Monthly payroll sheet successfully!");
     } catch (error) {
         console.error("Error running Payroll Sheet:", error.message);
         alert("Error running Payroll Sheet: " + error.message);
@@ -53,7 +53,7 @@ async function transfer_data_to_salary_process(payroll_id) {
 
 function populateTable(data) {
     const tableBody = document.getElementById('table-body');
-    tableBody.innerHTML = ''; // Clear existing rows
+    tableBody.innerHTML = ''; // Clear existing rows`
 
     console.log('populateTable data: ', data)
 
@@ -97,15 +97,15 @@ function populateTable(data) {
 
 
 document.getElementById("monthly_paysheet_btn").addEventListener('click', function() {
-    var userConfirmation = confirm("Do you want to run the monthly process?");
+    // var userConfirmation = confirm("Do you want to run the monthly process?");
     const payroll_id = document.getElementById("Payroll_ID").value;
+    transfer_data_to_salary_process(payroll_id);
 
-    if (userConfirmation) {
-        alert("Running the monthly process...");
-        transfer_data_to_salary_process(payroll_id);
-    } else {
-        alert("Monthly process was cancelled.");
-    }
+    // if (userConfirmation) {
+    //     // alert("Running the monthly process...");
+    // } else {
+    //     alert("Monthly process was cancelled.");
+    // }
 });
 
 

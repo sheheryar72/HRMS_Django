@@ -241,7 +241,7 @@ def getall_master_byid(request, empUpID, empID):
 @api_view(['GET'])
 def getll_master(request):
     try:
-        querySet = HR_Emp_Sal_Update_Mstr.objects.all()
+        querySet = HR_Emp_Sal_Update_Mstr.objects.select_related('Emp_ID', 'Dsg_ID', 'Dept_ID')
         print('querySet: ', querySet.count())
         datas = []
         for item in querySet:

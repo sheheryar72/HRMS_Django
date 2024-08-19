@@ -140,7 +140,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'mssql',
         'NAME': 'ATS_HRMS_TEST',
-        'USER': 'tech',
+        'USER': 'tech', 
         'PASSWORD': 'tech',
         'HOST': '192.168.20.166',
         'PORT': '1433',  # Leave it as an empty string for the default port

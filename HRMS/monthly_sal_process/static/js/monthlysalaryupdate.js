@@ -798,9 +798,16 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
         document.getElementById("Stop_Salary").value =  data[0].Stop_Salary ? 1 : 0;
 
         let allowanceRow = '', deductionRow = '';
-        let counter = 1, totalAllowance = 0, totalDeduction = 0;
+        let counter = 1, totalAllowance = 0, totalDeduction = 0, totalAllowance_fixed_gross = 0, totalAllowance_fixed_additional = 0;
 
         for (var i = 0; i < data.length; i++) {
+
+            if (data[i].Element_Category == 'Fixed Gross') {
+                totalAllowance_fixed_gross += data[i].Amount;
+            }
+            if (data[i].Element_Category == 'Fixed Additional') {
+                totalAllowance_fixed_additional += data[i].Amount;
+            }
             if (data[i].Element_Type == 'Allowance') {
                 allowanceRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
@@ -817,6 +824,7 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
             }
             counter++;
         }
+
         // console.log("allowanceRow: ", allowanceRow)
         // console.log("deductionRow: ", deductionRow)
         document.getElementById("InserRowID1").innerHTML = allowanceRow;

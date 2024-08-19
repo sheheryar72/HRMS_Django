@@ -16,8 +16,6 @@ import pyodbc
 def payroll_sheet_view(request):
     return render(request=request, template_name='payrollsheet.html')
 
-
-
 @require_http_methods(["GET"])
 def get_monthly_pay_sheet(request):
     try:
@@ -66,6 +64,93 @@ def get_monthly_pay_sheet(request):
             'message': str(e)
         }, status=500)
 
+def execute_monthly_pay_sheet2(request, payroll_id):
+    print('execute_salary_process 2 called')
+    api_url = f'http://localhost:5000/ExecuteMonthlyPaySheet/{payroll_id}'
+    params = {
+        'Payroll_ID': payroll_id
+    }
+
+    try:
+
+        response = requests.get(api_url, params=params, verify=False)  
+
+        response_status_code = 200
+
+        if response_status_code == 200:
+            data = []
+
+            records = HR_MONTHLY_PAY_SHEET.objects.select_related('Emp_ID', 'Payroll_ID', 'Dept_ID')[:20]
+
+            for record in records:
+                data.append({
+                    # 'Emp_Up_ID': record.Emp_Up_ID,
+                    # 'Emp_ID': record.Emp_ID.Emp_ID,
+                    'HR_Emp_ID': record.Emp_ID.HR_Emp_ID,
+                    'Emp_Name': record.Emp_ID.Emp_Name,
+                    # 'Dept_ID': record.Dept_ID.Dept_ID,
+                    'Dept_Descr': record.Dept_ID.Dept_Descr,
+                    # 'DSG_ID': record.Emp_ID.Joining_Dsg_ID.DSG_ID,
+                    'DSG_Descr': record.Emp_ID.Joining_Dsg_ID.DSG_Descr,
+                    'CT_Descr': record.Emp_ID.CT_ID.CT_Descr,
+                    'REG_Descr': record.Emp_ID.REG_ID.REG_Descr,
+                    'Emp_Status': record.Emp_ID.Emp_Status,
+                    'DateOfBirth': record.Emp_ID.DateOfBirth,
+                    'CNIC_No': record.Emp_ID.CNIC_No,
+                    'Payroll_ID': record.Payroll_ID.PAYROLL_ID,
+                    'MDays': record.MDays,
+                    'WDAYS': record.WDAYS,
+                    'ADAYS': record.ADAYS,
+                    'JLDAYS': record.JLDAYS,
+                    'Basic_Salary_1': record.Basic_Salary_1,
+                    'Medical_Allowance_2': record.Medical_Allowance_2,
+                    'Conveyance_Allowance_3': record.Conveyance_Fixed_Allowance_3,
+                    'Overtime_Allowansce_4': record.Overtime_Allowance_4,
+                    'House_Rent_Allowanc_5': record.House_Rent_Allowance_5,
+                    'Utilities_Allowance_6': record.Utilities_Allowance_6,
+                    'Meal_Allowance_7': record.Meal_Allowance_7,
+                    'Arrears_8': record.Arrears_8,
+                    'Bike_Maintainence_9': record.Bike_Maintainence_9,
+                    'Incentives_10': record.Incentives_Tech_10,
+                    'Device_Reimbursment_11': record.Device_Reimbursment_11,
+                    'Communication_12': record.Communication_12,
+                    'Bonus_13': record.Incentives_KPI_13,
+                    'Other_Allowance_14': record.Other_Allowance_14,
+                    'Loan_15': record.Loan_15,
+                    'Advance_Salary_16': record.Advance_Salary_16,
+                    'EOBI_17': record.EOBI_17,
+                    'Income_Tax_18': record.Income_Tax_18,
+                    'Absent_Days_19': record.Absent_Days_19,
+                    'Device_Deduction_20': record.Device_Deduction_20,
+                    'Over_Utilizaton_Mobile_21': record.Over_Utilization_Mobile_21,
+                    'Vehicle_or_Fuel_Deduction_22': record.Vehicle_Fuel_Deduction_22,
+                    'Pandamic_Deduction_23': record.Pandamic_Deduction_23,
+                    'Late_Days_24': record.Late_Days_24,
+                    'Other_Deduction_25': record.Other_Deduction_25,
+                    'Mobile_Installment_26': record.Mobile_Installment_26,
+                    'Food_Panda_27': record.Food_Panda_27,
+                    'Conveyance_Liters_Allowance_28': record.Conveyance_Liters_Allowance_28,
+                })
+
+                print('pay sheet data: ', data)
+
+            return JsonResponse({
+                'ResponseCode': response_status_code,
+                'Message': 'Successfully executed',
+                'Data': data
+            })
+        else:
+            return JsonResponse({
+                'ResponseCode': response_status_code,
+                'Message': 'Failed to execute external API',
+                'Data': None
+            })
+    except requests.RequestException as e:
+        return JsonResponse({
+            'ResponseCode': 500,
+            'Message': f'Error occurred: {str(e)}',
+            'Data': None
+        })
 
 def execute_monthly_pay_sheet(request, payroll_id):
     print('execute_salary_process')
@@ -162,9 +247,6 @@ def execute_monthly_pay_sheet(request, payroll_id):
             'Message': f'Error occurred: {str(e)}',
             'Data': None
         })
-
-
-
 
 # api_view(['get_payrollsheet'])
 # def get_payrollsheet(request, payroll_id):

@@ -77,13 +77,19 @@
                     <div id="alertMessage"></div>
                     <!-- First row -->
                     <div class="form-group row align-items-center">
-                        <label for="input5" class="col-sm-2  col-form-label">Update ID</label>
-                        <div class="col-sm-6">
+                        <label for="Payroll_ID" class="col-sm-2 col-form-label col-form-label-sm">Period</label>
+                        <div class="col-sm-4">
+                            <select class="form-control form-control-sm" id="Search_Payroll_ID">
+                            </select>
+                        </div>
+                    
+                        <label for="Emp_Up_ID" class="col-sm-2 col-form-label col-form-label-sm">Update ID</label>
+                        <div class="col-sm-3">
                             <input type="number" class="form-control form-control-sm" id="Emp_Up_ID" readonly />
                         </div>
-                        <div class="col-sm-2">
-                            <i class="fa fa-search SearchIconCLass" id="empupdateGridIconId" data-toggle="modal"
-                                data-target="#orangeModalSubscription4"></i>
+                    
+                        <div class="col-sm-1 d-flex align-items-center">
+                            <i class="fa fa-search SearchIconCLass" id="empupdateGridIconId" data-toggle="modal" data-target="#orangeModalSubscription4" style="cursor: pointer;"></i>
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
@@ -111,8 +117,13 @@
                     </div>
                     <div class="form-group row align-items-center">
                         <label for="input5" class="col-sm-2 col-form-label">Designation<span class="text-danger"> *</span></label>
-                        <div class="col-sm-10">
+                        <div class="col-sm-4">
                             <select class="form-control form-control-sm" id="DSG_ID">
+                            </select>
+                        </div>
+                        <label for="input5" class="col-sm-2 col-form-label">Company<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control form-control-sm" id="CO_ID">
                             </select>
                         </div>
                     </div>
@@ -124,7 +135,7 @@
                         </div>
                         <label for="input5" class="col-sm-2 col-form-label">Payroll Period<span class="text-danger"> *</span></label>
                         <div class="col-sm-3">
-                            <input type="number" class="form-control" id="Payroll_ID" placeholder="Payroll Period" readonly>
+                            <input type="text" class="form-control form-control-sm" id="Payroll_ID" placeholder="Payroll Payroll" readonly />
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
@@ -266,7 +277,9 @@
                 <tbody id="InserRowID1" class="ElementGridClass">
                 </tbody>
             </table>
-            <h5 id="totalAllowance" style="text-align: end;">Total Allowance: 100</h5>
+            <h5 id="totalAllowance_fixed_gross" style="text-align: end;">Total Allowance Fixed Gross: 0</h5>
+            <h5 id="totalAllowance_fixed_additional" style="text-align: end;">Total Allowance Fixed Additional: 0</h5>
+            <h5 id="totalAllowance" style="text-align: end;">Total Allowance: 0</h5>
         </div>
 
     </div>
@@ -287,7 +300,7 @@
                 <tbody id="InserRowID2" class="ElementGridClass">
                 </tbody>
             </table>
-            <h5 id="totalDeduction" style="text-align: end;">Total Deduction: 100</h5>
+            <h5 id="totalDeduction" style="text-align: end;">Total Deduction: 0</h5>
         </div>
 
     </div>

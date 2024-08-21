@@ -596,6 +596,7 @@ function calculateTotal() {
     let deductionInputs = document.querySelectorAll('.deductionInput');
     let allowanceTotal = 0;
     let deductionTotal = 0;
+    let totalAllowance_fixed_gross = 0, totalAllowance_fixed_additional = 0;
 
     allowanceInputs.forEach(input => {
         allowanceTotal += parseFloat(input.value) || 0;
@@ -604,6 +605,9 @@ function calculateTotal() {
     deductionInputs.forEach(input => {
         deductionTotal += parseFloat(input.value) || 0;
     });
+
+    // document.getElementById("totalAllowance_fixed_gross").innerHTML = `Total Allowance Fixed Gross: ${totalAllowance_fixed_gross}`
+    // document.getElementById("totalAllowance_fixed_additional").innerHTML = `Total Allowance Fixed Additional: ${totalAllowance_fixed_additional}`
 
     document.getElementById('totalAllowance').innerText = `Total Allowance: ${allowanceTotal.toFixed(2)}`
     document.getElementById('totalDeduction').innerText = `Total Deduction: ${deductionTotal.toFixed(2)}`
@@ -869,7 +873,6 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
         document.getElementById("totalAllowance_fixed_additional").innerHTML = `Total Allowance Fixed Additional: ${totalAllowance_fixed_additional}`
 
     });
-
 }
 
 
@@ -930,6 +933,8 @@ function handleTableRowClick2() {
 
 $(document).ready(function () {
     initializeDataTable();
+
+    document.getElementById('Emp_Up_Date').valueAsDate = new Date();
 
     fillCompaniestTableGrid()
     fillDepartmentTableGrid()

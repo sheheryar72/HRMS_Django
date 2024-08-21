@@ -848,6 +848,8 @@ def getall_master_byid(request, empUpID, empID):
                 "Account_No": data.Emp_Up_ID.Account_No,
                 "Bank_Name": data.Emp_Up_ID.Bank_Name,
                 "Stop_Salary": data.Emp_Up_ID.Stop_Salary,
+                'Payroll_ID': data.Payroll_ID.PAYROLL_ID,
+                'Payroll_Name': f'{data.Payroll_ID.MNTH_ID.MNTH_NAME} {data.Payroll_ID.FYID.FinYear}',
             }
             datas.append(item)
         # print("DAtas: ", datas)
@@ -860,7 +862,7 @@ def getall_master_byid(request, empUpID, empID):
 @api_view(['GET'])
 def getll_master(request):
     try:
-        querySet = HR_Emp_Monthly_Sal_Mstr.objects.prefetch_related('Emp_ID', 'Grade_ID', 'Dept_ID')
+        querySet = HR_Emp_Monthly_Sal_Mstr.objects.filter(Payroll_ID__PERIOD_STATUS=True).prefetch_related('Emp_ID', 'Grade_ID', 'Dept_ID', 'Dsg_ID')
         print('querySet: ', querySet.count())
         datas = []
         for item in querySet:

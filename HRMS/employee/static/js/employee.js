@@ -487,6 +487,8 @@ function fillFormDataFromDB(id) {
         document.getElementById("CNIC_No").value = data.CNIC_No 
         document.getElementById("Religion").value = data.Religion
         document.getElementById("CT_ID").value = data.CT_ID
+        document.getElementById("Grade_ID").value = data.Grade_ID
+        
         // console.log('region_array region: ', region_array)
         const region = region_array.find(x => x.REG_ID == data.REG_ID);
         // console.log('region: ', region)
@@ -547,6 +549,15 @@ document.getElementById('CT_ID').addEventListener('change', function (e) {
 
 $(document).ready(function () {
     initializeDataTable();
+
+    document.getElementById('DateOfBirth').valueAsDate = new Date();
+    document.getElementById('CNIC_Issue_Date').valueAsDate = new Date();
+    document.getElementById('CNIC_Exp_Date').valueAsDate = new Date();
+    document.getElementById('Joining_Date').valueAsDate = new Date();
+    document.getElementById('Confirmation_Date').valueAsDate = new Date();
+    document.getElementById('Joining_Date').valueAsDate = new Date();
+
+
     // $('#GridID tbody').on('click', 'tr', handleTableRowClick);
     $('#GridID tbody').on('click', '.roweditclass', handleTableRowClick);
     $('#GridID tbody').on('click', '.rowdeleteclass', handleDeleteButtonClick); // Attach delete button click handler

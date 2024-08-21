@@ -7,8 +7,7 @@ from payroll_element.models import HR_Payroll_Elements
 from payroll_period. models import HR_PAYROLL_PERIOD
 
 class HR_Emp_Monthly_Sal_Mstr(models.Model):
-    ID = models.AutoField(primary_key=True)
-    Emp_Up_ID = models.IntegerField()
+    Emp_Up_ID = models.AutoField(primary_key=True)
     Emp_Up_Date = models.DateTimeField(auto_now_add=True)
     Emp_Category = models.CharField(max_length=100)
     Marital_Status = models.CharField(max_length=50)
@@ -40,8 +39,9 @@ class HR_Emp_Monthly_Sal_Mstr(models.Model):
 
 class HR_Emp_Monthly_Sal_Dtl(models.Model):
     ID = models.AutoField(primary_key=True)
-    Emp_Up_ID = models.IntegerField()
-    # Emp_Up_ID = models.ForeignKey(HR_Emp_Monthly_Sal_Mstr, db_column='Emp_Up_ID', to_field='Emp_Up_ID', on_delete=models.CASCADE)
+    # Emp_Up_ID = models.IntegerField()
+    Emp_Up_ID = models.ForeignKey(HR_Emp_Monthly_Sal_Mstr, db_column='Emp_Up_ID', to_field='Emp_Up_ID', on_delete=models.CASCADE)
+    # Emp_Up_ID = models.ForeignKey(c, db_column='Emp_Up_ID', to_field='Emp_Up_ID', on_delete=models.CASCADE)
     Amount = models.FloatField()
     Element_ID = models.ForeignKey(HR_Payroll_Elements, db_column='Element_ID', to_field='Element_ID', on_delete=models.CASCADE)
     Element_Type = models.CharField(max_length=50)

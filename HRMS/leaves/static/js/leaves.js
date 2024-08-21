@@ -338,6 +338,9 @@ function displayErrorMessage(message) {
 
 $(document).ready(function () {
     initializeDataTable();
+
+    document.getElementById('Joining_Date').valueAsDate = new Date();
+
     // $('#GridID tbody').on('click', 'tr', handleTableRowClick);
     $('#GridID tbody').on('click', '.roweditclass', handleTableRowClick);
     $('#GridID tbody').on('click', '.rowdeleteclass', handleDeleteButtonClick); // Attach delete button click handler

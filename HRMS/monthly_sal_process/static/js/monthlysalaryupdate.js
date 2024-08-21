@@ -285,6 +285,7 @@ function handleInsertClick() {
     const Account_No = document.getElementById("Account_No");
     const Bank_Name = document.getElementById("Bank_Name");
     const Stop_Salary = document.getElementById("Stop_Salary");
+    const CO_ID = document.getElementById("CO_ID");
 
     let dataArray = [];
 
@@ -321,7 +322,7 @@ function handleInsertClick() {
         No_of_Children: No_of_Children,
         Remarks: Remarks,
         GrossSalary: grossSalary,
-        Co_ID: 1,
+        Co_ID: CO_ID,
         Transfer_Type: Transfer_Type,
         Account_No: Account_No,
         Bank_Name: Bank_Name,
@@ -383,6 +384,7 @@ function handleUpdateClick() {
     const Account_No = document.getElementById("Account_No").value;
     const Bank_Name = document.getElementById("Bank_Name").value;
     const Stop_Salary = document.getElementById("Stop_Salary").value;
+    const CO_ID = document.getElementById("CO_ID").value;
 
     let dataArray = [];
 
@@ -419,7 +421,7 @@ function handleUpdateClick() {
         No_of_Children: No_of_Children,
         Remarks: Remarks,
         GrossSalary: grossSalary,
-        Co_ID: 1,
+        Co_ID: CO_ID,
         Transfer_Type: Transfer_Type,
         Account_No: Account_No,
         Bank_Name: Bank_Name,
@@ -519,9 +521,9 @@ function mapEmployeeDate(empID) {
         document.getElementById("Emp_ID_").value = singleEmpData.Emp_ID;
         document.getElementById("HR_Emp_ID").value = singleEmpData.HR_Emp_ID;
         document.getElementById("Emp_Category").value = '';
-        document.getElementById("DSG_ID").value = singleEmpData.Joining_Dsg_ID; 
+        document.getElementById("DSG_ID").value = singleEmpData.Joining_Dsg_ID;
         document.getElementById("Dept_ID").value = singleEmpData.Joining_Dept_ID;
-        document.getElementById("Grade_ID").value = singleEmpData.Grade_ID; 
+        document.getElementById("Grade_ID").value = singleEmpData.Grade_ID;
         document.getElementById("Marital_Status").value = singleEmpData.Marital_Status;
     }
 
@@ -698,6 +700,17 @@ async function fillPayrollElementTableGrid(empID, empUpID) {
     }
 }
 
+function fillCompaniestTableGrid() {
+    getAllDataFromDB(`${BASE_URL}/employee/group-of-companies`, 'Companies').then((data) => {
+        console.log("companies: ", data);
+        var temp = '';
+        for (var i = 0; i < data.length; i++) {
+            temp += `<option value="${data[i].CoID}">${data[i].CoName}</option>`
+        }
+        document.getElementById("CO_ID").innerHTML = temp;
+    });
+}
+
 function fillDepartmentTableGrid() {
     getAllDataFromDB(`${BASE_URL}/department/getall`, 'Department').then((data) => {
         // console.log("response: ", data);
@@ -735,7 +748,7 @@ function fillSalaryMasterTableGrid() {
 }
 
 function fillEmployeeTableGrid() {
-    getAllDataFromDB(`${BASE_URL}/employee/getall`, 'Employee').then( (data) => {
+    getAllDataFromDB(`${BASE_URL}/employee/getall`, 'Employee').then((data) => {
         // console.log("response: ", data);
         var temp = '';
         listofEmployeeNotInSalUpdate = data;
@@ -776,7 +789,7 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
     getAllDataFromDB(`${BASE_URL}/salaryprocess/getallmasterbyid/${emp_up_Id}/${empId}/`, 'Salary Master').then((data) => {
         console.log("GetAll_Salary_update_BYID response: ", data);
 
-        document.getElementById("Emp_Up_ID").value = data[0].Emp_Up_ID; 
+        document.getElementById("Emp_Up_ID").value = data[0].Emp_Up_ID;
         // document.getElementById("Emp_Up_ID2").value = data[0].Emp_Up_ID;
         document.getElementById("Emp_Up_Date").value = moment(data[0].Emp_Up_Date).format("YYYY-MM-DD");
         document.getElementById("Emp_ID_").value = data[0].Emp_ID;
@@ -793,9 +806,11 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
         document.getElementById("GrossSalary").value = data[0].GrossSalary;
 
         document.getElementById("Transfer_Type").value = data[0].Transfer_Type;
-        document.getElementById("Account_No").value =  data[0].Account_No;
-        document.getElementById("Bank_Name").value =  data[0].Bank_Name;
-        document.getElementById("Stop_Salary").value =  data[0].Stop_Salary ? 1 : 0;
+        document.getElementById("Account_No").value = data[0].Account_No;
+        document.getElementById("Bank_Name").value = data[0].Bank_Name;
+        document.getElementById("Stop_Salary").value = data[0].Stop_Salary ? 1 : 0;
+        document.getElementById("CO_ID").value = data[0].Co_ID;
+        document.getElementById("Payroll_ID").value = data[0].Payroll_Name;
 
         let allowanceRow = '', deductionRow = '';
         let counter = 1, totalAllowance = 0, totalDeduction = 0, totalAllowance_fixed_gross = 0, totalAllowance_fixed_additional = 0;
@@ -866,33 +881,44 @@ function handleTableRowClick2() {
     const ElemenT_TYPE = $(this).find('td')[2].innerHTML;
     const ElemenT_CATEGORY = $(this).find('td')[3].innerHTML;
 
-    document.getElementById("Element_Descr").value = ElemenT_NAME;
+    document.getElementById("Element_Descr").value = ElemenT_NAME; fvz
 
     if (ElemenT_TYPE == "Allowance") {
         var temp =
             `<tr>
-                            <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
-                            <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
-                            <td><input type="text" value="" /></td></tr>`;
+                <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
+                <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
+                <td><input type="text" value="" /></td></tr>`;
         $("#InserRowID1").append(temp);
     }
     if (ElemenT_TYPE == "Deduction") {
         var temp =
             `<tr>
-                            <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
-                            <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
-                            <td><input type="text" value="" /></td></tr>`;
+                <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
+                <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
+                <td><input type="text" value="" /></td></tr>`;
         $("#InserRowID2").append(temp);
     }
 
     $("#orangeModalSubscription3").modal('hide');
 }
 
-
+function get_active_period() {
+    getAllDataFromDB(`${BASE_URL}/salaryprocess/get_active_period`, 'Payroll Period').then((data) => {
+        console.log("getall_payrollperiod response: ", data);
+        var temp = `<option value="${data.PAYROLL_ID}">${data.MNTH_NAME} - ${data.FinYear}</option>`
+        // var temp = `${data.MNTH_NAME} - ${data.FinYear}`
+        document.getElementById("Search_Payroll_ID").innerHTML = temp;
+    });
+}
 
 $(document).ready(function () {
     initializeDataTable();
 
+    document.getElementById('Emp_Up_Date').valueAsDate = new Date();
+
+    get_active_period()
+    fillCompaniestTableGrid()
     fillDepartmentTableGrid()
     fillDesignationTableGrid()
     fillEmployeeTableGrid()

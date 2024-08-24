@@ -67,14 +67,14 @@ def get_monthly_pay_sheet(request, payroll_id):
 def execute_monthly_pay_sheet(request, payroll_id):
     """
     Executes the external API call to process the monthly pay sheet using the given payroll ID.
-    Calls get_monthly_pay_sheet to fetch the updated data after the process.
+    Calls get_monthly_pay_sheet to fetch the updated data after the process.`
     """
     api_url = f'http://localhost:5000/ExecuteMonthlyPaySheet'
     payload = {'m_Payroll_ID': payroll_id}
 
     try:
         headers = {'Content-Type': 'application/json'}
-        response = requests.get(api_url,  json=payload, headers=headers, verify=False)
+        response = requests.get(api_url, json=payload, headers=headers, verify=False)
 
         logger.info(f'API Response Status Code: {response.status_code}')
         logger.info(f'API Response Content: {response.content.decode()}')

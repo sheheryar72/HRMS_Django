@@ -12,56 +12,89 @@ import requests
 from django.views.decorators.http import require_http_methods
 from django.db import connection
 import pyodbc
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def payroll_sheet_view(request):
     return render(request=request, template_name='payrollsheet.html')
 
 @require_http_methods(["GET"])
-def get_monthly_pay_sheet(request):
-    try:
-        # Define the raw SQL query to fetch data from the view
-        query = """
-        SELECT
-            Payroll_ID, Emp_Up_ID, Emp_ID, Emp_Name, Gender, Religion, CNIC_No, 
-            Marital_Status, Joining_Date, Emp_Status, HR_Emp_ID, CO_ID, CoName,
-            REG_ID, REG_Descr, CT_ID, CT_Descr, Dept_ID, Dept_Descr, Dsg_ID, 
-            DSG_Descr, Grade_ID, Grade_Descr, PERIOD_ID, FYID, FinYear, MNTH_ID, 
-            MNTH_NO, MNTH_NAME, MNTH_SHORT_NAME, PERIOD_STATUS, FYStatus, Yr, 
-            SDT, EDT, FYSDT, FYEDT, MDays, WDays, ADays, JLDays, Basic_Salary_1, 
-            Medical_Allowance_2, Conveyance_Fixed_Allowance_3, House_Rent_Allowance_5, 
-            Utilities_Allowance_6, Communication_12, Conveyance_Liters_Allowance_28, 
-            Tot_Gross_Salary, Meal_Allowance_7, Bike_Maintainence_9, 
-            Overtime_Allowance_4, Arrears_8, Incentives_Tech_10, Device_Reimbursment_11, 
-            Incentives_KPI_13, Other_Allowance_14, Tot_Allowances, 
-            Tot_Net_Gross_Allowances, Loan_15, Advance_Salary_16, EOBI_17, 
-            Income_Tax_18, Absent_Days_19, Device_Deduction_20, 
-            Over_Utilization_Mobile_21, Vehicle_Fuel_Deduction_22, 
-            Pandamic_Deduction_23, Late_Days_24, Other_Deduction_25, 
-            Mobile_Installment_26, Food_Panda_27, Tot_Deductions, Tot_AC_To_WD, 
-            Tot_Net_Salary, Transfer_Type, Account_No, Bank_Name
-        FROM HR_MONTHLY_PAY_SHEET_V
-        """
+def get_monthly_pay_sheet(request, payroll_id):
+    """
+    Fetches the monthly pay sheet data from the HR_MONTHLY_PAY_SHEET_V view.
+    Returns a JSON response with the data or an error message.
+    """
+    query = """
+    SELECT
+        Payroll_ID, Emp_Up_ID, Emp_ID, Emp_Name, Gender, Religion, CNIC_No, 
+        Marital_Status, Joining_Date, Emp_Status, HR_Emp_ID, CO_ID, CoName,
+        REG_ID, REG_Descr, CT_ID, CT_Descr, Dept_ID, Dept_Descr, Dsg_ID, 
+        DSG_Descr, Grade_ID, Grade_Descr, PERIOD_ID, FYID, FinYear, MNTH_ID, 
+        MNTH_NO, MNTH_NAME, MNTH_SHORT_NAME, PERIOD_STATUS, FYStatus, Yr, 
+        SDT, EDT, FYSDT, FYEDT, MDays, WDays, ADays, JLDays, Basic_Salary_1, 
+        Medical_Allowance_2, Conveyance_Fixed_Allowance_3, House_Rent_Allowance_5, 
+        Utilities_Allowance_6, Communication_12, Conveyance_Liters_Allowance_28, 
+        Tot_Gross_Salary, Meal_Allowance_7, Bike_Maintainence_9, 
+        Overtime_Allowance_4, Arrears_8, Incentives_Tech_10, Device_Reimbursment_11, 
+        Incentives_KPI_13, Other_Allowance_14, Tot_Allowances, 
+        Tot_Net_Gross_Allowances, Loan_15, Advance_Salary_16, EOBI_17, 
+        Income_Tax_18, Absent_Days_19, Device_Deduction_20, 
+        Over_Utilization_Mobile_21, Vehicle_Fuel_Deduction_22, 
+        Pandamic_Deduction_23, Late_Days_24, Other_Deduction_25, 
+        Mobile_Installment_26, Food_Panda_27, Tot_Deductions, Tot_AC_To_WD, 
+        Tot_Net_Salary, Transfer_Type, Account_No, Bank_Name
+    FROM HR_MONTHLY_PAY_SHEET_V
+    """
 
-        # Execute the query
+    try:
         with connection.cursor() as cursor:
             cursor.execute(query)
-            
-            # Fetch column names
             columns = [column[0] for column in cursor.description]
-
-            # Fetch all rows and convert to dictionaries
             rows = cursor.fetchall()
             data = [dict(zip(columns, row)) for row in rows]
 
-        return JsonResponse({
-            'status': 'success',
-            'data': data
-        })
+        return JsonResponse({'status': 'success', 'data': data}, status=200)
 
-    except pyodbc.Error as e:
+    except Exception as e:
+        logger.error(f"Error fetching monthly pay sheet data: {str(e)}")
+        return JsonResponse({'status': 'error', 'message': 'Failed to fetch data'}, status=500)
+
+
+@require_http_methods(["GET"])
+def execute_monthly_pay_sheet(request, payroll_id):
+    """
+    Executes the external API call to process the monthly pay sheet using the given payroll ID.
+    Calls get_monthly_pay_sheet to fetch the updated data after the process.
+    """
+    api_url = f'http://localhost:5000/ExecuteMonthlyPaySheet/{payroll_id}'
+    # payload = {'m_Payroll_ID': payroll_id}
+
+    try:
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(api_url, headers=headers, verify=False)
+
+        logger.info(f'API Response Status Code: {response.status_code}')
+        logger.info(f'API Response Content: {response.content.decode()}')
+
+        if response.status_code == 200:
+            # Call to get updated data after successful execution
+            return get_monthly_pay_sheet(request)
+        else:
+            logger.error(f'Failed to execute external API. Status Code: {response.status_code}')
+            return JsonResponse({
+                'ResponseCode': response.status_code,
+                'Message': 'Failed to execute external API',
+                'Data': None
+            }, status=response.status_code)
+
+    except requests.RequestException as e:
+        logger.error(f'Error occurred while executing external API: {str(e)}')
         return JsonResponse({
-            'status': 'error',
-            'message': str(e)
+            'ResponseCode': 500,
+            'Message': f'Error occurred: {str(e)}',
+            'Data': None
         }, status=500)
 
 def execute_monthly_pay_sheet2(request, payroll_id):
@@ -152,7 +185,7 @@ def execute_monthly_pay_sheet2(request, payroll_id):
             'Data': None
         })
 
-def execute_monthly_pay_sheet(request, payroll_id):
+def execute_monthly_pay_sheet5(request, payroll_id):
     print('execute_salary_process')
     api_url = 'https://localhost:44339/api/SalaryUpdate/ExecuteMonthlyPaySheet'
     params = {

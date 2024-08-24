@@ -162,7 +162,7 @@ document.getElementById("W_Department").addEventListener("click", async function
         // });
 
     } catch (error) {
-        console.error('Error fetching Grade:', error);
+        console.error('Error fetching Grade:', error);  
         return null;
     }
 
@@ -297,7 +297,7 @@ $(document).ready(function () {
         alert(w_dept)
     }
 
-    getAll_Dept_ByID(W_deptID);
+    // getAll_Dept_ByID(W_deptID);
     getAllDeptElemet(W_deptID);
     document.getElementById("CancelFormData").addEventListener('click', CancelFormAndGridData);
 })
@@ -439,9 +439,10 @@ async function getAllDepartmentFromAPI() {
     }
 }
 
-document.getElementById("Current_Department").addEventListener('click', function () {
+document.getElementById("Current_Department").addEventListener('change', function () {
     let W_deptID = this.value
     // let W_deptID = 1
+    alert('Current_Department call')
     getAll_Dept_ByID(W_deptID);
 })
 

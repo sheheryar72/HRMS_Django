@@ -20,7 +20,7 @@ function initializeDataTable() {
             },
             {
                 "targets": 2,
-                "className": "text-left",
+                "className": "text-right",
             }
         ],
         lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]
@@ -39,7 +39,7 @@ function initializeDataTable() {
             },
             {
                 "targets": 2,
-                "className": "text-left",
+                "className": "text-right",
             }
         ],
         lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]
@@ -588,6 +588,7 @@ function calculateTotal() {
     let deductionInputs = document.querySelectorAll('.deductionInput');
     let allowanceTotal = 0;
     let deductionTotal = 0;
+    let totalAllowance_fixed_gross = 0, totalAllowance_fixed_additional = 0;
 
     allowanceInputs.forEach(input => {
         allowanceTotal += parseFloat(input.value) || 0;
@@ -597,9 +598,32 @@ function calculateTotal() {
         deductionTotal += parseFloat(input.value) || 0;
     });
 
+    $("#bmGridID1 tbody tr").each(function () {
+        const Element_Allowance = $(this).find("td:eq(0) input").val();
+        const Element_Category = $(this).find("td:eq(1) input").val();
+        const Element_Amount = $(this).find("td:eq(2) input").val();
+
+        console.log('Element_Category: ', Element_Category)
+
+        if (Element_Category == 'Fixed Gross') {
+            totalAllowance_fixed_gross += Number(Element_Amount);
+        }
+        if (Element_Category == 'Fixed Additional') {
+            totalAllowance_fixed_additional += Number(Element_Amount);
+        }
+    })
+
+    document.getElementById("totalAllowance_fixed_gross").innerHTML = `Total Allowance Fixed Gross: ${totalAllowance_fixed_gross}`
+    document.getElementById("totalAllowance_fixed_additional").innerHTML = `Total Allowance Fixed Additional: ${totalAllowance_fixed_additional}`
+
+
+    // document.getElementById("totalAllowance_fixed_gross").innerHTML = `Total Allowance Fixed Gross: ${totalAllowance_fixed_gross}`
+    // document.getElementById("totalAllowance_fixed_additional").innerHTML = `Total Allowance Fixed Additional: ${totalAllowance_fixed_additional}`
+
     document.getElementById('totalAllowance').innerText = `Total Allowance: ${allowanceTotal.toFixed(2)}`
     document.getElementById('totalDeduction').innerText = `Total Deduction: ${deductionTotal.toFixed(2)}`
 }
+
 
 async function getAllDataFromDB(url, name) {
     try {
@@ -817,33 +841,39 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
 
         for (var i = 0; i < data.length; i++) {
 
-            if (data[i].Element_Category == 'Fixed Gross') {
+            if (data[i].Element_Type == 'Allowance' && data[i].Element_Category == 'Fixed Gross') {
                 totalAllowance_fixed_gross += data[i].Amount;
             }
-            if (data[i].Element_Category == 'Fixed Additional') {
+            if (data[i].Element_Type == 'Allowance' && data[i].Element_Category == 'Fixed Additional') {
                 totalAllowance_fixed_additional += data[i].Amount;
             }
             if (data[i].Element_Type == 'Allowance') {
                 allowanceRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
                         <td><input type="text" value="${data[i].Element_Category}" readonly /></td>
-                        <td><input type="text" class="allowanceInput" value="${data[i].Amount}" /></td></tr>`;
+                        <td><input type="text" style="text-align: right;" class="allowanceInput" value="${data[i].Amount}" /></td></tr>`;
                 totalAllowance += data[i].Amount;
             }
             if (data[i].Element_Type == 'Deduction') {
                 deductionRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
                         <td><input type="text" value="${data[i].Element_Category}" readonly /></td>
-                        <td><input type="text" class="deductionInput" value="${data[i].Amount}" /></td></tr>`;
+                        <td><input type="text" style="text-align: right;" class="deductionInput" value="${data[i].Amount}" /></td></tr>`;
                 totalDeduction += data[i].Amount;
             }
             counter++;
         }
-
         // console.log("allowanceRow: ", allowanceRow)
         // console.log("deductionRow: ", deductionRow)
         document.getElementById("InserRowID1").innerHTML = allowanceRow;
         document.getElementById("InserRowID2").innerHTML = deductionRow;
+
+        document.getElementById("totalAllowance").innerHTML = `Total Allowance: ${totalAllowance}`
+        document.getElementById("totalDeduction").innerHTML = `Total Deduction: ${totalDeduction}`
+
+        document.getElementById("totalAllowance_fixed_gross").innerHTML = `Total Allowance Fixed Gross: ${totalAllowance_fixed_gross}`
+        document.getElementById("totalAllowance_fixed_additional").innerHTML = `Total Allowance Fixed Additional: ${totalAllowance_fixed_additional}`
+
 
     });
 
@@ -888,7 +918,7 @@ function handleTableRowClick2() {
             `<tr>
                 <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                 <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
-                <td><input type="text" value="" /></td></tr>`;
+                <td><input type="text" style="text-align: right" value="" /></td></tr>`;
         $("#InserRowID1").append(temp);
     }
     if (ElemenT_TYPE == "Deduction") {
@@ -896,7 +926,7 @@ function handleTableRowClick2() {
             `<tr>
                 <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                 <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
-                <td><input type="text" value="" /></td></tr>`;
+                <td><input type="text" style="text-align: right" value="" /></td></tr>`;
         $("#InserRowID2").append(temp);
     }
 

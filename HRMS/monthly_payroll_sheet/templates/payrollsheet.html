@@ -98,6 +98,9 @@
             <div class="text-center">
               <button type="button" id="monthly_paysheet_btn" class="btn btn-success mr-2">Find Payroll Sheet</button>
             </div>
+            <div class="text-center">
+              <button type="button" id="export_paysheet_btn" class="btn btn-success mr-2">Export Sheet</button>
+            </div>
           </form>
         </div>
       </div>
@@ -187,7 +190,7 @@
                 <th>Food Panda</th>
                 <th>Total Deductions</th>
                 <th>Total AC to WD</th>
-                <th>Total Net Salary</th>
+                <th style="text-align: right;">Total Net Salary</th>
                 <th>Transfer Type</th>
                 <th>Account Number</th>
                 <th>Bank Name</th>
@@ -201,7 +204,7 @@
 </div>
 
   
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="{% static 'js/payrollsheet.js' %}"></script>
 
 

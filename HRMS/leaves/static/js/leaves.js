@@ -7,19 +7,22 @@ const CANCEL_BUTTON_ID = 'CancelFormData';
 function initializeDataTable() {
     table = $('#GridID').DataTable({
         destroy: true,
-        duplicate: false,   
         ordering: false,
         scrollY: '330px',
         scrollCollapse: true,
         pageLength: 5,
-        'columnDefs': [
+        columnDefs: [
             {
-                "targets": 1,
-                "className": "text-left",
+                targets: 1,
+                className: "text-left",
             },
-            {   
-                "targets": 2,
-                "className": "text-left",   
+            {
+                targets: 2,
+                className: "text-left",
+            },
+            { 
+                targets: [8, 9, 10, 11, 12, 13], 
+                className: 'text-right' // Align numeric columns to the right
             }
         ],
         lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]

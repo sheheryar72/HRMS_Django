@@ -67,6 +67,12 @@
         color: red;
         font-size: 15px;
     }
+    #Emp_ID {
+    pointer-events: none;  /* Disable interaction */
+    background-color: #f0f0f0; /* Change background to indicate non-interactivity */
+    color: #888; /* Change text color to indicate non-interactivity */
+    cursor: not-allowed; /* Change cursor to indicate non-interactivity */
+}
 </style>
 
 <div class="container">
@@ -106,7 +112,7 @@
                     <div class="form-group row align-items-center">
                         <label for="input5" class="col-sm-2 col-form-label">Employee<span class="text-danger"> *</span></label>
                         <div class="col-sm-6">
-                            <select class="form-control form-control-sm" id="Emp_ID" aria-readonly="true">
+                            <select class="form-control form-control-sm" id="Emp_ID" disabled aria-readonly="true">
                             </select>
                         </div>
                         <label for="input5" class="col-sm-2 col-form-label">HR Emp Code<span class="text-danger"> *</span></label>
@@ -196,7 +202,7 @@
                     <div class="form-group row align-items-center">
                         <label for="input5" class="col-sm-2 col-form-label">Gross Salary<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
-                            <input type="number" class="form-control" id="GrossSalary" placeholder="Gross Salary">
+                            <input type="number" class="form-control" style="text-align: right;" id="GrossSalary" placeholder="Gross Salary">
                         </div>
                         <div class="col-sm-2"></div>
                         <div class="col-sm-4">
@@ -270,7 +276,7 @@
                         <!-- <th style="width: 6%;">S. No</th> -->
                         <th style="width: 25%;">Allowance</th>
                         <th style="width: 15%;">Category</th>
-                        <th style="width: 20%;">Amount</th>
+                        <th style="width: 20%; text-align: right;">Amount</th>
                         <!-- <th style="width: 7%;">Action</th> -->
                     </tr>
                 </thead>
@@ -293,7 +299,7 @@
                         <!-- <th style="width: 6%;">S. No</th> -->
                         <th style="width: 25%;">Deduction</th>
                         <th style="width: 15%;">Category</th>
-                        <th style="width: 20%;">Amount</th>
+                        <th style="width: 20%; text-align: right;">Amount</th>
                         <!-- <th style="width: 7%;">Action</th> -->
                     </tr>
                 </thead>

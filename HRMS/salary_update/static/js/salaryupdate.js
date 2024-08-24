@@ -20,7 +20,7 @@ function initializeDataTable() {
             },
             {
                 "targets": 2,
-                "className": "text-left",
+                "className": "text-right",
             }
         ],
         lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]
@@ -39,8 +39,8 @@ function initializeDataTable() {
             },
             {
                 "targets": 2,
-                "className": "text-left",
-            }
+                "className": "text-right",
+            },
         ],
         lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]
     });
@@ -292,6 +292,7 @@ function handleInsertClick() {
         rowData.Element_ID = Number($(this).find("td:eq(0) input").attr("id"));
         rowData.Element_Category = $(this).find("td:eq(1) input").val();
         rowData.Amount = Number($(this).find("td:eq(2) input").val());
+        amountInput.css("text-align", "right");  // Align the input text to the right
         rowData.Element_Type = "Allowance";
         if (rowData.Amount != 0)
             dataArray.push(rowData);
@@ -461,11 +462,11 @@ document.getElementById("Emp_ID").addEventListener("change", function () {
     mapEmployeeDate(this.value);
 })
 
-document.getElementById("Last_GrossSalary").addEventListener("focusout", function(){
+document.getElementById("Last_GrossSalary").addEventListener("focusout", function () {
     document.getElementById("GrossSalary").value = Number(this.value) + Number(document.getElementById("Last_Increment_Amt").value);
 })
 
-document.getElementById("Last_Increment_Amt").addEventListener("focusout", function(){
+document.getElementById("Last_Increment_Amt").addEventListener("focusout", function () {
     document.getElementById("GrossSalary").value = Number(this.value) + Number(document.getElementById("Last_GrossSalary").value);
 })
 
@@ -529,9 +530,9 @@ function mapEmployeeDate(empID) {
         document.getElementById("Emp_ID_").value = singleEmpData.Emp_ID;
         document.getElementById("HR_Emp_ID").value = singleEmpData.HR_Emp_ID;
         document.getElementById("Emp_Category").value = '';
-        document.getElementById("DSG_ID").value = singleEmpData.Joining_Dsg_ID; 
+        document.getElementById("DSG_ID").value = singleEmpData.Joining_Dsg_ID;
         document.getElementById("Dept_ID").value = singleEmpData.Joining_Dept_ID;
-        document.getElementById("Grade_ID").value = singleEmpData.Grade_ID; 
+        document.getElementById("Grade_ID").value = singleEmpData.Grade_ID;
         document.getElementById("Marital_Status").value = singleEmpData.Marital_Status;
     }
 
@@ -606,6 +607,25 @@ function calculateTotal() {
         deductionTotal += parseFloat(input.value) || 0;
     });
 
+    $("#bmGridID1 tbody tr").each(function () {
+        const Element_Allowance = $(this).find("td:eq(0) input").val();
+        const Element_Category = $(this).find("td:eq(1) input").val();
+        const Element_Amount = $(this).find("td:eq(2) input").val();
+
+        console.log('Element_Category: ', Element_Category)
+
+        if (Element_Category == 'Fixed Gross') {
+            totalAllowance_fixed_gross += Number(Element_Amount);
+        }
+        if (Element_Category == 'Fixed Additional') {
+            totalAllowance_fixed_additional += Number(Element_Amount);
+        }
+    })
+
+    document.getElementById("totalAllowance_fixed_gross").innerHTML = `Total Allowance Fixed Gross: ${totalAllowance_fixed_gross}`
+    document.getElementById("totalAllowance_fixed_additional").innerHTML = `Total Allowance Fixed Additional: ${totalAllowance_fixed_additional}`
+
+
     // document.getElementById("totalAllowance_fixed_gross").innerHTML = `Total Allowance Fixed Gross: ${totalAllowance_fixed_gross}`
     // document.getElementById("totalAllowance_fixed_additional").innerHTML = `Total Allowance Fixed Additional: ${totalAllowance_fixed_additional}`
 
@@ -650,16 +670,21 @@ document.getElementById("calculateGrossSalary").addEventListener('click', functi
     const Last_GrossSalary = Number(document.getElementById("Last_GrossSalary").value);
     const Last_Increment_Amt = Number(document.getElementById("Last_Increment_Amt").value);
 
-    var total_gross = Last_GrossSalary +  Last_Increment_Amt
+    var total_gross = Last_GrossSalary + Last_Increment_Amt
 
     // debugger
     var totalRows = Number($('#InserRowID1 tr').length);
+
+    let totalAllowance_fixed_gross = 0, totalAllowance_fixed_additional = 0
 
     // alert('totalRows: ', totalRows)
     if (grossSalary != 0 && totalRows != 0 && Last_GrossSalary != 0 && total_gross != 0) {
         $("#bmGridID1 tbody tr").each(function () {
             const elementID = Number($(this).find("td:eq(0) input").attr("id"));
-            const _amount =  (total_gross / 100) * 65;
+            const Element_Allowance = $(this).find("td:eq(0) input").val();
+            const Element_Category = $(this).find("td:eq(1) input").val();
+            const Element_Amount = $(this).find("td:eq(2) input").val();
+            const _amount = (total_gross / 100) * 65;
             const basic_sal = (_amount / 100) * 90;
             if (elementID == 1) {
                 $(this).find("td:eq(2) input").val(basic_sal);
@@ -686,7 +711,7 @@ document.getElementById("calculateGrossSalary").addEventListener('click', functi
                 $(this).find("td:eq(2) input").val(130);
             }
         });
-    }else{
+    } else {
         alert("Kidnly check your Gross Salary and Increment Amount")
     }
 
@@ -767,7 +792,7 @@ function fillSalaryMasterTableGrid() {
 }
 
 function fillEmployeeTableGrid() {
-    getAllDataFromDB(`${BASE_URL}/employee/getall`, 'Employee').then( (data) => {
+    getAllDataFromDB(`${BASE_URL}/employee/getall`, 'Employee').then((data) => {
         // console.log("response: ", data);
         var temp = '';
         listofEmployeeNotInSalUpdate = data;
@@ -829,34 +854,34 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
 
 
         document.getElementById("Transfer_Type").value = data[0].Transfer_Type;
-        document.getElementById("Account_No").value =  data[0].Account_No;
-        document.getElementById("Bank_Name").value =  data[0].Bank_Name;
-        document.getElementById("Stop_Salary").value =  data[0].Stop_Salary;
-        document.getElementById("CO_ID").value =  data[0].Co_ID;
+        document.getElementById("Account_No").value = data[0].Account_No;
+        document.getElementById("Bank_Name").value = data[0].Bank_Name;
+        document.getElementById("Stop_Salary").value = data[0].Stop_Salary;
+        document.getElementById("CO_ID").value = data[0].Co_ID;
 
         let allowanceRow = '', deductionRow = '';
         let counter = 1, totalAllowance = 0, totalDeduction = 0, totalAllowance_fixed_gross = 0, totalAllowance_fixed_additional = 0;
 
         for (var i = 0; i < data.length; i++) {
 
-            if (data[i].Element_Category == 'Fixed Gross') {
+            if (data[i].Element_Type == 'Allowance' && data[i].Element_Category == 'Fixed Gross') {
                 totalAllowance_fixed_gross += data[i].Amount;
             }
-            if (data[i].Element_Category == 'Fixed Additional') {
+            if (data[i].Element_Type == 'Allowance' && data[i].Element_Category == 'Fixed Additional') {
                 totalAllowance_fixed_additional += data[i].Amount;
             }
             if (data[i].Element_Type == 'Allowance') {
                 allowanceRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
                         <td><input type="text" value="${data[i].Element_Category}" readonly /></td>
-                        <td><input type="text" class="allowanceInput" value="${data[i].Amount}" /></td></tr>`;
+                        <td><input type="text" style="text-align: right;" class="allowanceInput" value="${data[i].Amount}" /></td></tr>`;
                 totalAllowance += data[i].Amount;
             }
             if (data[i].Element_Type == 'Deduction') {
                 deductionRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
                         <td><input type="text" value="${data[i].Element_Category}" readonly /></td>
-                        <td><input type="text" class="deductionInput" value="${data[i].Amount}" /></td></tr>`;
+                        <td><input type="text" style="text-align: right;" class="deductionInput" value="${data[i].Amount}" /></td></tr>`;
                 totalDeduction += data[i].Amount;
             }
             counter++;
@@ -914,7 +939,7 @@ function handleTableRowClick2() {
             `<tr>
                             <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                             <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
-                            <td><input class="allowanceInput" type="text" value="" /></td></tr>`;
+                            <td><input class="allowanceInput" style="text-align: right" type="text" value="" /></td></tr>`;
         $("#InserRowID1").append(temp);
     }
     if (ElemenT_TYPE == "Deduction") {
@@ -922,7 +947,7 @@ function handleTableRowClick2() {
             `<tr>
                             <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                             <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
-                            <td><input class="allowanceInput" type="text" value="" /></td></tr>`;
+                            <td><input class="allowanceInput" style="text-align: right" type="text" value="" /></td></tr>`;
         $("#InserRowID2").append(temp);
     }
 

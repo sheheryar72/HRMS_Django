@@ -26,7 +26,7 @@ function get_active_period() {
 
 async function transfer_data_to_salary_process(payroll_id) {
     try {
-        const response = await fetch(`${BASE_URL}/payrollsheet/monthly-pay-sheet/`, {
+        const response = await fetch(`${BASE_URL}/payrollsheet/execute_monthly_pay_sheet/${payroll_id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -51,6 +51,8 @@ async function transfer_data_to_salary_process(payroll_id) {
     }
 }
 
+
+
 function populateTable(data) {
     const tableBody = document.getElementById('table-body');
     tableBody.innerHTML = ''; // Clear existing rows`
@@ -63,6 +65,7 @@ function populateTable(data) {
         // Add cells for each field
         Object.values(record).forEach(value => {
             const cell = document.createElement('td');
+            cell.style.textAlign = "right"
             cell.textContent = value !== null ? value : 'N/A'; // Display 'N/A' for null values
             row.appendChild(cell);
         });
@@ -107,6 +110,62 @@ document.getElementById("monthly_paysheet_btn").addEventListener('click', functi
     //     alert("Monthly process was cancelled.");
     // }
 });
+
+
+// Modify exportToExcel to be an async function
+async function exportToExcel() {
+    try {
+        const payrollId = document.getElementById('Payroll_ID').value; // Assuming you select payroll ID from a dropdown
+        const data = await get_payrollsheet_data(payrollId); // Await the data from the async function
+
+        console.log('export to excel data: ', data)
+
+        if (!data || !data.data || data.data.length === 0) {
+            alert("No data available to export.");
+            return;
+        }
+
+        // Convert JSON data to worksheet
+        const worksheet = XLSX.utils.json_to_sheet(data.data);
+
+        // Create a workbook and add the worksheet
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Payroll Data');
+
+        // Generate Excel file and prompt download
+        XLSX.writeFile(workbook, 'Payroll_Sheet.xlsx');
+    } catch (error) {
+        console.error("Error exporting to Excel:", error.message);
+        alert("Error exporting to Excel: " + error.message);
+    }
+}
+
+// Modify get_payrollsheet_data to accept a payroll_id parameter and call it correctly
+async function get_payrollsheet_data(payroll_id) {
+    try {
+        const response = await fetch(`${BASE_URL}/payrollsheet/monthly-pay-sheet/${payroll_id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(`Failed to run Payroll Sheet: ${errorData.error}`);
+        }
+
+        const data = await response.json();
+        console.log('get_payrollsheet_data data: ', data)
+        return data;
+    } catch (error) {
+        console.error("Error running Payroll Sheet:", error.message);
+        alert("Error running Payroll Sheet: " + error.message);
+    }
+}
+
+// Add event listener to the export button
+document.getElementById('export_paysheet_btn').addEventListener('click', exportToExcel);
 
 
 $(document).ready(function () {

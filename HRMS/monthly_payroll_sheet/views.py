@@ -22,6 +22,7 @@ def payroll_sheet_view(request):
 
 @require_http_methods(["GET"])
 def get_monthly_pay_sheet(request, payroll_id):
+    print('get_monthly_pay_sheet payroll_id', payroll_id)
     """
     Fetches the monthly pay sheet data from the HR_MONTHLY_PAY_SHEET_V view.
     Returns a JSON response with the data or an error message.
@@ -68,19 +69,19 @@ def execute_monthly_pay_sheet(request, payroll_id):
     Executes the external API call to process the monthly pay sheet using the given payroll ID.
     Calls get_monthly_pay_sheet to fetch the updated data after the process.
     """
-    api_url = f'http://localhost:5000/ExecuteMonthlyPaySheet/{payroll_id}'
-    # payload = {'m_Payroll_ID': payroll_id}
+    api_url = f'http://localhost:5000/ExecuteMonthlyPaySheet'
+    payload = {'m_Payroll_ID': payroll_id}
 
     try:
         headers = {'Content-Type': 'application/json'}
-        response = requests.post(api_url, headers=headers, verify=False)
+        response = requests.get(api_url,  json=payload, headers=headers, verify=False)
 
         logger.info(f'API Response Status Code: {response.status_code}')
         logger.info(f'API Response Content: {response.content.decode()}')
 
         if response.status_code == 200:
             # Call to get updated data after successful execution
-            return get_monthly_pay_sheet(request)
+            return get_monthly_pay_sheet(request, payroll_id)
         else:
             logger.error(f'Failed to execute external API. Status Code: {response.status_code}')
             return JsonResponse({

@@ -144,6 +144,21 @@ def delete_finYear(request, id):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+@api_view(['GET'])
+def get_payroll_status_byid(request, payroll_id, filename):
+    try:
+        queryData = HR_PAYROLL_PERIOD.objects.filter(PAYROLL_ID=payroll_id).first()
+        if queryData.PAYROLL_FINAL == filename:
+            return queryData.PAYROLL_FINAL
+        if queryData.PAYSHEET_FINAL == filename:
+            return queryData.PAYSHEET_FINAL
+    except HR_FinYearMstr.DoesNotExist:
+        return Response({'error': 'payrollsheet not found'}, status=status.HTTP_404_NOT_FOUND)
+    serializerData = HR_FinYearMstrSerializer(queryData)
+    return Response(serializerData.data, status=200)
+
+
 # @api_view(['GET'])
 # def get_allpayrollperiod(request, id):
 #     try:

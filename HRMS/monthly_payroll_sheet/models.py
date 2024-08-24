@@ -42,6 +42,7 @@ class HR_MONTHLY_PAY_SHEET(models.Model):
     Mobile_Installment_26 = models.IntegerField(blank=True, null=True)
     Food_Panda_27 = models.IntegerField(blank=True, null=True)
     Conveyance_Liters_Allowance_28 = models.IntegerField(blank=True, null=True)
+    Leaves_29 = models.IntegerField(blank=True, null=True)
     Tot_Gross_Salary = models.FloatField(blank=True, null=True)
     Tot_Allowances = models.FloatField(blank=True, null=True)
     Tot_Net_Gross_Allowances = models.FloatField(blank=True, null=True)

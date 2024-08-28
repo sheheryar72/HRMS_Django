@@ -611,6 +611,34 @@ function importFromExcel(file) {
 //     }
 // }
 
+document.getElementById('searchBox').addEventListener('keyup', function() {
+    // Get the search box input value
+    var searchValue = this.value.toLowerCase();
+    
+    // Get all table rows from the tbody
+    var rows = document.querySelectorAll('#InserRowID tr');
+    
+    // Loop through the rows and filter based on search value
+    rows.forEach(function(row) {
+        // Get the input fields in the 2nd and 3rd columns
+        var secondColumnInput = row.cells[1] ? row.cells[1].querySelector('input') : null;
+        var thirdColumnInput = row.cells[2] ? row.cells[2].querySelector('input') : null;
+        
+        // Get the input values and convert them to lowercase
+        var secondColumnValue = secondColumnInput ? secondColumnInput.value.toLowerCase() : "";
+        var thirdColumnValue = thirdColumnInput ? thirdColumnInput.value.toLowerCase() : "";
+        
+        // Check if either the 2nd or 3rd column's input value contains the search value
+        if (secondColumnValue.includes(searchValue) || thirdColumnValue.includes(searchValue)) {
+            // Show row if it matches the search value
+            row.style.display = '';
+        } else {
+            // Hide row if it doesn't match
+            row.style.display = 'none';
+        }
+    });
+});
+
 function displaySuccessMessage(message) {
     const alertContainer = document.createElement('div');
     alertContainer.classList.add('alert', 'alert-success', 'mt-3');

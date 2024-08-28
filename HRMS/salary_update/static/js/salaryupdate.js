@@ -737,17 +737,56 @@ async function fillPayrollElementTableGrid(empID, empUpID) {
                 'Content-Type': 'application/json',
             },
         });
+        
         if (!response.ok) {
             throw new Error(`Failed to fetch Payroll Element`);
         }
+
         const data = await response.json();
-        console.log("data: ", data)
+        console.log("data: ", data);
         listofPayrollElement = data;
+
+        // Clear the table before adding new rows
         table4.clear().draw();
-        for (var i = 0; i < data.length; i++) {
-            table4.row.add([data[i].Element_ID, data[i].Element_Name, data[i].Element_Type, data[i].Element_Category]).draw(false);
-        }
-        // document.getElementById("Element_Descr").innerHTML = temp;
+
+        // Get the current allowance and deduction values from the first column of input fields
+        const allowance_grid = document.querySelectorAll('#InserRowID1 tr td:first-child input[type="text"]');
+        const deduction_grid = document.querySelectorAll('#InserRowID2 tr td:first-child input[type="text"]');
+
+        // Use sets to store existing allowance and deduction values for fast lookup
+        const existingAllowances = new Set();
+        const existingDeductions = new Set();
+
+        // Collect values from the first column input fields
+        allowance_grid.forEach(function(input) {
+            console.log('allowance_grid input value: ', input.id)
+            existingAllowances.add(Number(input.id));
+        });
+
+        deduction_grid.forEach(function(input) {
+            console.log('deduction_grid input value: ', input.id)
+            existingDeductions.add(Number(input.id));
+        });
+
+        // Loop through fetched data
+        data.forEach(function(item) {
+            const elementID = item.Element_ID;
+
+            console.log('elementID: ', elementID)
+            console.log('existingAllowances: ', existingAllowances)
+            console.log('existingDeductions: ', existingDeductions)
+
+            // Add the row to table4 only if it doesn't exist in either allowance or deduction grids
+            if (!existingAllowances.has(elementID) && !existingDeductions.has(elementID)) {
+                table4.row.add([
+                    item.Element_ID,
+                    item.Element_Name,
+                    item.Element_Type,
+                    item.Element_Category
+                ]).draw(false);
+            }
+        });
+
     } catch (error) {
         console.error(`Error fetching Payroll Element:`, error);
         return null;

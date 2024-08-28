@@ -20,6 +20,9 @@ logger = logging.getLogger(__name__)
 def payroll_sheet_view(request):
     return render(request=request, template_name='payrollsheet.html')
 
+def payroll_sheet_process_view(request):
+    return render(request=request, template_name='payrollsheetprocess.html')
+
 @require_http_methods(["GET"])
 def get_monthly_pay_sheet(request, payroll_id):
     print('get_monthly_pay_sheet payroll_id', payroll_id)

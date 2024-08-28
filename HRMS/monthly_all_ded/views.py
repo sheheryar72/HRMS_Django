@@ -327,15 +327,15 @@ def Insert_Monthly_PE(request):
         print('table_data: ', table_data)
 
         for item in table_data:
-            print('item: ', item)
-            print('item.Employee: ', item['Employee'])
+            # print('item: ', item)
+            # print('item.Employee: ', item['Employee'])
             my_monthly_data = {}
             my_monthly_data['Employee'] = item['Employee']
             my_monthly_data['Period'] = item["Period"]
             my_monthly_data['Department'] = W_Department
             for key, value in item.items():
-                print('Key:', key)
-                print('Value:', value)
+                # print('Key:', key)
+                # print('Value:', value)
                 my_monthly_data[key] = value
 
             # Check if data already exists
@@ -482,7 +482,7 @@ def export_template(request, ID):
         #     emp_list.append(data)
 
         # assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID__in=assigned_depts).values("Emp_ID", "Emp_Name", "Joining_Dept_ID", "Joining_Dept_ID__Dept_Descr", "Joining_Dsg_ID", "Joining_Dsg_ID__DSG_Descr")
-        assigned_emps = HR_Emp_Sal_Update_Mstr.objects.filter(Dept_ID__in=assigned_depts).prefetch_related('Emp_ID', 'Dept_ID', 'Dsg_ID').values("Emp_ID", "Emp_ID__Emp_Name", "Dept_ID", "Dept_ID__Dept_Descr", "Dsg_ID", "Dsg_ID__DSG_Descr")
+        assigned_emps = HR_Emp_Sal_Update_Mstr.objects.filter(Dept_ID__in=assigned_depts).prefetch_related('Emp_ID', 'Dept_ID', 'Dsg_ID').values("Emp_ID", "HR_Emp_ID", "Emp_ID__Emp_Name", "Dept_ID", "Dept_ID__Dept_Descr", "Dsg_ID", "Dsg_ID__DSG_Descr")
        
         # assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID__in=assigned_depts).values("Emp_ID", "Emp_Name", "Joining_Dept_ID", "Joining_Dept_ID__Dept_Descr", "Joining_Dsg_ID", "Joining_Dsg_ID__Dsg_Descr")
         

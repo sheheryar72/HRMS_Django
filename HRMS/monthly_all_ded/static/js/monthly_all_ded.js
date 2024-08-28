@@ -442,7 +442,7 @@ async function getAllDepartmentFromAPI() {
 document.getElementById("Current_Department").addEventListener('change', function () {
     let W_deptID = this.value
     // let W_deptID = 1
-    alert('Current_Department call')
+    // alert('Current_Department call')
     getAll_Dept_ByID(W_deptID);
 })
 
@@ -457,7 +457,7 @@ async function exportToExcel() {
         //     'Device_Reimbursment_11', 'Communication_12', 'Bonus_13', 'Other_Allowance_14', 'Loan_15', 'Advance_Salary_16',
         //     'EOBI_17', 'Income_Tax_18', 'Absent_Days_19', 'Device_Deduction_20', 'Over_Utilizaton_Mobile_21', 'Vehicle_or_Fuel_Deduction_22',
         //     'Pandamic_Deduction_23', 'Late_Days_24', 'Other_Deduction_25', 'Mobile_Installment_26', 'Food_Panda_27'];
-        const columns = ['Emp_ID', 'Emp_Name', 'Department', 'Designation']
+        const columns = ['Emp_ID', 'HR_Emp_ID', 'Emp_Name', 'Department', 'Designation']
         data.Element.map(obj => {
             let element_col_name = `${obj.W_All_Ded_Element_ID__Element_Name}_${obj.W_All_Ded_Element_ID__Element_ID}`
             let element_col_name2 = element_col_name.replace(/ /g, "_");
@@ -469,7 +469,7 @@ async function exportToExcel() {
         // Extract values for each row
         const rows = data.Employee.map(obj => {
             // Fill the first two columns with Emp_ID and Emp_Name values
-            const row = [obj['Emp_ID'], obj['Emp_Name'], obj['Dept_ID__Dept_Descr'], obj['Dsg_ID__DSG_Descr']];
+            const row = [obj['Emp_ID'], obj['HR_Emp_ID'], obj['Emp_ID__Emp_Name'], obj['Dept_ID__Dept_Descr'], obj['Dsg_ID__DSG_Descr']];
             // Fill the rest of the columns with empty strings
             for (let i = 4; i < 27; i++) {
                 row.push('');
@@ -495,7 +495,11 @@ document.getElementById("importData").addEventListener('click', async function (
     try {
         const fileInput = document.getElementById('fileInput');
         const file = fileInput.files[0];
-        Insert_Monthly_PE_By_Excel(file);
+        if (file) {  // Corrected check to see if a file is selected
+            Insert_Monthly_PE_By_Excel(file);
+        } else {
+            alert('Kindly select a file first!');
+        }
     } catch (error) {
         console.error('Error:', error);
     }

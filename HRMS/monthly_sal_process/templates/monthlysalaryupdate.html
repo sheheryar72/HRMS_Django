@@ -67,7 +67,7 @@
         color: red;
         font-size: 15px;
     }
-    #Emp_ID {
+.dropdown_disable {
     pointer-events: none;  /* Disable interaction */
     background-color: #f0f0f0; /* Change background to indicate non-interactivity */
     color: #888; /* Change text color to indicate non-interactivity */
@@ -106,13 +106,13 @@
                         </div>
                         <label for="input1" class="col-sm-2 col-form-label">Update Date<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
-                            <input type="date" class="form-control" id="Emp_Up_Date" placeholder="Salary Date">
+                            <input type="date" class="form-control" id="Emp_Up_Date" placeholder="Salary Date" readonly>
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
                         <label for="input5" class="col-sm-2 col-form-label">Employee<span class="text-danger"> *</span></label>
                         <div class="col-sm-6">
-                            <select class="form-control form-control-sm" id="Emp_ID" disabled aria-readonly="true">
+                            <select class="form-control form-control-sm dropdown_disable" id="Emp_ID" disabled aria-readonly="true">
                             </select>
                         </div>
                         <label for="input5" class="col-sm-2 col-form-label">HR Emp Code<span class="text-danger"> *</span></label>
@@ -124,35 +124,42 @@
                     <div class="form-group row align-items-center">
                         <label for="input5" class="col-sm-2 col-form-label">Designation<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
-                            <select class="form-control form-control-sm" id="DSG_ID">
+                            <select class="form-control form-control-sm dropdown_disable" id="DSG_ID" disabled>
                             </select>
                         </div>
                         <label for="input5" class="col-sm-2 col-form-label">Company<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
-                            <select class="form-control form-control-sm" id="CO_ID">
+                            <select class="form-control form-control-sm dropdown_disable" id="CO_ID" disabled>
                             </select>
                         </div>
                     </div>
-                    <div class="form-group row align-items-center">
+                    <!-- <div class="form-group row align-items-center">
                         <label for="input5" class="col-sm-2 col-form-label">Department<span class="text-danger"> *</span></label>
                         <div class="col-sm-5">
-                            <select class="form-control form-control-sm" id="Dept_ID">
+                            <select class="form-control form-control-sm dropdown_disable" disabled id="Dept_ID">
                             </select>
                         </div>
                         <label for="input5" class="col-sm-2 col-form-label">Payroll Period<span class="text-danger"> *</span></label>
                         <div class="col-sm-3">
                             <input type="text" class="form-control form-control-sm" id="Payroll_ID" placeholder="Payroll Payroll" readonly />
                         </div>
+                    </div> -->
+                    <div class="form-group row align-items-center">
+                        <label for="input5" class="col-sm-2 col-form-label">Department<span class="text-danger"> *</span></label>
+                        <div class="col-sm-10">
+                            <select class="form-control form-control-sm dropdown_disable" disabled id="Dept_ID">
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group row align-items-center">
                         <label for="input5" class="col-sm-2 col-form-label">Grade<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
-                            <select class="form-control form-control-sm" id="Grade_ID">
+                            <select class="form-control form-control-sm dropdown_disable" disabled id="Grade_ID">
                             </select>
                         </div>
                         <label for="input5" class="col-sm-2 col-form-label">Emp Category<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
-                            <select class="form-control form-control-sm" id="Emp_Category">
+                            <select class="form-control form-control-sm dropdown_disable" disabled id="Emp_Category">
                                 <option value="Manager">Manager</option>
                                 <option value="Executive Staff">Executive Staff</option>
                                 <option value="Jonior Stafff">Jonior Stafff</option>
@@ -162,20 +169,20 @@
                     <div class="form-group row align-items-center">
                         <label for="input5" class="col-sm-2 col-form-label">Marital Status<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
-                            <select class="form-control form-control-sm" id="Marital_Status">
+                            <select class="form-control form-control-sm dropdown_disable" disabled id="Marital_Status">
                                 <option value="Single">Single</option>
                                 <option value="Married">Married</option>
                             </select>
                         </div>
                         <label for="input6" class="col-sm-2 col-form-label">No of Children</label>
                         <div class="col-sm-4">
-                            <input type="number" class="form-control" id="No_of_Children" placeholder="No of Children">
+                            <input type="number" class="form-control" id="No_of_Children" readonly placeholder="No of Children">
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
                         <label for="input6" class="col-sm-2 col-form-label">Transfer Type<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
-                            <select class="form-control form-control-sm" id="Transfer_Type">
+                            <select class="form-control form-control-sm dropdown_disable" disabled id="Transfer_Type">
                                 <option value="Bank Transter">Bank Transter</option>
                                 <option value="Check">Check</option>
                                 <option value="Cash">Cash</option>
@@ -183,17 +190,17 @@
                         </div>
                         <label for="input6" class="col-sm-2 col-form-label">Account No<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
-                            <input type="number" class="form-control" id="Account_No" placeholder="Account No">
+                            <input type="number" class="form-control" id="Account_No" readonly placeholder="Account No">
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
                         <label for="input6" class="col-sm-2 col-form-label">Bank Name<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
-                            <input type="text" class="form-control" id="Bank_Name" placeholder="Bank Name">
+                            <input type="text" class="form-control" id="Bank_Name" readonly placeholder="Bank Name">
                         </div>
                         <label for="input6" class="col-sm-2 col-form-label">Stop Salary<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
-                            <select class="form-control form-control-sm" id="Stop_Salary">
+                            <select class="form-control form-control-sm" disabled id="Stop_Salary">
                                 <option value="0">Not Stop</option>
                                 <option value="1">Stop</option>
                             </select>

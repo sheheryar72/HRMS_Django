@@ -23,7 +23,12 @@ function initializeDataTable() {
                 "className": "text-right",
             }
         ],
-        lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]
+        lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']],
+        paging: false, // Hide pagination
+        searching: false, // Hide search
+        lengthChange: false, // Hide page length options
+        info: false, // Hide table info (e.g., "Showing 1 to 5 of 10 entries")
+        dom: '<"top"i>rt<"bottom"flp><"clear">' // Position controls above the table
     });
     table2 = $('#bmGridID2').DataTable({
         destroy: true,
@@ -42,7 +47,12 @@ function initializeDataTable() {
                 "className": "text-right",
             }
         ],
-        lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]
+        lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']],
+        paging: false, // Hide pagination
+        searching: false, // Hide search
+        lengthChange: false, // Hide page length options
+        info: false, // Hide table info (e.g., "Showing 1 to 5 of 10 entries")
+        dom: '<"top"i>rt<"bottom"flp><"clear">' // Position controls above the table
     });
 
     table4 = $('#GridID4').DataTable({
@@ -834,7 +844,7 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
         document.getElementById("Bank_Name").value = data[0].Bank_Name;
         document.getElementById("Stop_Salary").value = data[0].Stop_Salary ? 1 : 0;
         document.getElementById("CO_ID").value = data[0].Co_ID;
-        document.getElementById("Payroll_ID").value = data[0].Payroll_Name;
+        // document.getElementById("Payroll_ID").value = data[0].Payroll_Name;
 
         let allowanceRow = '', deductionRow = '';
         let counter = 1, totalAllowance = 0, totalDeduction = 0, totalAllowance_fixed_gross = 0, totalAllowance_fixed_additional = 0;

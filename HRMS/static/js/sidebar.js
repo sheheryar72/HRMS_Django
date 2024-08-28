@@ -226,6 +226,8 @@ function onClickFunc(formID, formDescr) {
         window.open('/salaryprocess/')
     } else if (formID === 20) {
         window.open('/payrollsheet/')
+    } else if (formID === 21) {
+        window.open('/payrollsheet/process/')
     }
 }
 

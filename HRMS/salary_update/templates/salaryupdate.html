@@ -2,11 +2,14 @@
 {% load static %}
 
 {% block title %} Salary Upadate {% endblock %}
-{% block pagetitle %} Salary Update {% endblock %} 
+{% block pagetitle %} Salary Update {% endblock %}
 
 {% block content %}
 
 <link rel="stylesheet" href="{% static 'css/salaryupdate.css' %}">
+
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
 <style>
     .form-control[readonly] {
@@ -63,16 +66,22 @@
     tbody#InserRowID2 input {
         width: -webkit-fill-available;
     }
+
     .text-danger {
         color: red;
         font-size: 15px;
     }
+
     .dropdown_disable {
-    pointer-events: none;  /* Disable interaction */
-    background-color: #f0f0f0; /* Change background to indicate non-interactivity */
-    color: #888; /* Change text color to indicate non-interactivity */
-    cursor: not-allowed; /* Change cursor to indicate non-interactivity */
-}
+        pointer-events: none;
+        /* Disable interaction */
+        background-color: #f0f0f0;
+        /* Change background to indicate non-interactivity */
+        color: #888;
+        /* Change text color to indicate non-interactivity */
+        cursor: not-allowed;
+        /* Change cursor to indicate non-interactivity */
+    }
 </style>
 
 <div class="container">
@@ -93,54 +102,60 @@
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input1" class="col-sm-2 col-form-label">Emp ID</label>
+
+                        <label for="input1" class="col-sm-2 col-form-label">Salary Date<span class="text-danger">
+                                *</span></label>
                         <div class="col-sm-4">
-                            <input type="number" class="form-control" id="Emp_ID_" placeholder="Salary Update ID"
-                                readonly>
+                            <input type="date" class="form-control" id="Emp_Up_Date" placeholder="Salary Date">
                         </div>
-                        <label for="input1" class="col-sm-2 col-form-label">Salary Date<span class="text-danger"> *</span></label>
-                        <div class="col-sm-4">
-                            <input type="date" class="form-control" id="Emp_Up_Date" placeholder="Salary Date" readonly>
+                        <div class="col-sm-6">
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input5" class="col-sm-2 col-form-label">Employee<span class="text-danger"> *</span></label>
+                        <label for="input5" class="col-sm-2 col-form-label">Employee<span class="text-danger">
+                                *</span></label>
                         <div class="col-sm-6 ">
-                            <select class="form-control form-control-sm dropdown_disable" id="Emp_ID" disabled>
+                            <select class="form-control form-control-sm select2" id="Emp_ID">
                             </select>
                         </div>
-                        <label for="input5" class="col-sm-2 col-form-label">HR Emp Code<span class="text-danger"> *</span></label>
+                        <label for="input5" class="col-sm-2 col-form-label">HR Emp Code<span class="text-danger">
+                                *</span></label>
                         <div class="col-sm-2">
                             <input type="number" class="form-control form-control-sm" id="HR_Emp_ID"
-                                placeholder="HR Code" readonly />
+                                placeholder="HR Code" />
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input5" class="col-sm-2 col-form-label">Designation<span class="text-danger"> *</span></label>
+                        <label for="input5" class="col-sm-2 col-form-label">Designation<span class="text-danger">
+                                *</span></label>
                         <div class="col-sm-4">
                             <select class="form-control form-control-sm" id="DSG_ID">
                             </select>
                         </div>
-                        <label for="input5" class="col-sm-2 col-form-label">Company<span class="text-danger"> *</span></label>
+                        <label for="input5" class="col-sm-2 col-form-label">Company<span class="text-danger">
+                                *</span></label>
                         <div class="col-sm-4">
                             <select class="form-control form-control-sm" id="CO_ID">
                             </select>
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input5" class="col-sm-2 col-form-label">Department<span class="text-danger"> *</span></label>
+                        <label for="input5" class="col-sm-2 col-form-label">Department<span class="text-danger">
+                                *</span></label>
                         <div class="col-sm-10">
                             <select class="form-control form-control-sm" id="Dept_ID">
                             </select>
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input5" class="col-sm-2 col-form-label">Grade<span class="text-danger"> *</span></label>
+                        <label for="input5" class="col-sm-2 col-form-label">Grade<span class="text-danger">
+                                *</span></label>
                         <div class="col-sm-4">
                             <select class="form-control form-control-sm" id="Grade_ID">
                             </select>
                         </div>
-                        <label for="input5" class="col-sm-2 col-form-label">Emp Category<span class="text-danger"> *</span></label>
+                        <label for="input5" class="col-sm-2 col-form-label">Emp Category<span class="text-danger">
+                                *</span></label>
                         <div class="col-sm-4">
                             <select class="form-control form-control-sm" id="Emp_Category">
                                 <option value="Manager">Manager</option>
@@ -150,7 +165,8 @@
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input5" class="col-sm-2 col-form-label">Marital Status<span class="text-danger"> *</span></label>
+                        <label for="input5" class="col-sm-2 col-form-label">Marital Status<span class="text-danger">
+                                *</span></label>
                         <div class="col-sm-4">
                             <select class="form-control form-control-sm" id="Marital_Status">
                                 <option value="Single">Single</option>
@@ -163,23 +179,26 @@
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input6" class="col-sm-2 col-form-label">Transfer Type<span class="text-danger"> *</span></label>
+                        <label for="input6" class="col-sm-2 col-form-label">Transfer Type<span class="text-danger">
+                                *</span></label>
                         <div class="col-sm-4">
                             <select class="form-control form-control-sm" id="Transfer_Type">
-                                <option value="0">Bank Transter</option>
-                                <option value="1">Cheque</option>
-                                <option value="2">Cash</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Cheque">Cheque</option>
+                                <option value="Cash">Cash</option>
                             </select>
                         </div>
-                        <label for="input6" class="col-sm-2 col-form-label">Account No<span class="text-danger"> *</span></label>
+                        <label for="input6" class="col-sm-2 col-form-label">Account No<span class="text-danger">
+                                *</span></label>
                         <div class="col-sm-4">
                             <input type="number" class="form-control" id="Account_No" placeholder="Account No">
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input6" class="col-sm-2 col-form-label">Bank Name<span class="text-danger"> *</span></label>
+                        <label for="input6" class="col-sm-2 col-form-label">Bank Name<span class="text-danger">
+                                *</span></label>
                         <div class="col-sm-4">
-                            <input type="text" class="form-control" id="Bank_Name" placeholder="Bank Name" readonly>
+                            <input type="text" class="form-control" id="Bank_Name" placeholder="Bank Name">
                         </div>
                         <label for="input6" class="col-sm-2 col-form-label">Stop Salary</label>
                         <div class="col-sm-4">
@@ -190,19 +209,25 @@
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input6" class="col-sm-2 col-form-label">Last Gross Salary<span class="text-danger"> *</span></label>
+                        <label for="input6" class="col-sm-2 col-form-label">Last Gross Salary<span class="text-danger">
+                                *</span></label>
                         <div class="col-sm-4">
-                            <input type="number" class="form-control" id="Last_GrossSalary" style="text-align: right;" placeholder="Last Gross Salary">
+                            <input type="number" class="form-control" id="Last_GrossSalary" style="text-align: right;"
+                                placeholder="Last Gross Salary">
                         </div>
-                        <label for="input6" class="col-sm-2 col-form-label">Last Increment Amount<span class="text-danger"> *</span></label>
+                        <label for="input6" class="col-sm-2 col-form-label">Last Increment Amount<span
+                                class="text-danger"> *</span></label>
                         <div class="col-sm-4">
-                            <input type="number" class="form-control form-control-sm" style="text-align: right;" id="Last_Increment_Amt" placeholder="Last Increment Amount" />
+                            <input type="number" class="form-control form-control-sm" style="text-align: right;"
+                                id="Last_Increment_Amt" placeholder="Last Increment Amount" />
                         </div>
                     </div>
                     <div class="form-group row align-items-center">
-                        <label for="input5" class="col-sm-2 col-form-label">Gross Salary<span class="text-danger"> *</span></label>
+                        <label for="input5" class="col-sm-2 col-form-label">Gross Salary<span class="text-danger">
+                                *</span></label>
                         <div class="col-sm-4">
-                            <input type="number" class="form-control" id="GrossSalary" style="text-align: right;" placeholder="Gross Salary" readonly>
+                            <input type="number" class="form-control" id="GrossSalary" style="text-align: right;"
+                                placeholder="Gross Salary">
                         </div>
                         <div class="col-sm-2"></div>
                         <div class="col-sm-4">
@@ -397,8 +422,7 @@
     <!-- Bootstrap Modal End -->
 </section>
 
-
-
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="{% static 'js/salaryupdate.js' %}"></script>
 
 

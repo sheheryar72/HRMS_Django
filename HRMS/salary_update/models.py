@@ -6,7 +6,7 @@ from grade.models import HR_Grade
 from payroll_element.models import HR_Payroll_Elements
 
 class HR_Emp_Sal_Update_Mstr(models.Model):
-    Emp_Up_ID = models.AutoField(primary_key=True)
+    Emp_Up_ID = models.IntegerField(primary_key=True)
     Emp_Up_Date = models.DateTimeField(auto_now_add=True)
     Emp_Category = models.CharField(max_length=100)
     Marital_Status = models.CharField(max_length=50)
@@ -19,9 +19,9 @@ class HR_Emp_Sal_Update_Mstr(models.Model):
     Grade_ID = models.ForeignKey(HR_Grade, db_column='Grade_ID', to_field='Grade_ID', on_delete=models.DO_NOTHING)
     Dsg_ID = models.ForeignKey(HR_Designation, db_column='Dsg_ID', to_field='DSG_ID', on_delete=models.CASCADE)
     Dept_ID = models.ForeignKey(HR_Department, db_column='Dept_ID', to_field='Dept_ID', on_delete=models.CASCADE)
-    Transfer_Type = models.CharField(max_length=10)
-    Account_No = models.CharField(max_length=20, null=True)
-    Bank_Name = models.CharField(max_length=100, null=True)
+    Transfer_Type = models.CharField(max_length=50)
+    Account_No = models.CharField(max_length=50, null=True, blank=True)
+    Bank_Name = models.CharField(max_length=100, null=True, blank=True)
     Stop_Salary = models.BooleanField(default=False)
     Last_GrossSalary = models.FloatField(blank=True, null=True)
     Last_Increment_Amt = models.FloatField(blank=True, null=True)
@@ -39,8 +39,8 @@ class HR_Emp_Sal_Update_Dtl(models.Model):
     Amount = models.FloatField()
     # Element_ID = models.IntegerField()
     Element_ID = models.ForeignKey(HR_Payroll_Elements, db_column='Element_ID', to_field='Element_ID', on_delete=models.CASCADE)
-    Element_Type = models.CharField(max_length=10)
-    Element_Category = models.CharField(max_length=10)
+    Element_Type = models.CharField(max_length=50)
+    Element_Category = models.CharField(max_length=50)
     Emp_ID = models.ForeignKey(HR_Employees, db_column='Emp_ID', to_field='Emp_ID', on_delete=models.CASCADE)
 
     class Meta:

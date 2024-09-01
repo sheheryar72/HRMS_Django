@@ -37,9 +37,17 @@ def salaryprocess_view(request):
 def monthlysalaryupdate_view(request):
     return render(request, 'monthlysalaryupdate.html')
 
-
 def execute_salary_process2(request, payroll_id, fuel_rate):
     print('execute_salary_process2 called')
+
+    payroll_period = HR_PAYROLL_PERIOD.objects.filter(PAYROLL_ID=payroll_id).first()
+    if payroll_period.PAYROLL_FINAL:
+        return JsonResponse({
+            'ResponseCode': 201,
+            'Message': 'Payroll Process Already Executed',
+            'Data': None
+        })
+
     api_url = 'http://localhost:5000/ExecuteSalaryProcess/'
     payload = {
         'm_Payroll_ID': payroll_id,
@@ -801,7 +809,7 @@ def getall_payroll_element_notin_su(request, empUpID, empID):
         if empID is None or empUpID is None:
             return Response({'error': 'Salary not found'}, status=status.HTTP_404_NOT_FOUND)
         su_queryset = HR_Emp_Monthly_Sal_Dtl.objects.filter(Emp_ID=empID, Emp_Up_ID=empUpID).values_list("Element_ID", flat=True)
-        element_queryset = HR_Payroll_Elements.objects.exclude(Element_ID__in=su_queryset)
+        element_queryset = HR_Payroll_Elements.objects.filter(Element_Category='Fixed Additional').exclude(Element_ID__in=su_queryset)
         serializer = HR_Payroll_Elements_Serializer(element_queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Exception as e:
@@ -859,13 +867,48 @@ def getall_master_byid(request, empUpID, empID):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+# @api_view(['GET'])
+# def getll_master(request):
+#     try:
+#         querySet = HR_Emp_Monthly_Sal_Mstr.objects.filter(Payroll_ID__PERIOD_STATUS=True).prefetch_related('Emp_ID', 'Grade_ID', 'Dept_ID', 'Dsg_ID')
+       
+#         print('querySet: ', querySet.count())
+#         datas = []
+#         for item in querySet:
+#             data = {
+#                 'Emp_Up_ID': item.Emp_Up_ID,
+#                 'Emp_Up_Date': item.Emp_Up_Date,
+#                 'Emp_ID': item.Emp_ID.Emp_ID,
+#                 'HR_Emp_ID': item.Emp_ID.HR_Emp_ID,
+#                 'Emp_Name': item.Emp_ID.Emp_Name,
+#                 'Dsg_Descr': item.Dsg_ID.DSG_Descr,
+#                 'Dept_Descr': item.Dept_ID.Dept_Descr
+#             }
+#             datas.append(data)
+#         # print('datas: ', datas)
+#         return Response(datas, status=status.HTTP_200_OK)
+#     except Exception as e:
+#         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
 @api_view(['GET'])
 def getll_master(request):
     try:
-        querySet = HR_Emp_Monthly_Sal_Mstr.objects.filter(Payroll_ID__PERIOD_STATUS=True).prefetch_related('Emp_ID', 'Grade_ID', 'Dept_ID', 'Dsg_ID')
-        print('querySet: ', querySet.count())
+        # Step 1: Get the maximum Emp_Up_ID for each employee
+        latest_salary_updates = HR_Emp_Monthly_Sal_Mstr.objects.values('Emp_ID').annotate(
+            max_emp_up_id=Max('Emp_Up_ID')
+        )
+
+        # Step 2: Fetch only the latest records using the maximum Emp_Up_ID values
+        latest_records = HR_Emp_Monthly_Sal_Mstr.objects.filter(
+            Emp_Up_ID__in=[item['max_emp_up_id'] for item in latest_salary_updates]
+        ).select_related('Emp_ID', 'Dsg_ID', 'Dept_ID')
+
+        print('latest_records count: ', latest_records.count())
         datas = []
-        for item in querySet:
+
+        for item in latest_records:
             data = {
                 'Emp_Up_ID': item.Emp_Up_ID,
                 'Emp_Up_Date': item.Emp_Up_Date,
@@ -876,8 +919,11 @@ def getll_master(request):
                 'Dept_Descr': item.Dept_ID.Dept_Descr
             }
             datas.append(data)
-        # print('datas: ', datas)
+
+        print('datas: ', datas)
         return Response(datas, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 

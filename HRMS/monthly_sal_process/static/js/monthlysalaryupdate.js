@@ -138,6 +138,8 @@ function handleCancelClick() {
     document.getElementById("InserRowID1").innerHTML = "";
     document.getElementById("InserRowID2").innerHTML = "";
 
+    document.getElementById('totalAllowance_fixed_gross').innerText = `Total Allowance Fixed Gross: 0.00`
+    document.getElementById('totalAllowance_fixed_additional').innerText = `Total Allowance Fixed Additional: 0.00`
     document.getElementById('totalAllowance').innerText = `Total Allowance: 0.00`
     document.getElementById('totalDeduction').innerText = `Total Deduction: 0.00`
 
@@ -291,11 +293,11 @@ function handleInsertClick() {
     const Element_Descr = document.getElementById("Element_Descr").value;
     const grossSalary = Number(document.getElementById("GrossSalary").value);
 
-    const Transfer_Type = document.getElementById("Transfer_Type");
-    const Account_No = document.getElementById("Account_No");
-    const Bank_Name = document.getElementById("Bank_Name");
-    const Stop_Salary = document.getElementById("Stop_Salary");
-    const CO_ID = document.getElementById("CO_ID");
+    const Transfer_Type = document.getElementById("Transfer_Type").value;
+    const Account_No = document.getElementById("Account_No").value;
+    const Bank_Name = document.getElementById("Bank_Name").value;
+    const Stop_Salary = document.getElementById("Stop_Salary").value;
+    const CO_ID = document.getElementById("CO_ID").value;
 
     let dataArray = [];
 
@@ -623,8 +625,8 @@ function calculateTotal() {
         }
     })
 
-    document.getElementById("totalAllowance_fixed_gross").innerHTML = `Total Allowance Fixed Gross: ${totalAllowance_fixed_gross}`
-    document.getElementById("totalAllowance_fixed_additional").innerHTML = `Total Allowance Fixed Additional: ${totalAllowance_fixed_additional}`
+    document.getElementById("totalAllowance_fixed_gross").innerHTML = `Total Allowance Fixed Gross: ${totalAllowance_fixed_gross.toFixed(2)}`
+    document.getElementById("totalAllowance_fixed_additional").innerHTML = `Total Allowance Fixed Additional: ${totalAllowance_fixed_additional.toFixed(2)}`
 
 
     // document.getElementById("totalAllowance_fixed_gross").innerHTML = `Total Allowance Fixed Gross: ${totalAllowance_fixed_gross}`
@@ -678,22 +680,22 @@ document.getElementById("calculateGrossSalary").addEventListener('click', functi
             const elementID = Number($(this).find("td:eq(0) input").attr("id"));
             if (elementID == 1) {
                 const amount = (grossSalary / 100) * 58.5;
-                $(this).find("td:eq(2) input").val(amount);
+                $(this).find("td:eq(2) input").val(amount.toFixed(2));
             }
             if (elementID == 2) {
                 const amount = (grossSalary / 100) * 6.5;
 
-                $(this).find("td:eq(2) input").val(amount);
+                $(this).find("td:eq(2) input").val(amount.toFixed(2));
             }
             if (elementID == 5) {
                 const amount = (grossSalary / 100) * 29;
 
-                $(this).find("td:eq(2) input").val(amount);
+                $(this).find("td:eq(2) input").val(amount.toFixed(2));
             }
             if (elementID == 6) {
                 const amount = (grossSalary / 100) * 6;
 
-                $(this).find("td:eq(2) input").val(amount);
+                $(this).find("td:eq(2) input").val(amount.toFixed(2));
             }
         });
 
@@ -717,7 +719,7 @@ document.getElementById("calculateGrossSalary").addEventListener('click', functi
 //                 'Content-Type': 'application/json',
 //             },
 //         });
-//         if (!response.ok) {
+//         if (!response.ok) {  
 //             throw new Error(`Failed to fetch Payroll Element`);
 //         }
 //         const data = await response.json();
@@ -868,7 +870,7 @@ function fillEmployeeTableGrid() {
         listofEmployeeNotInSalUpdate = data;
         // Sort the list of objects by name in ascending order
         listofEmployeeNotInSalUpdate.sort((a, b) => {
-            if (a.Emp_Name < b.Emp_Name) {
+            if (a.Emp_Name < b.Emp_Name) {  
                 return -1;
             }
             if (a.name > b.name) {
@@ -877,7 +879,8 @@ function fillEmployeeTableGrid() {
             return 0;
         });
         for (var i = 0; i < data.length; i++) {
-            temp += `<option value="${data[i].Emp_ID}">${data[i].Emp_Name} - ${data[i].HR_Emp_ID}</option>`
+            temp += `<option value="${data[i].Emp_ID}">${data[i].Emp_Name}</option>`
+            // temp += `<option value="${data[i].Emp_ID}">${data[i].Emp_Name} - ${data[i].HR_Emp_ID}</option>`
         }
         document.getElementById("Emp_ID").innerHTML = temp;
     });
@@ -926,6 +929,9 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
         document.getElementById("CO_ID").value = data[0].Co_ID;
         // document.getElementById("Payroll_ID").value = data[0].Payroll_Name;
 
+        document.getElementById("InserRowID1").innerHTML = '';
+        document.getElementById("InserRowID2").innerHTML = '';
+
         let allowanceRow = '', deductionRow = '';
         let counter = 1, totalAllowance = 0, totalDeduction = 0, totalAllowance_fixed_gross = 0, totalAllowance_fixed_additional = 0;
 
@@ -941,14 +947,14 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
                 allowanceRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
                         <td><input type="text" value="${data[i].Element_Category}" readonly /></td>
-                        <td><input type="text" style="text-align: right;" class="allowanceInput" value="${data[i].Amount}" /></td></tr>`;
+                        <td><input type="text" style="text-align: right;" class="allowanceInput" value="${data[i].Amount.toFixed(2)}" /></td></tr>`;
                 totalAllowance += data[i].Amount;
             }
             if (data[i].Element_Type == 'Deduction') {
                 deductionRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
                         <td><input type="text" value="${data[i].Element_Category}" readonly /></td>
-                        <td><input type="text" style="text-align: right;" class="deductionInput" value="${data[i].Amount}" /></td></tr>`;
+                        <td><input type="text" style="text-align: right;" class="deductionInput" value="${data[i].Amount.toFixed(2)}" /></td></tr>`;
                 totalDeduction += data[i].Amount;
             }
             counter++;
@@ -958,11 +964,11 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
         document.getElementById("InserRowID1").innerHTML = allowanceRow;
         document.getElementById("InserRowID2").innerHTML = deductionRow;
 
-        document.getElementById("totalAllowance").innerHTML = `Total Allowance: ${totalAllowance}`
-        document.getElementById("totalDeduction").innerHTML = `Total Deduction: ${totalDeduction}`
+        document.getElementById("totalAllowance").innerHTML = `Total Allowance: ${totalAllowance.toFixed(2)}`
+        document.getElementById("totalDeduction").innerHTML = `Total Deduction: ${totalDeduction.toFixed(2)}`
 
-        document.getElementById("totalAllowance_fixed_gross").innerHTML = `Total Allowance Fixed Gross: ${totalAllowance_fixed_gross}`
-        document.getElementById("totalAllowance_fixed_additional").innerHTML = `Total Allowance Fixed Additional: ${totalAllowance_fixed_additional}`
+        document.getElementById("totalAllowance_fixed_gross").innerHTML = `Total Allowance Fixed Gross: ${totalAllowance_fixed_gross.toFixed(2)}`
+        document.getElementById("totalAllowance_fixed_additional").innerHTML = `Total Allowance Fixed Additional: ${totalAllowance_fixed_additional.toFixed(2)}`
 
 
     });
@@ -999,7 +1005,7 @@ function handleTableRowClick2() {
     const ElemenT_ID = $(this).find('td')[0].innerHTML;
     const ElemenT_NAME = $(this).find('td')[1].innerHTML;
     const ElemenT_TYPE = $(this).find('td')[2].innerHTML;
-    const ElemenT_CATEGORY = $(this).find('td')[3].innerHTML;
+    const ElemenT_CATEGORY = $(this).find('td')[3].innerHTML;   
 
     document.getElementById("Element_Descr").value = ElemenT_NAME;
 

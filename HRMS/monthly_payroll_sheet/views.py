@@ -13,6 +13,7 @@ from django.views.decorators.http import require_http_methods
 from django.db import connection
 import pyodbc
 import logging
+from payroll_period.models import HR_PAYROLL_PERIOD
 
 logger = logging.getLogger(__name__)
 
@@ -72,6 +73,14 @@ def execute_monthly_pay_sheet(request, payroll_id):
     Executes the external API call to process the monthly pay sheet using the given payroll ID.
     Calls get_monthly_pay_sheet to fetch the updated data after the process.`
     """
+    payroll_period = HR_PAYROLL_PERIOD.objects.filter(PAYROLL_ID=payroll_id).first()
+    if payroll_period.PAYSHEET_FINAL:
+        return JsonResponse({
+            'ResponseCode': 201,
+            'Message': 'Payroll Sheet Process Already Executed',
+            'Data': None
+        })
+
     api_url = f'http://localhost:5000/ExecuteMonthlyPaySheet'
     payload = {'m_Payroll_ID': payroll_id}
 

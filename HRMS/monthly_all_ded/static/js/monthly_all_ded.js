@@ -58,11 +58,12 @@ function CancelFormAndGridData() {
     document.getElementById("InserRowID").innerHTML = '';
 }
 
-document.getElementById("W_Department").addEventListener("click", async function () {
+document.getElementById("W_Department").addEventListener("change", async function () {
     // const W_deptID = localStorage.getItem("W_deptID");
     // const W_deptID = 2;
     const W_deptID = document.getElementById("Current_Department").value;
     const W_Department = document.getElementById("W_Department").value;
+    document.getElementById("W_Department_Loader").classList.remove('d-none')
     try {
         const response = await fetch(`${BASE_URL}/monthly_all_ded/getall_dept_element/${W_deptID}/${W_Department}`);
         if (!response.ok) {
@@ -71,7 +72,7 @@ document.getElementById("W_Department").addEventListener("click", async function
         const data = await response.json();
         let temp = '', temp2 = '', counter = 1;
 
-        // console.log("W_Department data: ", data);
+        console.log("W_Department data: ", data);
 
         document.getElementById("InserRowHeadID").innerHTML =
             `<th style="width: 10%;">S.No</th><th style="width: 12%;">Emp ID</th><th style="width: 40%;">Emp Name</th><th style="width: 15%;">HR Code</th><th style="width: 10%;">Grade</th>`;
@@ -165,6 +166,8 @@ document.getElementById("W_Department").addEventListener("click", async function
         console.error('Error fetching Grade:', error);  
         return null;
     }
+
+    document.getElementById("W_Department_Loader").classList.add('d-none')
 
 });
 
@@ -495,8 +498,11 @@ document.getElementById("importData").addEventListener('click', async function (
     try {
         const fileInput = document.getElementById('fileInput');
         const file = fileInput.files[0];
+        const loader = document.getElementById("W_Department_Loader");
         if (file) {  // Corrected check to see if a file is selected
-            Insert_Monthly_PE_By_Excel(file);
+            loader.classList.remove('d-none');
+            await Insert_Monthly_PE_By_Excel(file);
+            loader.classList.add('d-none');
         } else {
             alert('Kindly select a file first!');
         }

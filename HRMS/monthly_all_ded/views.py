@@ -22,6 +22,87 @@ def Index(request):
     return render(request, 'monthly_all_ded.html')
 
 
+
+# def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
+#     print("getAll_W_Dept_By_DeptID")
+    
+#     try:
+#         # Fetch relevant data from the database
+#         w_dept_queryset = HR_W_All_Ded_Department.objects.filter(
+#             W_All_Ded_Dept_ID=W_DeptID,
+#             Dept_ID=DeptID
+#         ).prefetch_related(
+#             'W_All_Ded_Dept_ID', 'W_All_Ded_Element_ID', 'Dept_ID'
+#         )
+        
+#         emp_queryset = HR_Emp_Salary_Grade_V.objects.filter(
+#             Dept_ID=DeptID
+#         ).distinct()
+
+#         month_pp_queryset = HR_Monthly_All_Ded.objects.filter(
+#             Department=DeptID
+#         )
+
+#         month_pp_serializer = HR_Monthly_All_Ded_Serializer(
+#             month_pp_queryset, many=True
+#         )
+
+#         # Convert serialized data to a dictionary for quick lookup by Emp_ID
+#         month_pp_data = {item['Employee']: item['Element_Amount'] for item in month_pp_serializer.data}
+
+#         # Prepare the data for response
+#         data = []
+#         data2 = []
+#         data4 = []
+
+#         for item in emp_queryset:
+#             element_amount = month_pp_data.get(item.Emp_ID, [])  # Use .get() to handle cases where Emp_ID might not be present
+
+#             single_emp = {
+#                 'Emp_ID': item.Emp_ID,
+#                 'Emp_Name': item.Emp_Name,
+#                 'HR_Emp_ID': item.HR_Emp_ID,
+#                 'Grade_ID': item.Grade_ID,
+#                 'Grade_Descr': item.Grade_Descr,
+#                 'Element_Amount': element_amount
+#             }
+
+#             data.append(single_emp)
+
+#             a1 = w_dept_queryset.values_list('W_All_Ded_Element_ID__Element_ID', flat=True).distinct()
+#             grade_comb = HR_Element_Grade_Combination.objects.filter(
+#                 Grade_ID=item.Grade_ID,
+#                 Element_ID__in=a1
+#             )
+            
+#             for j in grade_comb:
+#                 data4.append({
+#                     'Emp_ID': item.Emp_ID,
+#                     'Element_ID': j.Element_ID.Element_ID,
+#                     'Grade_ID': j.Grade_ID.Grade_ID
+#                 })
+
+#         for item in w_dept_queryset:
+#             single_w_dept = {
+#                 'Element_ID': item.W_All_Ded_Element_ID.Element_ID,
+#                 'Element_Name': item.W_All_Ded_Element_ID.Element_Name
+#             }
+#             data2.append(single_w_dept)
+
+#         data3 = [
+#             {"Employee": data},
+#             {"Element": data2},
+#             {"Emp_Element_Status": data4}
+#         ]
+
+#         return JsonResponse(data3, safe=False)
+    
+#     except Exception as e:
+#         print(f"Error: {str(e)}")  
+#         return JsonResponse({'error': str(e)}, status=500)
+
+
+
 def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
     print("getAll_W_Dept_By_DeptID")
     
@@ -34,19 +115,19 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
             'W_All_Ded_Dept_ID', 'W_All_Ded_Element_ID', 'Dept_ID'
         )
         
-        print('w_dept_queryset: ', w_dept_queryset)
+        # print('w_dept_queryset: ', w_dept_queryset)c
 
         emp_queryset = HR_Emp_Salary_Grade_V.objects.filter(
             Dept_ID=DeptID
         ).distinct()
 
-        print('emp_queryset: ', emp_queryset)
+        # print('emp_queryset: ', emp_queryset)
 
         month_pp_queryset = HR_Monthly_All_Ded.objects.filter(
             Department=DeptID
         )
 
-        print('month_pp_queryset: ', month_pp_queryset)
+        # print('month_pp_queryset: ', month_pp_queryset)
 
         # print('month_pp_queryset: ', month_pp_queryset)
 
@@ -54,7 +135,10 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
             month_pp_queryset, many=True
         )
 
-        print('month_pp_serializer: ', month_pp_serializer)
+        # print('month_pp_serializer: ', month_pp_serializer.data)
+
+        for item in month_pp_serializer.data:
+            print('month_pp_serializer item: ', item)
 
         # print('count 1: ', emp_queryset.count())
         # print('count 2: ', month_pp_queryset.count())
@@ -71,13 +155,20 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
 
         count = 0
         for item in emp_queryset:
+
+            matching_employee_data = next(
+                (entry for entry in month_pp_serializer.data if entry['Employee'] == item.Emp_ID),
+                None
+                )
             single_emp = {
                 'Emp_ID': item.Emp_ID,
                 'Emp_Name': item.Emp_Name,
                 'HR_Emp_ID': item.HR_Emp_ID,
                 'Grade_ID': item.Grade_ID,
                 'Grade_Descr': item.Grade_Descr,
-                'Element_Amount': month_pp_serializer.data[count] if count < len(month_pp_serializer.data) else []
+                'Element_Amount': matching_employee_data if matching_employee_data else []
+                # 'Element_Amount': month_pp_serializer.data[item.Emp_ID] if count < len(month_pp_serializer.data) else []
+                # 'Element_Amount': month_pp_serializer.data[count] if count < len(month_pp_serializer.data) else []
             }
 
             count += 1
@@ -439,12 +530,19 @@ def Insert_from_excel(request):
                 }
 
                 for key, value in table_data.items():
-                    print('key: ', key)
-                    if key != 'Emp_ID' and i < len(value) and key != 'Emp_Name' and key != 'Department' and key != 'Designation':
+                    print('key: ', key, ' value: ', value[i])
+                    if key != 'Emp_ID' and i < len(value) and key != 'HR_Emp_ID' and key != 'Emp_Name' and key != 'Department' and key != 'Designation':
                         try:
-                            my_monthly_data[key] = int(value[i])
+                            my_monthly_data[key] = int(value[i]) if value[i] is not None else 0
                         except ValueError:
-                            my_monthly_data[key] = None  # Set to None if conversion fails
+                            my_monthly_data[key] = 0  # Set to None if conversion fails
+
+                        # try:
+                        #     # Convert to int or default to 0 if value is None
+                        #     my_monthly_data[key] = int(value[i]) if value[i] is not None else 0
+                        # except (ValueError, TypeError) as e:
+                        #     print(f"Error converting {value[i]} to int for key {key}: {e}")
+                        #     my_monthly_data[key] = 0  # Default to 0 in case of error
 
                 print('my_monthly_data: ', my_monthly_data)
                 existing_data = HR_Monthly_All_Ded.objects.filter(Employee=emp_id, Period=period, Department=W_Department)

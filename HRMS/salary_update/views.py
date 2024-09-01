@@ -14,15 +14,15 @@ import pdb
 def salaryupdate_view(request):
     return render(request, 'salaryupdate.html')
 
-@api_view(['GET'])  
-def getall_salaryupdate(request):
-    try:
-        emp_ids = HR_Emp_Sal_Update_Mstr.objects.values('Emp_ID')
-        queryset_emp_salaryupdate = HR_Employees.objects.exclude(Emp_ID__in=Subquery(emp_ids)).all()    
-        serializer = HR_Employees_Serializer(queryset_emp_salaryupdate, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    except Exception as e:
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+# @api_view(['GET'])  
+# def getall_salaryupdate(request):
+#     try:
+#         emp_ids = HR_Emp_Sal_Update_Mstr.objects.values('Emp_ID')
+#         queryset_emp_salaryupdate = HR_Employees.objects.exclude(Emp_ID__in=Subquery(emp_ids)).all()    
+#         serializer = HR_Employees_Serializer(queryset_emp_salaryupdate, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+#     except Exception as e:
+#         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['GET'])  
 def getll_emp_notin_salaryupdate(request):
@@ -34,35 +34,87 @@ def getll_emp_notin_salaryupdate(request):
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 @api_view(['POST'])
 def add_salary_update(request):
-        try:
-            # print("add_salary_update data: ", request.data)   
-            # pdb.set_trace()
-            print("add_salary_update")
-            print("masterData data: ", request.data.get("masterData", {}))
-            print("detailList data: ", request.data.get('detailList', []))
-            master_serializer = HR_Emp_Sal_Update_Mstr_Serializer(data=request.data.get("masterData", {}))
-            if master_serializer.is_valid():
-                master_serializer.save()
-                print("master saved")
-                print("master_serializer: ", master_serializer.data)
-                print("master_serializer.data.Emp_Up_ID: ", master_serializer.data['Emp_Up_ID'])
-                detailList = request.data.get('detailList', [])
-                for detail_data in detailList:
-                    detail_data['Emp_Up_ID'] = master_serializer.data['Emp_Up_ID']
-                    detail_data['Emp_ID'] = master_serializer.data['Emp_ID']
-                    detail_serializer = HR_Emp_Sal_Update_Dtl_Serializer(data=detail_data)
-                    if detail_serializer.is_valid():
-                        detail_serializer.save()
-                        print("detail saved")
-                    else:
-                        return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                return Response(master_serializer.data, status=status.HTTP_200_OK)
-            else:
-                return Response(master_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    try:
+        print("add_salary_update")
+        print("masterData data: ", request.data.get("masterData", {}))
+        print("detailList data: ", request.data.get('detailList', []))
+
+        # Calculate the new max_emp_up_id
+        max_emp_up_id = HR_Emp_Sal_Update_Mstr.objects.aggregate(Max('Emp_Up_ID'))['Emp_Up_ID__max']
+        if max_emp_up_id is None:
+            max_emp_up_id = 1  # Starting with 1 if there are no existing records
+        else:
+            max_emp_up_id += 1
+
+        # Set Emp_Up_ID in masterData
+        master_data = request.data.get("masterData", {})
+        master_data['Emp_Up_ID'] = max_emp_up_id
+
+        master_serializer = HR_Emp_Sal_Update_Mstr_Serializer(data=master_data)
+        if master_serializer.is_valid():
+            master_serializer.save()
+            print("master saved")
+            print("master_serializer: ", master_serializer.data)
+            print("master_serializer.data.Emp_Up_ID: ", master_serializer.data['Emp_Up_ID'])
+
+            # Iterate through each detail record
+            detailList = request.data.get('detailList', [])
+            for detail_data in detailList:
+                # Set Emp_Up_ID and Emp_ID in each detail data
+                detail_data['Emp_Up_ID'] = master_serializer.data['Emp_Up_ID']
+                detail_data['Emp_ID'] = master_serializer.data['Emp_ID']
+
+                detail_serializer = HR_Emp_Sal_Update_Dtl_Serializer(data=detail_data)
+                if detail_serializer.is_valid():
+                    detail_serializer.save()
+                    print("detail saved")
+                else:
+                    return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+            return Response(master_serializer.data, status=status.HTTP_200_OK)
+        else:
+            print('master_serializer.errors call')
+            return Response(master_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# @api_view(['POST'])
+# def add_salary_update(request):
+#         try:
+#             # print("add_salary_update data: ", request.data)   
+#             # pdb.set_trace()
+#             print("add_salary_update")
+#             print("masterData data: ", request.data.get("masterData", {}))
+#             print("detailList data: ", request.data.get('detailList', []))
+#             max_emp_up_id = HR_Emp_Sal_Update_Mstr.objects.aggregate(Max('Emp_Up_ID'))['Emp_Up_ID__max']
+#             max_emp_up_id += 1
+#             request.data['Emp_Up_ID'] = max_emp_up_id
+#             master_serializer = HR_Emp_Sal_Update_Mstr_Serializer(data=request.data.get("masterData", {}))
+#             if master_serializer.is_valid():
+#                 master_serializer.save()
+#                 print("master saved")
+#                 print("master_serializer: ", master_serializer.data)
+#                 print("master_serializer.data.Emp_Up_ID: ", master_serializer.data['Emp_Up_ID'])
+#                 detailList = request.data.get('detailList', [])
+#                 for detail_data in detailList:
+#                     detail_data['Emp_Up_ID'] = master_serializer.data['Emp_Up_ID']
+#                     detail_data['Emp_ID'] = master_serializer.data['Emp_ID']
+#                     detail_serializer = HR_Emp_Sal_Update_Dtl_Serializer(data=detail_data)
+#                     if detail_serializer.is_valid():
+#                         detail_serializer.save()
+#                         print("detail saved")
+#                     else:
+#                         return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#                 return Response(master_serializer.data, status=status.HTTP_200_OK)
+#             else:
+#                 print('master_serializer.errors call')
+#                 return Response(master_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#         except Exception as e:
+#             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 @api_view(['POST'])
 def update_salary_update(request, empupid):
@@ -139,7 +191,7 @@ def getall_payroll_element_notin_su(request, empUpID, empID):
         if empID is None or empUpID is None:
             return Response({'error': 'Salary not found'}, status=status.HTTP_404_NOT_FOUND)
         su_queryset = HR_Emp_Sal_Update_Dtl.objects.filter(Emp_ID=empID, Emp_Up_ID=empUpID).values_list("Element_ID", flat=True)
-        element_queryset = HR_Payroll_Elements.objects.exclude(Element_ID__in=su_queryset)
+        element_queryset = HR_Payroll_Elements.objects.filter(Element_Category__in=['Fixed Gross', 'Fixed Additional']).exclude(Element_ID__in=su_queryset)
         serializer = HR_Payroll_Elements_Serializer(element_queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Exception as e:
@@ -238,13 +290,25 @@ def getall_master_byid(request, empUpID, empID):
 #     except Exception as e:
 #         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+from django.db.models import Max
+
 @api_view(['GET'])
 def getll_master(request):
     try:
-        querySet = HR_Emp_Sal_Update_Mstr.objects.select_related('Emp_ID', 'Dsg_ID', 'Dept_ID')
-        print('querySet: ', querySet.count())
+        # Step 1: Get the maximum Emp_Up_ID for each employee
+        latest_salary_updates = HR_Emp_Sal_Update_Mstr.objects.values('Emp_ID').annotate(
+            max_emp_up_id=Max('Emp_Up_ID')
+        )
+
+        # Step 2: Fetch only the latest records using the maximum Emp_Up_ID values
+        latest_records = HR_Emp_Sal_Update_Mstr.objects.filter(
+            Emp_Up_ID__in=[item['max_emp_up_id'] for item in latest_salary_updates]
+        ).select_related('Emp_ID', 'Dsg_ID', 'Dept_ID')
+
+        print('latest_records count: ', latest_records.count())
         datas = []
-        for item in querySet:
+
+        for item in latest_records:
             data = {
                 'Emp_Up_ID': item.Emp_Up_ID,
                 'Emp_Up_Date': item.Emp_Up_Date,
@@ -255,8 +319,32 @@ def getll_master(request):
                 'Dept_Descr': item.Dept_ID.Dept_Descr
             }
             datas.append(data)
+
         print('datas: ', datas)
         return Response(datas, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# @api_view(['GET'])
+# def getll_master(request):
+#     try:
+#         querySet = HR_Emp_Sal_Update_Mstr.objects.select_related('Emp_ID', 'Dsg_ID', 'Dept_ID')
+#         print('querySet: ', querySet.count())
+#         datas = []
+#         for item in querySet:
+#             data = {
+#                 'Emp_Up_ID': item.Emp_Up_ID,
+#                 'Emp_Up_Date': item.Emp_Up_Date,
+#                 'Emp_ID': item.Emp_ID.Emp_ID,
+#                 'HR_Emp_ID': item.Emp_ID.HR_Emp_ID,
+#                 'Emp_Name': item.Emp_ID.Emp_Name,
+#                 'Dsg_Descr': item.Dsg_ID.DSG_Descr,
+#                 'Dept_Descr': item.Dept_ID.Dept_Descr
+#             }
+#             datas.append(data)
+#         print('datas: ', datas)
+#         return Response(datas, status=status.HTTP_200_OK)
+#     except Exception as e:
+#         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

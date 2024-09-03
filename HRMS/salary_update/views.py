@@ -28,9 +28,26 @@ def salaryupdate_view(request):
 def getll_emp_notin_salaryupdate(request):
     try:
         emp_ids = HR_Emp_Sal_Update_Mstr.objects.values('Emp_ID')
-        queryset_emp_salaryupdate = HR_Employees.objects.exclude(Emp_ID__in=Subquery(emp_ids)).all()
-        serializer = HR_Employees_Serializer(queryset_emp_salaryupdate, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        queryset_emp_salaryupdate = HR_Employees.objects.exclude(Emp_ID__in=Subquery(emp_ids)).prefetch_related('Joining_Dept_ID', 'Joining_Dsg_ID', 'Grade_ID')
+
+        data = []
+
+        for employee in queryset_emp_salaryupdate:
+            data.append({
+                'Emp_ID': employee.Emp_ID,
+                'HR_Emp_ID': employee.HR_Emp_ID,
+                'Emp_Name': employee.Emp_Name,
+                'Dept_ID': employee.Joining_Dept_ID.Dept_ID,
+                'Dept_Descr': employee.Joining_Dept_ID.Dept_Descr,
+                'DSG_ID': employee.Joining_Dsg_ID.DSG_ID,
+                'DSG_Descr': employee.Joining_Dsg_ID.DSG_Descr,
+                'Grade_ID': employee.Grade_ID.Grade_ID,
+                'Grade_Descr': employee.Grade_ID.Grade_Descr,
+                'Marital_Status': employee.Marital_Status
+            })
+
+        # serializer = HR_Employees_Serializer(queryset_emp_salaryupdate, many=True)
+        return Response(data, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

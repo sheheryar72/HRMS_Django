@@ -90,6 +90,14 @@ function initializeDataTable() {
         lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]
     });
 
+    table6 = $('#GridID6').DataTable({
+        destroy: true,
+        duplicate: false,
+        ordering: false,
+        pageLength: 5,
+        lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]
+    });
+
 }
 
 // Handle click on table row
@@ -130,9 +138,11 @@ function handleCancelClick() {
     document.getElementById("GrossSalary").value = '';
     document.getElementById("Remarks").value = '';
     document.getElementById("HR_Emp_ID").value = '';
+    document.getElementById("Emp_ID").value = '';
+    document.getElementById("Emp_Name").value = '';
 
-    var firstOptionValue = $('#Emp_ID option:first').val();
-    $('#Emp_ID').val(firstOptionValue).trigger('change');
+    // var firstOptionValue = $('#Emp_ID option:first').val();
+    // $('#Emp_ID').val(firstOptionValue).trigger('change');
 
     // document.getElementById("Emp_ID").selectedIndex = 0;
     document.getElementById("DSG_ID").selectedIndex = 0;
@@ -486,9 +496,9 @@ function handleUpdateClick() {
     }
 }
 
-document.getElementById("Emp_ID").addEventListener("change", function () {
-    mapEmployeeDate(this.value);
-})
+// document.getElementById("Emp_ID").addEventListener("change", function () {
+//     mapEmployeeDate(this.value);
+// })
 
 document.getElementById("Last_GrossSalary").addEventListener("focusout", function () {
     document.getElementById("GrossSalary").value = Number(this.value) + Number(document.getElementById("Last_Increment_Amt").value);
@@ -557,14 +567,16 @@ function mapEmployeeDate(empID) {
 
         // $('#Emp_ID').select2();
         // Set the value and update the Select2 UI
-        $('#Emp_ID').val(singleEmpData.Emp_ID).trigger('change');
+        // $('#Emp_ID').val(singleEmpData.Emp_ID).trigger('change');
 
         // document.getElementById("Emp_ID").value = singleEmpData.Emp_ID;
         // document.getElementById("Emp_ID_").value = singleEmpData.Emp_ID;
+        document.getElementById("Emp_ID").value = singleEmpData.Emp_ID
+        document.getElementById("Emp_Name").value = singleEmpData.Emp_Name
         document.getElementById("HR_Emp_ID").value = singleEmpData.HR_Emp_ID;
         document.getElementById("Emp_Category").value = '';
-        document.getElementById("DSG_ID").value = singleEmpData.Joining_Dsg_ID;
-        document.getElementById("Dept_ID").value = singleEmpData.Joining_Dept_ID;
+        document.getElementById("DSG_ID").value = singleEmpData.DSG_ID;
+        document.getElementById("Dept_ID").value = singleEmpData.Dept_ID;
         document.getElementById("Grade_ID").value = singleEmpData.Grade_ID;
         document.getElementById("Marital_Status").value = singleEmpData.Marital_Status;
     }
@@ -573,6 +585,8 @@ function mapEmployeeDate(empID) {
         console.log("Data: ", data)
         listofPayrollElement = data;
 
+        console.log('payroll_element/getall called')
+            
         let counter = 0;
         document.getElementById("InserRowID1").innerHTML = '';
         document.getElementById("InserRowID2").innerHTML = '';
@@ -864,9 +878,9 @@ function fillSalaryMasterTableGrid() {
 }
 
 function fillEmployeeTableGrid() {
-    getAllDataFromDB(`${BASE_URL}/employee/getall`, 'Employee').then((data) => {
+    getAllDataFromDB(`${BASE_URL}/salaryupdate/getallemployee`, 'Employee').then((data) => {
     // getAllDataFromDB(`${BASE_URL}/salaryupdate/getallemployee`, 'Employee').then((data) => {
-        // console.log("response: ", data);
+        console.log("fillEmployeeTableGrid not in sal update: ", data);
         var temp = '';
         listofEmployeeNotInSalUpdate = data;
         // Sort the list of objects by name in ascending order
@@ -879,11 +893,16 @@ function fillEmployeeTableGrid() {
             }
             return 0;
         });
+        table6.clear().draw();
         for (var i = 0; i < data.length; i++) {
-            temp += `<option value="${data[i].Emp_ID}">${data[i].Emp_Name}</option>`
+            table6.row.add([data[i].Emp_ID, data[i].HR_Emp_ID, data[i].Emp_Name
+                , data[i].DSG_Descr, data[i].Dept_Descr]).draw(false);
+            // temp += `<option value="${data[i].Emp_ID}">${data[i].Emp_Name}</option>`
             // temp += `<option value="${data[i].Emp_ID}">${data[i].Emp_Name} - ${data[i].HR_Emp_ID}</option>`
         }
-        document.getElementById("Emp_ID").innerHTML = temp;
+
+        // document.getElementById("Emp_ID").innerHTML = temp;
+        // document.getElementById("Emp_ID").value = temp;
     });
 }
 
@@ -903,6 +922,25 @@ function handleTableRowClick3() {
     salary_update_form_status_func(1)
 }
 
+function handleTableRowClick6() {
+
+    const Emp_ID = Number($(this).find('td')[0].innerHTML);
+    const Emp_Name = Number($(this).find('td')[2].innerHTML);
+    
+
+    // GetAll_Salary_update_BYID(Emp_Up_ID, Emp_ID);
+    
+    mapEmployeeDate(Emp_ID)
+
+    $("#orangeModalSubscription6").modal('hide');
+    
+    document.getElementById("insertFormData").classList.remove("d-none");
+    document.getElementById("saveNewBtnId").classList.add("d-none");
+    document.getElementById("updateFormData").classList.add("d-none");
+
+    // salary_update_form_status_func(1)
+}
+
 function GetAll_Salary_update_BYID(emp_up_Id, empId) {
     console.log("emp_up_Id: ", emp_up_Id)
     console.log("empId: ", empId)
@@ -914,8 +952,10 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
         document.getElementById("Emp_Up_Date").value = moment(data[0].Emp_Up_Date).format("YYYY-MM-DD");
         // document.getElementById("Emp_ID_").value = data[0].Emp_ID;
 
-        $('#Emp_ID').val(data[0].Emp_ID).trigger('change');
+        // $('#Emp_ID').val(data[0].Emp_ID).trigger('change');
         // document.getElementById("Emp_ID").value = data[0].Emp_ID;
+        document.getElementById("Emp_ID").value = data[0].Emp_ID;
+        document.getElementById("Emp_Name").value = data[0].Emp_Name;
         document.getElementById("HR_Emp_ID").value = data[0].HR_Emp_ID;
         // document.getElementById("Emp_Name").value = data[0].Emp_Name;
         // document.getElementById("Emp_Category").value = "";
@@ -983,6 +1023,10 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
 
 document.getElementById("empupdateGridIconId").addEventListener("click", function () {
     fillSalaryMasterTableGrid();
+});
+
+document.getElementById("Emp_Grid_ID").addEventListener("click", function () {
+    fillEmployeeTableGrid();
 });
 
 function displaySuccessMessage(message) {
@@ -1054,7 +1098,7 @@ $(document).ready(function () {
     fillCompaniestTableGrid()
     fillDepartmentTableGrid()
     fillDesignationTableGrid()
-    fillEmployeeTableGrid()
+    // fillEmployeeTableGrid()
     fillGradeTableGrid()
     // fillPayrollElementTableGrid()
     document.getElementById("InserRowID1").innerHTML = "";
@@ -1062,6 +1106,7 @@ $(document).ready(function () {
 
     $('#GridID4 tbody').on('click', 'tr', handleTableRowClick2);
     $('#GridID5 tbody').on('click', 'tr', handleTableRowClick3);
+    $('#GridID6 tbody').on('click', 'tr', handleTableRowClick6);
 
     // $('#GridID tbody').on('click', 'tr', handleTableRowClick);
     $('#GridID tbody').on('click', '.roweditclass', handleTableRowClick);

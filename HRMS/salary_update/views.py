@@ -313,14 +313,16 @@ from django.db.models import Max
 def getll_master(request):
     try:
         # Step 1: Get the maximum Emp_Up_ID for each employee
-        latest_salary_updates = HR_Emp_Sal_Update_Mstr.objects.values('Emp_ID').annotate(
-            max_emp_up_id=Max('Emp_Up_ID')
-        )
+        # latest_salary_updates = HR_Emp_Sal_Update_Mstr.objects.values('Emp_ID').annotate(
+        #     max_emp_up_id=Max('Emp_Up_ID')
+        # )
 
-        # Step 2: Fetch only the latest records using the maximum Emp_Up_ID values
-        latest_records = HR_Emp_Sal_Update_Mstr.objects.filter(
-            Emp_Up_ID__in=[item['max_emp_up_id'] for item in latest_salary_updates]
-        ).select_related('Emp_ID', 'Dsg_ID', 'Dept_ID')
+        # # Step 2: Fetch only the latest records using the maximum Emp_Up_ID values
+        # latest_records = HR_Emp_Sal_Update_Mstr.objects.filter(
+        #     Emp_Up_ID__in=[item['max_emp_up_id'] for item in latest_salary_updates]
+        # ).select_related('Emp_ID', 'Dsg_ID', 'Dept_ID')
+
+        latest_records = HR_Emp_Sal_Update_Mstr.objects.all().select_related('Emp_ID', 'Dsg_ID', 'Dept_ID')
 
         print('latest_records count: ', latest_records.count())
         datas = []

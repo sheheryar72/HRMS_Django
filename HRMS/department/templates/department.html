@@ -1,8 +1,8 @@
 {% extends 'dashboard.html' %}
 {% load static %}
 
-{% block title %} Department {% endblock %}
-{% block pagetitle %} Department {% endblock %} 
+{% block title %} Department {% endblock %} 
+{% block pagetitle %} Department {% endblock %}
 
 {% block content %}
 
@@ -22,6 +22,28 @@
       <div class="form-container">
         <form id="myForm">
           <div id="alertMessage"></div>
+
+          <div class="row">
+            <div class="col-sm-3">
+              <label for="Dept_ID" class="col-form-label">Dep ID : </label>
+            </div>
+            <div class="col-sm-3">
+              <input type="text" class="form-control form-control-sm" id="Dept_ID" placeholder="Department ID" readonly>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-3">
+              <label for="Dept_Descr" class="col-form-label">Dep Name : <span class="text-danger"> *</span></label>
+            </div>
+            <div class="col-sm-9">
+              <input type="text" class="form-control form-control-sm" id="Dept_Descr" placeholder="Department Name">
+            </div>
+          </div>     
+
+
+
+
+<!--
           <div class="form-group row align-items-center">
             <label for="id" class="col-sm-3 col-form-label col-form-label-sm">ID</label>
             <div class="col-sm-9">
@@ -34,6 +56,8 @@
               <input type="text" class="form-control form-control-sm" id="Dept_Descr" placeholder="Description">
             </div>
           </div>
+-->
+
           <div class="text-center">
             <button type="button" id="insertFormData" class="btn btn-dark mr-2">Create</button>
             <button type="button" id="updateFormData" class="btn btn-dark mr-2 d-none">Update</button>

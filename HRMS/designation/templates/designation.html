@@ -22,18 +22,26 @@
       <div class="form-container">
         <form id="myForm">
           <div id="alertMessage"></div>
-          <div class="form-group row align-items-center">
-            <label for="id" class="col-sm-3 col-form-label col-form-label-sm">ID</label>
-            <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm mb-2" id="DSG_ID" placeholder="ID" readonly>
+          
+          
+          <div class="row">
+            <div class="col-sm-3">
+              <label for="id" class="col-form-label">Dsg ID : </label>
+            </div>
+            <div class="col-sm-3">
+              <input type="text" class="form-control form-control-sm" id="DSG_ID" placeholder="Designation ID" readonly>
             </div>
           </div>
-          <div class="form-group row align-items-center">
-            <label for="name" class="col-sm-3 col-form-label col-form-label-sm">Name<span class="text-danger"> *</span></label>
-            <div class="col-sm-9">
-              <input type="text" class="form-control form-control-sm" id="DSG_Descr" placeholder="Description">
+          
+          <div class="row">
+            <div class="col-sm-3">
+              <label for="name" class="col-form-label">Dsg Name : <span class="text-danger"> *</span></label>
             </div>
-          </div>
+            <div class="col-sm-9">
+              <input type="text" class="form-control form-control-sm" id="DSG_Descr" placeholder="Designation Name">
+            </div>
+          </div>   
+
           <div class="text-center">
             <button type="button" id="insertFormData" class="btn btn-dark mr-2">Create</button>
             <button type="button" id="updateFormData" class="btn btn-dark mr-2 d-none">Update</button>

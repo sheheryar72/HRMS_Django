@@ -485,9 +485,12 @@ function fillFormDataFromDB(id) {
         document.getElementById("HR_Emp_ID").value = data.HR_Emp_ID
         document.getElementById("Father_Name").value = data.Father_Name
         document.getElementById("CNIC_No").value = data.CNIC_No 
+        document.getElementById("CNIC_Issue_Date").value = data.CNIC_Issue_Date 
+        document.getElementById("CNIC_Exp_Date").value = data.CNIC_Exp_Date 
         document.getElementById("Religion").value = data.Religion
         document.getElementById("CT_ID").value = data.CT_ID
         document.getElementById("Grade_ID").value = data.Grade_ID
+        document.getElementById("Address").value = data.Address
         
         // console.log('region_array region: ', region_array)
         const region = region_array.find(x => x.REG_ID == data.REG_ID);
@@ -512,12 +515,13 @@ function fillFormDataFromDB(id) {
 function fillDropDown(dataName, dropdownId, valueField, displayTextField) {
     getAllDataFromDB(dataName).then((data) => {
         var temp = '';
-        console.log('dataName: ', dataName)
+        // console.log('dataName: ', dataName)
+        // console.log('dataName data: ', data)
         if (dataName == 'city/getall') {
             city_array = data
         }  if (dataName == 'region/getall') {
                 region_array = data
-                console.log('region_array: ', region_array)
+                // console.log('region_array: ', region_array)
             } else{
                 data.forEach(element => {
                     temp += `<option value="${element[valueField]}">${element[displayTextField]}</option>`;

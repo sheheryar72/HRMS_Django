@@ -38,7 +38,7 @@ def get_monthly_pay_sheet(request, payroll_id):
         REG_ID, REG_Descr, CT_ID, CT_Descr, Dept_ID, Dept_Descr, Dsg_ID, 
         DSG_Descr, Grade_ID, Grade_Descr, PERIOD_ID, FYID, FinYear, MNTH_ID, 
         MNTH_NO, MNTH_NAME, MNTH_SHORT_NAME, PERIOD_STATUS, FYStatus, Yr, 
-        SDT, EDT, FYSDT, FYEDT, MDays, WDays, ADays, JLDays, Basic_Salary_1, 
+        SDT, EDT, FYSDT, FYEDT, MDays, WDays, ADays, JLDays, Last_Working_Date, Basic_Salary_1, 
         Medical_Allowance_2, Conveyance_Fixed_Allowance_3, House_Rent_Allowance_5, 
         Utilities_Allowance_6, Communication_12, Conveyance_Liters_Allowance_28, 
         Tot_Gross_Salary, Meal_Allowance_7, Bike_Maintainence_9, 
@@ -73,13 +73,13 @@ def execute_monthly_pay_sheet(request, payroll_id):
     Executes the external API call to process the monthly pay sheet using the given payroll ID.
     Calls get_monthly_pay_sheet to fetch the updated data after the process.`
     """
-    payroll_period = HR_PAYROLL_PERIOD.objects.filter(PAYROLL_ID=payroll_id).first()
-    if payroll_period.PAYSHEET_FINAL:
-        return JsonResponse({
-            'ResponseCode': 201,
-            'Message': 'Payroll Sheet Process Already Executed',
-            'Data': None
-        })
+    # payroll_period = HR_PAYROLL_PERIOD.objects.filter(PAYROLL_ID=payroll_id).first()
+    # if payroll_period.PAYSHEET_FINAL:
+    #     return JsonResponse({
+    #         'ResponseCode': 201,
+    #         'Message': 'Payroll Sheet Process Already Executed',
+    #         'Data': None
+    #     })
 
     api_url = f'http://localhost:5000/ExecuteMonthlyPaySheet'
     payload = {'m_Payroll_ID': payroll_id}

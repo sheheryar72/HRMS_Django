@@ -815,57 +815,201 @@ def getall_payroll_element_notin_su(request, empUpID, empID):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+
 @api_view(['GET'])
-def getall_master_byid(request, empUpID, empID):
+def getall_master_byid(request, empUpID, empID, payroll_id):
     try:
         if not empID or not empUpID:
             return Response({'error': 'Employee ID or Update ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
-        print("up is: ", empUpID)
-        print("empID: ", empID)
-        # detail_queryset = HR_Emp_Monthly_Sal_Dtl.objects.filter(Emp_Up_ID=empUpID)
-        detail_queryset = HR_Emp_Monthly_Sal_Dtl.objects.filter(Emp_Up_ID=empUpID, Emp_ID=empID).select_related('Emp_Up_ID', 'Emp_ID', 'Element_ID')
-        # detail_queryset = HR_Emp_Monthly_Sal_Dtl.objects.filter(Emp_Up_ID=empUpID, Emp_ID=empID)
-        datas = []
-        print('detail_queryset: ', detail_queryset)
+        
+        # Fetching data
+        detail_queryset = HR_Emp_Monthly_Sal_Dtl.objects.filter(
+            Emp_Up_ID__Emp_Up_ID=empUpID,
+            Emp_ID__Emp_ID=empID,
+            Payroll_ID__PAYROLL_ID=payroll_id
+        ).select_related('Emp_Up_ID', 'Emp_ID', 'Element_ID')
+
+        print('detail_queryset count: ', detail_queryset.count())
+
+        # Use a set to track unique keys (e.g., Emp_Up_ID + Emp_ID)
+        unique_data = {}
+        
+        # Loop through the queryset
         for data in detail_queryset:
-            print('data: ', data)
-            item = {
-                "Emp_Up_ID": data.Emp_Up_ID.Emp_Up_ID,
-                "Emp_Up_Date": data.Emp_Up_ID.Emp_Up_Date,
-                "Emp_ID": data.Emp_ID.Emp_ID,
-                "Emp_Name": data.Emp_ID.Emp_Name,
-                "HR_Emp_ID": data.Emp_ID.HR_Emp_ID,
-                "Emp_Category": data.Emp_Up_ID.Emp_Category,
-                "GrossSalary": data.Emp_Up_ID.GrossSalary,  
-                "Amount": data.Amount,
-                "Element_Category": data.Element_Category,
-                "Element_ID": data.Element_ID.Element_ID,
-                "Element_Name": data.Element_ID.Element_Name,
-                "Element_Type": data.Element_Type,
-                "Remarks": data.Emp_Up_ID.Remarks,
-                "Grade_ID": data.Emp_Up_ID.Grade_ID.Grade_ID,
-                "Grade_Descr": data.Emp_Up_ID.Grade_ID.Grade_Descr,
-                "Co_ID": data.Emp_ID.Co_ID,
-                "Dsg_ID": data.Emp_Up_ID.Dsg_ID.DSG_ID,
-                "DSG_Descr": data.Emp_Up_ID.Dept_ID.Dept_Descr,
-                "Dept_ID": data.Emp_Up_ID.Dept_ID.Dept_ID,
-                "Dept_Descr": data.Emp_Up_ID.Dept_ID.Dept_Descr,
-                "Marital_Status": data.Emp_ID.Marital_Status,
-                "No_of_Children": data.Emp_Up_ID.No_of_Children,
-                "Transfer_Type": data.Emp_Up_ID.Transfer_Type,
-                "Account_No": data.Emp_Up_ID.Account_No,
-                "Bank_Name": data.Emp_Up_ID.Bank_Name,
-                "Stop_Salary": data.Emp_Up_ID.Stop_Salary,
-                'Payroll_ID': data.Payroll_ID.PAYROLL_ID,
-                'Payroll_Name': f'{data.Payroll_ID.MNTH_ID.MNTH_NAME} {data.Payroll_ID.FYID.FinYear}',
-            }
-            datas.append(item)
-        # print("DAtas: ", datas)
+            # Create a unique key for each employee
+            unique_key = (data.Emp_Up_ID.Emp_Up_ID, data.Emp_ID.Emp_ID, data.Element_ID.Element_ID)
+
+            # Check if this unique combination already exists
+            if unique_key not in unique_data:
+                # If not, add it to the unique_data dictionary
+                unique_data[unique_key] = {
+                    "Emp_Up_ID": data.Emp_Up_ID.Emp_Up_ID,
+                    "Emp_Up_Date": data.Emp_Up_ID.Emp_Up_Date,
+                    "Emp_ID": data.Emp_ID.Emp_ID,
+                    "Emp_Name": data.Emp_ID.Emp_Name,
+                    "HR_Emp_ID": data.Emp_ID.HR_Emp_ID,
+                    "Emp_Category": data.Emp_Up_ID.Emp_Category,
+                    "GrossSalary": data.Emp_Up_ID.GrossSalary,  
+                    "Amount": data.Amount,
+                    "Element_Category": data.Element_Category,
+                    "Element_ID": data.Element_ID.Element_ID,
+                    "Element_Name": data.Element_ID.Element_Name,
+                    "Element_Type": data.Element_Type,
+                    "Remarks": data.Emp_Up_ID.Remarks,
+                    "Grade_ID": data.Emp_Up_ID.Grade_ID.Grade_ID,
+                    "Grade_Descr": data.Emp_Up_ID.Grade_ID.Grade_Descr,
+                    "Co_ID": data.Emp_ID.Co_ID,
+                    "Dsg_ID": data.Emp_Up_ID.Dsg_ID.DSG_ID,
+                    "DSG_Descr": data.Emp_Up_ID.Dept_ID.Dept_Descr,
+                    "Dept_ID": data.Emp_Up_ID.Dept_ID.Dept_ID,
+                    "Dept_Descr": data.Emp_Up_ID.Dept_ID.Dept_Descr,
+                    "Marital_Status": data.Emp_ID.Marital_Status,
+                    "No_of_Children": data.Emp_Up_ID.No_of_Children,
+                    "Transfer_Type": data.Emp_Up_ID.Transfer_Type,
+                    "Account_No": data.Emp_Up_ID.Account_No,
+                    "Bank_Name": data.Emp_Up_ID.Bank_Name,
+                    "Stop_Salary": data.Emp_Up_ID.Stop_Salary,
+                    'Payroll_ID': data.Payroll_ID.PAYROLL_ID,
+                    'Payroll_Name': f'{data.Payroll_ID.MNTH_ID.MNTH_NAME} {data.Payroll_ID.FYID.FinYear}',
+                }
+        
+        # Now convert the dictionary values to a list
+        datas = list(unique_data.values())
+
+        print("Final data count: ", len(datas))
         return Response(datas, status=status.HTTP_200_OK)
+
     except HR_Emp_Monthly_Sal_Dtl.DoesNotExist:
         return Response({'error': 'Salary not found'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+# @api_view(['GET'])
+# def getall_master_byid(request, empUpID, empID, payroll_id):
+#     try:
+#         if not empID or not empUpID:
+#             return Response({'error': 'Employee ID or Update ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
+#         # Fetching data with distinct records
+#         detail_queryset = HR_Emp_Monthly_Sal_Dtl.objects.filter(
+#             Emp_Up_ID__Emp_Up_ID=empUpID,
+#             Emp_ID__Emp_ID=empID,
+#             Payroll_ID__PAYROLL_ID=payroll_id
+#         ).select_related('Emp_Up_ID', 'Emp_ID', 'Element_ID').distinct()
+
+#         datas = []
+
+#         print('detail_queryset: ', detail_queryset)
+
+#         print('detail_queryset count: ', detail_queryset.count())
+
+#         counter = 0
+#         # Appending unique data to list
+#         for data in detail_queryset:
+#             counter += 1
+#             print('data: data: ', data)
+#             # print('counter: ', counter)
+#             print(f"Loop iteration {counter}: Data Element_ID {data.Element_ID.Element_ID}")  # Print which record is processed
+
+#             item = {
+#                 "Emp_Up_ID": data.Emp_Up_ID.Emp_Up_ID,
+#                 "Emp_Up_Date": data.Emp_Up_ID.Emp_Up_Date,
+#                 "Emp_ID": data.Emp_ID.Emp_ID,
+#                 "Emp_Name": data.Emp_ID.Emp_Name,
+#                 "HR_Emp_ID": data.Emp_ID.HR_Emp_ID,
+#                 "Emp_Category": data.Emp_Up_ID.Emp_Category,
+#                 "GrossSalary": data.Emp_Up_ID.GrossSalary,  
+#                 "Amount": data.Amount,
+#                 "Element_Category": data.Element_Category,
+#                 "Element_ID": data.Element_ID.Element_ID,
+#                 "Element_Name": data.Element_ID.Element_Name,
+#                 "Element_Type": data.Element_Type,
+#                 "Remarks": data.Emp_Up_ID.Remarks,
+#                 "Grade_ID": data.Emp_Up_ID.Grade_ID.Grade_ID,
+#                 "Grade_Descr": data.Emp_Up_ID.Grade_ID.Grade_Descr,
+#                 "Co_ID": data.Emp_ID.Co_ID,
+#                 "Dsg_ID": data.Emp_Up_ID.Dsg_ID.DSG_ID,
+#                 "DSG_Descr": data.Emp_Up_ID.Dept_ID.Dept_Descr,
+#                 "Dept_ID": data.Emp_Up_ID.Dept_ID.Dept_ID,
+#                 "Dept_Descr": data.Emp_Up_ID.Dept_ID.Dept_Descr,
+#                 "Marital_Status": data.Emp_ID.Marital_Status,
+#                 "No_of_Children": data.Emp_Up_ID.No_of_Children,
+#                 "Transfer_Type": data.Emp_Up_ID.Transfer_Type,
+#                 "Account_No": data.Emp_Up_ID.Account_No,
+#                 "Bank_Name": data.Emp_Up_ID.Bank_Name,
+#                 "Stop_Salary": data.Emp_Up_ID.Stop_Salary,
+#                 'Payroll_ID': data.Payroll_ID.PAYROLL_ID,
+#                 'Payroll_Name': f'{data.Payroll_ID.MNTH_ID.MNTH_NAME} {data.Payroll_ID.FYID.FinYear}',
+#             }
+#             datas.append(item)
+        
+#         print("Datas count: ", len(datas))
+#         return Response(datas, status=status.HTTP_200_OK)
+
+#     except HR_Emp_Monthly_Sal_Dtl.DoesNotExist:
+#         return Response({'error': 'Salary not found'}, status=status.HTTP_404_NOT_FOUND)
+#     except Exception as e:
+#         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+
+# @api_view(['GET'])
+# def getall_master_byid(request, empUpID, empID, payroll_id):
+#     try:
+#         if not empID or not empUpID:
+#             return Response({'error': 'Employee ID or Update ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
+#         print("up is: ", empUpID)
+#         print("empID: ", empID)
+#         print("payroll_id: ", payroll_id)
+#         # detail_queryset = HR_Emp_Monthly_Sal_Dtl.objects.filter(Emp_Up_ID=empUpID)
+#         detail_queryset = HR_Emp_Monthly_Sal_Dtl.objects.filter(Emp_Up_ID__Emp_Up_ID=empUpID, Emp_ID__Emp_ID=empID, Payroll_ID__PAYROLL_ID=payroll_id).select_related('Emp_Up_ID', 'Emp_ID', 'Element_ID')
+#         # detail_queryset = HR_Emp_Monthly_Sal_Dtl.objects.filter(Emp_Up_ID=empUpID, Emp_ID=empID)
+#         datas = []
+#         print('detail_queryset: ', detail_queryset)
+#         print('detail_queryset count: ', detail_queryset.count())
+#         for data in detail_queryset:
+#             # print('data: ', data)
+#             item = {
+#                 "Emp_Up_ID": data.Emp_Up_ID.Emp_Up_ID,
+#                 "Emp_Up_Date": data.Emp_Up_ID.Emp_Up_Date,
+#                 "Emp_ID": data.Emp_ID.Emp_ID,
+#                 "Emp_Name": data.Emp_ID.Emp_Name,
+#                 "HR_Emp_ID": data.Emp_ID.HR_Emp_ID,
+#                 "Emp_Category": data.Emp_Up_ID.Emp_Category,
+#                 "GrossSalary": data.Emp_Up_ID.GrossSalary,  
+#                 "Amount": data.Amount,
+#                 "Element_Category": data.Element_Category,
+#                 "Element_ID": data.Element_ID.Element_ID,
+#                 "Element_Name": data.Element_ID.Element_Name,
+#                 "Element_Type": data.Element_Type,
+#                 "Remarks": data.Emp_Up_ID.Remarks,
+#                 "Grade_ID": data.Emp_Up_ID.Grade_ID.Grade_ID,
+#                 "Grade_Descr": data.Emp_Up_ID.Grade_ID.Grade_Descr,
+#                 "Co_ID": data.Emp_ID.Co_ID,
+#                 "Dsg_ID": data.Emp_Up_ID.Dsg_ID.DSG_ID,
+#                 "DSG_Descr": data.Emp_Up_ID.Dept_ID.Dept_Descr,
+#                 "Dept_ID": data.Emp_Up_ID.Dept_ID.Dept_ID,
+#                 "Dept_Descr": data.Emp_Up_ID.Dept_ID.Dept_Descr,
+#                 "Marital_Status": data.Emp_ID.Marital_Status,
+#                 "No_of_Children": data.Emp_Up_ID.No_of_Children,
+#                 "Transfer_Type": data.Emp_Up_ID.Transfer_Type,
+#                 "Account_No": data.Emp_Up_ID.Account_No,
+#                 "Bank_Name": data.Emp_Up_ID.Bank_Name,
+#                 "Stop_Salary": data.Emp_Up_ID.Stop_Salary,
+#                 'Payroll_ID': data.Payroll_ID.PAYROLL_ID,
+#                 'Payroll_Name': f'{data.Payroll_ID.MNTH_ID.MNTH_NAME} {data.Payroll_ID.FYID.FinYear}',
+#             }
+#             datas.append(item)
+#         print("DAtas: ", datas)
+#         print("DAtas count: ", len(datas))
+#         return Response(datas, status=status.HTTP_200_OK)
+#     except HR_Emp_Monthly_Sal_Dtl.DoesNotExist:
+#         return Response({'error': 'Salary not found'}, status=status.HTTP_404_NOT_FOUND)
+#     except Exception as e:
+#         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 # @api_view(['GET'])
 # def getll_master(request):
@@ -890,37 +1034,41 @@ def getall_master_byid(request, empUpID, empID):
 #     except Exception as e:
 #         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-
+from monthly_sal_process.models import *
 
 @api_view(['GET'])
-def getll_master(request):
+def getall_master(request, payroll_id):
     try:
         # Step 1: Get the maximum Emp_Up_ID for each employee
-        latest_salary_updates = HR_Emp_Monthly_Sal_Mstr.objects.values('Emp_ID').annotate(
-            max_emp_up_id=Max('Emp_Up_ID')
-        )
+        # latest_salary_updates = HR_Emp_Monthly_Sal_Mstr.objects.values('Emp_ID').annotate(
+        #     max_emp_up_id=Max('Emp_Up_ID')
+        # )
 
-        # Step 2: Fetch only the latest records using the maximum Emp_Up_ID values
-        latest_records = HR_Emp_Monthly_Sal_Mstr.objects.filter(
-            Emp_Up_ID__in=[item['max_emp_up_id'] for item in latest_salary_updates]
-        ).select_related('Emp_ID', 'Dsg_ID', 'Dept_ID')
-
-        print('latest_records count: ', latest_records.count())
+        # # Step 2: Fetch only the latest records using the maximum Emp_Up_ID values
+        # latest_records = HR_Emp_Monthly_Sal_Mstr.objects.filter(
+        #     Emp_Up_ID__in=[item['max_emp_up_id'] for item in latest_salary_updates]
+        # ).select_related('Emp_ID', 'Dsg_ID', 'Dept_ID')
+        # payroll_id = 2
+        print('getll_master payroll_id: ', payroll_id)
         datas = []
+        if payroll_id:
+            latest_records = HR_Emp_Monthly_Sal_Mstr.objects.filter(Payroll_ID=payroll_id).select_related('Emp_ID', 'Dsg_ID', 'Dept_ID')
 
-        for item in latest_records:
-            data = {
-                'Emp_Up_ID': item.Emp_Up_ID,
-                'Emp_Up_Date': item.Emp_Up_Date,
-                'Emp_ID': item.Emp_ID.Emp_ID,
-                'HR_Emp_ID': item.Emp_ID.HR_Emp_ID,
-                'Emp_Name': item.Emp_ID.Emp_Name,
-                'Dsg_Descr': item.Dsg_ID.DSG_Descr,
-                'Dept_Descr': item.Dept_ID.Dept_Descr
-            }
-            datas.append(data)
+            print('latest_records count: ', latest_records.count())
 
-        print('datas: ', datas)
+            for item in latest_records:
+                data = {
+                    'Emp_Up_ID': item.Emp_Up_ID,
+                    'Emp_Up_Date': item.Emp_Up_Date,
+                    'Emp_ID': item.Emp_ID.Emp_ID,
+                    'HR_Emp_ID': item.Emp_ID.HR_Emp_ID,
+                    'Emp_Name': item.Emp_ID.Emp_Name,
+                    'Dsg_Descr': item.Dsg_ID.DSG_Descr,
+                    'Dept_Descr': item.Dept_ID.Dept_Descr
+                }
+                datas.append(data)
+
+            # print('datas: ', datas)
         return Response(datas, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

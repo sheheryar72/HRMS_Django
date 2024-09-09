@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MyHttpListenerApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7385b7446b8508d6413d1a525e3f173c871f7367")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7f55c843968a2c0a554bb5e71875629e120a0c21")]
 [assembly: System.Reflection.AssemblyProductAttribute("MyHttpListenerApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MyHttpListenerApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

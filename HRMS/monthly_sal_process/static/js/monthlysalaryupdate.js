@@ -849,18 +849,57 @@ function fillDesignationTableGrid() {
     });
 }
 
+// function fillSalaryMasterTableGrid() {
+    
+//     const payroll_id = document.getElementById("Search_Payroll_ID").value;
+
+//     if(payroll_id != '' || payroll_id != undefined){
+//         getAllDataFromDB(`${BASE_URL}/salaryprocess/getllmaster/${payroll_id}`, 'Monthly Salary Update Master').then((data) => {
+//             console.log("fillSalaryMasterTableGrid response: ", data);
+//             var temp = '';
+//             table5.clear().draw();
+//             for (var i = 0; i < data.length; i++) {
+//                 // temp += `<option value="${data[i].Emp_ID}">${data[i].Emp_Name}</option>`;
+//                 table5.row.add([data[i].Emp_Up_ID, data[i].Emp_ID, data[i].HR_Emp_ID, data[i].Emp_Name
+//                     , data[i].Dsg_Descr, data[i].Dept_Descr, data[i].Emp_Up_Date]).draw(false);
+//             }
+//             // document.getElementById("Emp_Up_ID2").innerHTML = temp;
+//         });
+//     }
+//     else{
+//         alert("Kindly Select payroll period first!")
+//     }
+// }
+
 function fillSalaryMasterTableGrid() {
-    getAllDataFromDB(`${BASE_URL}/salaryprocess/getllmaster/`, 'Monthly Salary Update Master').then((data) => {
-        console.log("fillSalaryMasterTableGrid response: ", data);
-        var temp = '';
-        table5.clear().draw();
-        for (var i = 0; i < data.length; i++) {
-            // temp += `<option value="${data[i].Emp_ID}">${data[i].Emp_Name}</option>`;
-            table5.row.add([data[i].Emp_Up_ID, data[i].Emp_ID, data[i].HR_Emp_ID, data[i].Emp_Name
-                , data[i].Dsg_Descr, data[i].Dept_Descr, data[i].Emp_Up_Date]).draw(false);
-        }
-        // document.getElementById("Emp_Up_ID2").innerHTML = temp;
-    });
+    const payroll_id = Number(document.getElementById("Search_Payroll_ID").value);
+
+    console.log('payroll_id: ', payroll_id)
+
+    if (payroll_id && payroll_id !== '') {
+        getAllDataFromDB(`${BASE_URL}/salaryprocess/getallmaster/${payroll_id}/`, 'Monthly Salary Update Master')
+            .then((data) => {
+                console.log("fillSalaryMasterTableGrid response: ", data);
+                table5.clear().draw();
+                for (let i = 0; i < data.length; i++) {
+                    table5.row.add([
+                        data[i].Emp_Up_ID,
+                        data[i].Emp_ID,
+                        data[i].HR_Emp_ID,
+                        data[i].Emp_Name,
+                        data[i].Dsg_Descr,
+                        data[i].Dept_Descr,
+                        data[i].Emp_Up_Date
+                    ]).draw(false);
+                }
+            })
+            .catch((error) => {
+                console.error("Error fetching data: ", error);
+                alert("Failed to fetch data. Please try again later.");
+            });
+    } else {
+        alert("Kindly Select payroll period first!");
+    }
 }
 
 function fillEmployeeTableGrid() {
@@ -891,7 +930,10 @@ function handleTableRowClick3() {
     const Emp_Up_ID = Number($(this).find('td')[0].innerHTML);
     const Emp_ID = Number($(this).find('td')[1].innerHTML);
 
-    GetAll_Salary_update_BYID(Emp_Up_ID, Emp_ID);
+    const payroll_id = Number(document.getElementById("Search_Payroll_ID").value);
+    console.log('payroll_id: ', payroll_id)
+
+    GetAll_Salary_update_BYID(Emp_Up_ID, Emp_ID, payroll_id);
 
     $("#orangeModalSubscription4").modal('hide');
 
@@ -900,10 +942,11 @@ function handleTableRowClick3() {
     document.getElementById("updateFormData").classList.remove("d-none");
 }
 
-function GetAll_Salary_update_BYID(emp_up_Id, empId) {
+function GetAll_Salary_update_BYID(emp_up_Id, empId, payroll_id) {
     console.log("emp_up_Id: ", emp_up_Id)
     console.log("empId: ", empId)
-    getAllDataFromDB(`${BASE_URL}/salaryprocess/getallmasterbyid/${emp_up_Id}/${empId}/`, 'Salary Master').then((data) => {
+    console.log("payroll_id: ", payroll_id)
+    getAllDataFromDB(`${BASE_URL}/salaryprocess/getallmasterbyid/${emp_up_Id}/${empId}/${payroll_id}`, 'Salary Master').then((data) => {
         console.log("GetAll_Salary_update_BYID response: ", data);
 
         document.getElementById("Emp_Up_ID").value = data[0].Emp_Up_ID;

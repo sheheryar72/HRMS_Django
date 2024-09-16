@@ -43,7 +43,8 @@ def getll_emp_notin_salaryupdate(request):
                 'DSG_Descr': employee.Joining_Dsg_ID.DSG_Descr,
                 'Grade_ID': employee.Grade_ID.Grade_ID,
                 'Grade_Descr': employee.Grade_ID.Grade_Descr,
-                'Marital_Status': employee.Marital_Status
+                'Marital_Status': employee.Marital_Status,
+                'Joining_Date': employee.Joining_Date
             })
 
         # serializer = HR_Employees_Serializer(queryset_emp_salaryupdate, many=True)

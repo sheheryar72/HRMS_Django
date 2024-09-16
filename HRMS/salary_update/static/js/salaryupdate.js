@@ -10,7 +10,7 @@ function initializeDataTable() {
 
     $(document).ready(function () {
         $('.select2').select2();
-      });
+    });
 
     salary_update_form_status_func(0)
     table = $('#bmGridID1').DataTable({
@@ -160,7 +160,7 @@ function handleCancelClick() {
     document.getElementById("InserRowID1").innerHTML = "";
     document.getElementById("InserRowID2").innerHTML = "";
 
-    
+
     document.getElementById('totalAllowance_fixed_gross').innerText = `Total Allowance Fixed Gross: 0.00`
     document.getElementById('totalAllowance_fixed_additional').innerText = `Total Allowance Fixed Additional: 0.00`
     document.getElementById('totalAllowance').innerText = `Total Allowance: 0.00`
@@ -170,6 +170,10 @@ function handleCancelClick() {
     document.getElementById("Account_No").value = '';
     document.getElementById("Bank_Name").value = '';
     document.getElementById("Stop_Salary").selectedIndex = 0;
+
+    document.getElementById('Emp_Grid_ID').setAttribute('data-target', '#orangeModalSubscription6');
+    document.getElementById('empupdateGridIconId').setAttribute('data-target', '#orangeModalSubscription4');
+
     salary_update_form_status_func(0)
 
 }
@@ -579,56 +583,10 @@ function mapEmployeeDate(empID) {
         document.getElementById("Dept_ID").value = singleEmpData.Dept_ID;
         document.getElementById("Grade_ID").value = singleEmpData.Grade_ID;
         document.getElementById("Marital_Status").value = singleEmpData.Marital_Status;
+        document.getElementById("Emp_Up_Date").value = singleEmpData.Joining_Date;
     }
-
-    getAllDataFromDB(`${BASE_URL}/payroll_element/getall/`, "Payroll Element").then((data) => {
-        console.log("Data: ", data)
-        listofPayrollElement = data;
-
-        console.log('payroll_element/getall called')
-            
-        let counter = 0;
-        document.getElementById("InserRowID1").innerHTML = '';
-        document.getElementById("InserRowID2").innerHTML = '';
-
-        let totalAllowance = 0;
-        let totalDeduction = 0;
-
-        for (var i = 0; i < listofPayrollElement.length; i++) {
-            if (listofPayrollElement[i].Element_Category == "Fixed") {
-                if (listofPayrollElement[i].Element_Type == "Allowance") {
-                    let allowanceAmount = document.createElement('input');
-                    allowanceAmount.setAttribute('type', 'number');
-                    allowanceAmount.setAttribute('value', '');
-                    allowanceAmount.setAttribute('class', 'allowanceInput');
-
-                    document.getElementById("InserRowID1").innerHTML +=
-                        `<tr>
-                                <td><input type="text" id="${listofPayrollElement[i].Element_ID}" value="${listofPayrollElement[i].Element_Name}" readonly /></td>
-                                <td><input type="text" value="${listofPayrollElement[i].Element_Category}" readonly /></td>
-                                <td><input type="number" value="" class="allowanceInput" /></td></tr>`;
-                }
-
-                if (listofPayrollElement[i].Element_Type == "Deduction") {
-                    let deductionAmount = document.createElement('input');
-                    deductionAmount.setAttribute('type', 'number');
-                    deductionAmount.setAttribute('value', '');
-                    deductionAmount.setAttribute('class', 'deductionInput');
-
-                    document.getElementById("InserRowID2").innerHTML +=
-                        `<tr>
-                                <td><input type="text" id="${listofPayrollElement[i].Element_ID}" value="${listofPayrollElement[i].Element_Name}" readonly /></td>
-                                <td><input type="text" value="${listofPayrollElement[i].Element_Category}" readonly /></td>
-                                <td><input type="number" value="" class="deductionInput" /></td></tr>`;
-                }
-            }
-        }
-        // Calculate total after elements are added
-        calculateTotal();
-    })
-        .catch((error) => {
-            console.log("Error")
-        })
+    defaultElements();
+    calculateTotal();
 }
 
 // Event delegation for dynamic elements
@@ -637,6 +595,61 @@ document.addEventListener('focusout', function (e) {
         calculateTotal();
     }
 });
+
+function defaultElements(){
+
+    getAllDataFromDB(`${BASE_URL}/payroll_element/getall/`, "Payroll Element").then((data) => {
+        console.log("Data: ", data)
+        listofPayrollElement = data;
+
+        console.log('payroll_element/getall called')
+        console.log('listofPayrollElement called: ', listofPayrollElement)
+
+        let counter = 0;
+        document.getElementById("InserRowID1").innerHTML = '';
+        document.getElementById("InserRowID2").innerHTML = '';
+
+        let totalAllowance = 0;
+        let totalDeduction = 0;
+
+        for (var i = 0; i < listofPayrollElement.length; i++) {
+            if (listofPayrollElement[i].Element_Category == "Fixed Gross" || listofPayrollElement[i].Element_Category == "Fixed Additional") {
+                if (listofPayrollElement[i].Element_Type == "Allowance") {
+                    console.log('listofPayrollElement allowance: ', listofPayrollElement[i])
+                    let allowanceAmount = document.createElement('input');
+                    allowanceAmount.setAttribute('type', 'number');
+                    allowanceAmount.setAttribute('value', '');
+                    allowanceAmount.setAttribute('class', 'allowanceInput');
+    
+                    document.getElementById("InserRowID1").innerHTML +=
+                        `<tr>
+                                <td><input type="text" id="${listofPayrollElement[i].Element_ID}" value="${listofPayrollElement[i].Element_Name}" readonly /></td>
+                                <td><input type="text" value="${listofPayrollElement[i].Element_Category}" readonly /></td>
+                                <td><input type="number" value="" class="allowanceInput" /></td></tr>`;
+                }
+    
+                if (listofPayrollElement[i].Element_Type == "Deduction") {
+                    console.log('listofPayrollElement Deduction: ', listofPayrollElement[i])
+                    let deductionAmount = document.createElement('input');
+                    deductionAmount.setAttribute('type', 'number');
+                    deductionAmount.setAttribute('value', '');
+                    deductionAmount.setAttribute('class', 'deductionInput');
+    
+                    document.getElementById("InserRowID2").innerHTML +=
+                        `<tr>
+                                <td><input type="text" id="${listofPayrollElement[i].Element_ID}" value="${listofPayrollElement[i].Element_Name}" readonly /></td>
+                                <td><input type="text" value="${listofPayrollElement[i].Element_Category}" readonly /></td>
+                                <td><input type="number" value="" class="deductionInput" /></td></tr>`;
+                }
+            }
+        }
+        
+    })
+    .catch((error) => {
+        console.log("Error")
+    })
+
+}
 
 function calculateTotal() {
     // alert()
@@ -713,6 +726,7 @@ document.getElementById("elementGridIconId").addEventListener("click", function 
 
 document.getElementById("calculateGrossSalary").addEventListener('click', function () {
 
+
     const grossSalary = Number(document.getElementById("GrossSalary").value);
     const Last_GrossSalary = Number(document.getElementById("Last_GrossSalary").value);
     const Last_Increment_Amt = Number(document.getElementById("Last_Increment_Amt").value);
@@ -726,6 +740,9 @@ document.getElementById("calculateGrossSalary").addEventListener('click', functi
 
     // alert('totalRows: ', totalRows)
     if (grossSalary != 0 && Last_GrossSalary != 0 && total_gross != 0) {
+
+        // defaultElements();
+
         $("#bmGridID1 tbody tr").each(function () {
             const elementID = Number($(this).find("td:eq(0) input").attr("id"));
             const Element_Allowance = $(this).find("td:eq(0) input").val();
@@ -774,7 +791,7 @@ async function fillPayrollElementTableGrid(empID, empUpID) {
                 'Content-Type': 'application/json',
             },
         });
-        
+
         if (!response.ok) {
             throw new Error(`Failed to fetch Payroll Element`);
         }
@@ -795,18 +812,18 @@ async function fillPayrollElementTableGrid(empID, empUpID) {
         const existingDeductions = new Set();
 
         // Collect values from the first column input fields
-        allowance_grid.forEach(function(input) {
+        allowance_grid.forEach(function (input) {
             console.log('allowance_grid input value: ', input.id)
             existingAllowances.add(Number(input.id));
         });
 
-        deduction_grid.forEach(function(input) {
+        deduction_grid.forEach(function (input) {
             console.log('deduction_grid input value: ', input.id)
             existingDeductions.add(Number(input.id));
         });
 
         // Loop through fetched data
-        data.forEach(function(item) {
+        data.forEach(function (item) {
             const elementID = item.Element_ID;
 
             console.log('elementID: ', elementID)
@@ -879,7 +896,7 @@ function fillSalaryMasterTableGrid() {
 
 function fillEmployeeTableGrid() {
     getAllDataFromDB(`${BASE_URL}/salaryupdate/getallemployee`, 'Employee').then((data) => {
-    // getAllDataFromDB(`${BASE_URL}/salaryupdate/getallemployee`, 'Employee').then((data) => {
+        // getAllDataFromDB(`${BASE_URL}/salaryupdate/getallemployee`, 'Employee').then((data) => {
         console.log("fillEmployeeTableGrid not in sal update: ", data);
         var temp = '';
         listofEmployeeNotInSalUpdate = data;
@@ -910,14 +927,17 @@ function handleTableRowClick3() {
 
     const Emp_Up_ID = Number($(this).find('td')[0].innerHTML);
     const Emp_ID = Number($(this).find('td')[1].innerHTML);
-    
+
     GetAll_Salary_update_BYID(Emp_Up_ID, Emp_ID);
-    
+
     $("#orangeModalSubscription4").modal('hide');
-    
+
     document.getElementById("insertFormData").classList.add("d-none");
     document.getElementById("saveNewBtnId").classList.remove("d-none");
     document.getElementById("updateFormData").classList.remove("d-none");
+
+    // document.getElementById('Emp_Grid_ID').setAttribute('data-target', '#orangeModalSubscription6');
+    document.getElementById('Emp_Grid_ID').removeAttribute('data-target');
 
     salary_update_form_status_func(1)
 }
@@ -926,14 +946,14 @@ function handleTableRowClick6() {
 
     const Emp_ID = Number($(this).find('td')[0].innerHTML);
     const Emp_Name = Number($(this).find('td')[2].innerHTML);
-    
+
 
     // GetAll_Salary_update_BYID(Emp_Up_ID, Emp_ID);
-    
+
     mapEmployeeDate(Emp_ID)
 
     $("#orangeModalSubscription6").modal('hide');
-    
+
     document.getElementById("insertFormData").classList.remove("d-none");
     document.getElementById("saveNewBtnId").classList.add("d-none");
     document.getElementById("updateFormData").classList.add("d-none");
@@ -1078,12 +1098,12 @@ function handleTableRowClick2() {
     $("#orangeModalSubscription3").modal('hide');
 }
 
-function salary_update_form_status_func(status){
-    if(status == 0){
+function salary_update_form_status_func(status) {
+    if (status == 0) {
         document.getElementById("HR_Emp_ID").readOnly = false;
         document.getElementById("Emp_ID").disabled = false;
         document.getElementById("Emp_ID").classList.remove("dropdown_disable");
-    }else if(status == 1){
+    } else if (status == 1) {
         document.getElementById("HR_Emp_ID").readOnly = true;
         document.getElementById("Emp_ID").disabled = true;
         document.getElementById("Emp_ID").classList.add("dropdown_disable");

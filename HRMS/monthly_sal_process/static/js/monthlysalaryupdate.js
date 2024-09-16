@@ -660,7 +660,7 @@ function fillGradeTableGrid() {
         }
         document.getElementById("Grade_ID").innerHTML = temp;
     });
-}
+}   
 
 document.getElementById("elementGridIconId").addEventListener("click", function () {
     let Emp_Up_ID_ = Number(document.getElementById("Emp_Up_ID").value);
@@ -940,6 +940,7 @@ function handleTableRowClick3() {
     // document.getElementById("insertFormData").classList.add("d-none");
     // document.getElementById("saveNewBtnId").classList.remove("d-none");
     document.getElementById("updateFormData").classList.remove("d-none");
+
 }
 
 function GetAll_Salary_update_BYID(emp_up_Id, empId, payroll_id) {
@@ -990,7 +991,7 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId, payroll_id) {
                 allowanceRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
                         <td><input type="text" value="${data[i].Element_Category}" readonly /></td>
-                        <td><input type="text" style="text-align: right;" class="allowanceInput" value="${data[i].Amount.toFixed(2)}" /></td></tr>`;
+                        <td><input type="text" style="text-align: right;" class="allowanceInput" value="${data[i].Amount.toFixed(2)}" ${data[i].Element_Category === 'Fixed Gross' ? 'readonly' : ''} /></td></tr>`;
                 totalAllowance += data[i].Amount;
             }
             if (data[i].Element_Type == 'Deduction') {

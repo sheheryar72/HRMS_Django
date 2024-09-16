@@ -58,9 +58,8 @@ function CancelFormAndGridData() {
     document.getElementById("InserRowID").innerHTML = '';
 }
 
-document.getElementById("W_Department").addEventListener("change", async function () {
-    // const W_deptID = localStorage.getItem("W_deptID");
-    // const W_deptID = 2;
+async function Working_Dept_Func(){
+
     const W_deptID = document.getElementById("Current_Department").value;
     const W_Department = document.getElementById("W_Department").value;
     document.getElementById("W_Department_Loader").classList.remove('d-none')
@@ -168,8 +167,22 @@ document.getElementById("W_Department").addEventListener("change", async functio
     }
 
     document.getElementById("W_Department_Loader").classList.add('d-none')
+}
 
+document.getElementById("W_Department").addEventListener("change", async function () {
+    // const W_deptID = localStorage.getItem("W_deptID");
+    // const W_deptID = 2;
+    await Working_Dept_Func()
+    //alert()
 });
+
+document.getElementById("W_Department").addEventListener("click", async function () {
+    if (this.options.length === 1){
+        // alert()
+        await Working_Dept_Func()
+    }
+});
+
 
 async function getAll_Dept_ByID(id) {
     try {
@@ -471,10 +484,11 @@ async function exportToExcel() {
 
         // Extract values for each row
         const rows = data.Employee.map(obj => {
+            // console.log('obj: ', obj)
             // Fill the first two columns with Emp_ID and Emp_Name values
             const row = [obj['Emp_ID'], obj['HR_Emp_ID'], obj['Emp_ID__Emp_Name'], obj['Dept_ID__Dept_Descr'], obj['Dsg_ID__DSG_Descr']];
             // Fill the rest of the columns with empty strings
-            for (let i = 4; i < 27; i++) {
+            for (let i = 4; i < 29; i++) {
                 row.push('');
             }
             return row;

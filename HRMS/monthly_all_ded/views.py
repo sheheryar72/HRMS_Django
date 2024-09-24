@@ -103,7 +103,7 @@ def Index(request):
 
 
 
-def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
+def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID, Payroll_ID):
     print("getAll_W_Dept_By_DeptID")
     
     try:
@@ -121,13 +121,14 @@ def getAll_W_Dept_By_DeptID(request, W_DeptID, DeptID):
             Dept_ID=DeptID
         ).distinct()
 
-        # print('emp_queryset: ', emp_queryset)
+        print('emp_queryset: ', emp_queryset.__dict__)
 
         month_pp_queryset = HR_Monthly_All_Ded.objects.filter(
-            Department=DeptID
+            Department=DeptID,
+            Period=Payroll_ID
         )
 
-        # print('month_pp_queryset: ', month_pp_queryset)
+        print('month_pp_queryset: ', month_pp_queryset.__dict__)
 
         # print('month_pp_queryset: ', month_pp_queryset)
 
@@ -386,8 +387,8 @@ def getAll_W_Dept_By_W_DeptID(request, W_DeptID):
         dept_data = {'Dept_ID': dept_queryset.Dept_ID, 'Dept_Descr': dept_queryset.Dept_Descr}
 
         # Get payroll period details
-        payroll_period_queryset = HR_PAYROLL_PERIOD.objects.filter(PERIOD_STATUS=True).values('PAYROLL_ID', 'MNTH_ID__MNTH_ID', 'MNTH_ID__MNTH_NAME').first()
-        payroll_period = {'PAYROLL_ID': payroll_period_queryset['PAYROLL_ID'], 'MNTH_ID': payroll_period_queryset['MNTH_ID__MNTH_ID'], 'MNTH_NAME': payroll_period_queryset['MNTH_ID__MNTH_NAME']}
+        payroll_period_queryset = HR_PAYROLL_PERIOD.objects.filter(PERIOD_STATUS=True).values('PAYROLL_ID', 'MNTH_ID__MNTH_ID', 'MNTH_ID__MNTH_NAME', 'FYID__FinYear').first()
+        payroll_period = {'PAYROLL_ID': payroll_period_queryset['PAYROLL_ID'], 'MNTH_ID': payroll_period_queryset['MNTH_ID__MNTH_ID'], 'MNTH_NAME': payroll_period_queryset['MNTH_ID__MNTH_NAME'], 'FinYear': payroll_period_queryset['FYID__FinYear']}
 
         # Prepare the response data
         response_data = {'Employee': employees_data, 'Element': elements_data, 'Period': payroll_period, 'Department': dept_data}
@@ -562,10 +563,20 @@ def Insert_from_excel(request):
         print('Exception:', e)  # Print the exception for debugging
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+from django.db.models import Max, OuterRef, Subquery
+
 @api_view(['GET'])
 def export_template(request, ID):
     try:
-        assigned_depts = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=ID).values_list('Dept_ID')
+        assigned_depts = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=ID).values_list('Dept_ID', flat=True)
+
+        # Get the max Emp_Up_ID per employee in each department
+        max_emp_up_id_subquery = HR_Emp_Sal_Update_Mstr.objects.filter(
+        Emp_ID=OuterRef('Emp_ID'),
+        Dept_ID__in=assigned_depts
+        ).values('Emp_ID').annotate(max_id=Max('Emp_Up_ID')).values('max_id')
+
+        # assigned_depts = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=ID).values_list('Dept_ID')
         assigned_elements = HR_W_All_Ded_Department.objects.filter(W_All_Ded_Dept_ID=ID).prefetch_related("W_All_Ded_Element_ID").values("W_All_Ded_Element_ID__Element_ID", "W_All_Ded_Element_ID__Element_Name").order_by('W_All_Ded_Element_ID__Element_ID').distinct()
 
         if assigned_depts is None:
@@ -580,8 +591,18 @@ def export_template(request, ID):
         #     emp_list.append(data)
 
         # assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID__in=assigned_depts).values("Emp_ID", "Emp_Name", "Joining_Dept_ID", "Joining_Dept_ID__Dept_Descr", "Joining_Dsg_ID", "Joining_Dsg_ID__DSG_Descr")
-        assigned_emps = HR_Emp_Sal_Update_Mstr.objects.filter(Dept_ID__in=assigned_depts).prefetch_related('Emp_ID', 'Dept_ID', 'Dsg_ID').values("Emp_ID", "HR_Emp_ID", "Emp_ID__Emp_Name", "Dept_ID", "Dept_ID__Dept_Descr", "Dsg_ID", "Dsg_ID__DSG_Descr")
+        # assigned_emps = HR_Emp_Sal_Update_Mstr.objects.filter(Dept_ID__in=assigned_depts).prefetch_related('Emp_ID', 'Dept_ID', 'Dsg_ID').values("Emp_ID", "HR_Emp_ID", "Emp_ID__Emp_Name", "Dept_ID", "Dept_ID__Dept_Descr", "Dsg_ID", "Dsg_ID__DSG_Descr")
        
+        
+        # Fetch records with max Emp_Up_ID per employee
+        assigned_emps = HR_Emp_Sal_Update_Mstr.objects.filter(
+        Dept_ID__in=assigned_depts,
+        Emp_Up_ID=Subquery(max_emp_up_id_subquery)
+        ).prefetch_related('Emp_ID', 'Dept_ID', 'Dsg_ID').values(
+        "Emp_ID", "HR_Emp_ID", "Emp_ID__Emp_Name", "Dept_ID", "Dept_ID__Dept_Descr", "Dsg_ID", "Dsg_ID__DSG_Descr"
+        )
+
+
         # assigned_emps = HR_Employees.objects.filter(Joining_Dept_ID__in=assigned_depts).values("Emp_ID", "Emp_Name", "Joining_Dept_ID", "Joining_Dept_ID__Dept_Descr", "Joining_Dsg_ID", "Joining_Dsg_ID__Dsg_Descr")
         
         print('assigned_emps: ', assigned_emps)

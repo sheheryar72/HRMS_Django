@@ -30,6 +30,8 @@ from django.db.models.functions import Coalesce
 from django.db import transaction
 from django.http import HttpResponse
 import requests
+from django.db.models import Q
+
 
 def salaryprocess_view(request):
     return render(request, 'salaryprocess.html')
@@ -809,7 +811,7 @@ def getall_payroll_element_notin_su(request, empUpID, empID):
         if empID is None or empUpID is None:
             return Response({'error': 'Salary not found'}, status=status.HTTP_404_NOT_FOUND)
         su_queryset = HR_Emp_Monthly_Sal_Dtl.objects.filter(Emp_ID=empID, Emp_Up_ID=empUpID).values_list("Element_ID", flat=True)
-        element_queryset = HR_Payroll_Elements.objects.filter(Element_Category='Fixed Additional').exclude(Element_ID__in=su_queryset)
+        element_queryset = HR_Payroll_Elements.objects.filter(Q(Element_Category='Fixed Additional') | Q(Element_Category='Additional')).exclude(Element_ID__in=su_queryset)
         serializer = HR_Payroll_Elements_Serializer(element_queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     except Exception as e:

@@ -625,7 +625,7 @@ function defaultElements(){
                         `<tr>
                                 <td><input type="text" id="${listofPayrollElement[i].Element_ID}" value="${listofPayrollElement[i].Element_Name}" readonly /></td>
                                 <td><input type="text" value="${listofPayrollElement[i].Element_Category}" readonly /></td>
-                                <td><input type="number" value="" class="allowanceInput" /></td></tr>`;
+                                <td><input type="number" style="text-align: right !important;" value="" class="allowanceInput" /></td></tr>`;
                 }
     
                 if (listofPayrollElement[i].Element_Type == "Deduction") {
@@ -639,7 +639,7 @@ function defaultElements(){
                         `<tr>
                                 <td><input type="text" id="${listofPayrollElement[i].Element_ID}" value="${listofPayrollElement[i].Element_Name}" readonly /></td>
                                 <td><input type="text" value="${listofPayrollElement[i].Element_Category}" readonly /></td>
-                                <td><input type="number" value="" class="deductionInput" /></td></tr>`;
+                                <td><input type="number" style="text-align: right !important;" value="" class="deductionInput" /></td></tr>`;
                 }
             }
         }
@@ -739,7 +739,7 @@ document.getElementById("calculateGrossSalary").addEventListener('click', functi
     let totalAllowance_fixed_gross = 0, totalAllowance_fixed_additional = 0
 
     // alert('totalRows: ', totalRows)
-    if (grossSalary != 0 && Last_GrossSalary != 0 && total_gross != 0) {
+    if (Last_GrossSalary != 0 && total_gross != 0) {
 
         // defaultElements();
 
@@ -1014,14 +1014,14 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId) {
                 allowanceRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
                         <td><input type="text" value="${data[i].Element_Category}" readonly /></td>
-                        <td><input type="text" style="text-align: right;" class="allowanceInput" value="${data[i].Amount.toFixed(2)}" /></td></tr>`;
+                        <td><input type="text" style="text-align: right !important;" class="allowanceInput" value="${data[i].Amount.toFixed(2)}" /></td></tr>`;
                 totalAllowance += data[i].Amount;
             }
             if (data[i].Element_Type == 'Deduction') {
                 deductionRow += `<tr>
                         <td><input type="text" id="${data[i].Element_ID}" value="${data[i].Element_Name}" readonly /></td>
                         <td><input type="text" value="${data[i].Element_Category}" readonly /></td>
-                        <td><input type="text" style="text-align: right;" class="deductionInput" value="${data[i].Amount.toFixed(2)}" /></td></tr>`;
+                        <td><input type="text" style="text-align: right !important;" class="deductionInput" value="${data[i].Amount.toFixed(2)}" /></td></tr>`;
                 totalDeduction += data[i].Amount;
             }
             counter++;
@@ -1083,7 +1083,7 @@ function handleTableRowClick2() {
             `<tr>
                             <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                             <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
-                            <td><input class="allowanceInput" style="text-align: right" type="text" value="" /></td></tr>`;
+                            <td><input class="allowanceInput" style="text-align: right !important;" type="text" value="" /></td></tr>`;
         $("#InserRowID1").append(temp);
     }
     if (ElemenT_TYPE == "Deduction") {
@@ -1091,7 +1091,7 @@ function handleTableRowClick2() {
             `<tr>
                             <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                             <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
-                            <td><input class="allowanceInput" style="text-align: right" type="text" value="" /></td></tr>`;
+                            <td><input class="allowanceInput" style="text-align: right !important;" type="text" value="" /></td></tr>`;
         $("#InserRowID2").append(temp);
     }
 

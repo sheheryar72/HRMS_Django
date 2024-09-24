@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.hashers import check_password
 from employee.models import HR_Employees
 from django.contrib.auth import login as auth_login
-
+# from profile import Profile
 
 def sheheryar_test2(request):
     return HttpResponse("Hi This is second request")  

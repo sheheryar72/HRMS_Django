@@ -38,6 +38,7 @@ class HR_Monthly_All_Ded(models.Model):
     Food_Panda_27 = models.FloatField(blank=True, null=True)
     Conveyance_Liters_Allowance_28 = models.FloatField(blank=True, null=True)
     Leaves_29 = models.FloatField(blank=True, null=True)
+    # Payroll_ID = models.ForeignKey(HR_PAYROLL_PERIOD, db_column='Payroll_ID', to_field='PAYROLL_ID', on_delete=models.CASCADE)
 
     class Meta:
         managed = True

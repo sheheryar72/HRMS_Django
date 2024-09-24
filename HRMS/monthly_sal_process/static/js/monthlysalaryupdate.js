@@ -668,48 +668,51 @@ document.getElementById("elementGridIconId").addEventListener("click", function 
     fillPayrollElementTableGrid(Emp_ID_, Emp_Up_ID_);
 });
 
-document.getElementById("calculateGrossSalary").addEventListener('click', function () {
 
-    const grossSalary = Number(document.getElementById("GrossSalary").value);
-    // debugger
-    var totalRows = Number($('#InserRowID1 tr').length);
+// document.getElementById("calculateGrossSalary").addEventListener('click', function () {
 
-    // alert('totalRows: ', totalRows)
-    if (grossSalary != 0 && totalRows != 0) {
-        $("#bmGridID1 tbody tr").each(function () {
-            const elementID = Number($(this).find("td:eq(0) input").attr("id"));
-            if (elementID == 1) {
-                const amount = (grossSalary / 100) * 58.5;
-                $(this).find("td:eq(2) input").val(amount.toFixed(2));
-            }
-            if (elementID == 2) {
-                const amount = (grossSalary / 100) * 6.5;
+//     const grossSalary = Number(document.getElementById("GrossSalary").value);
+//     // debugger
+//     var totalRows = Number($('#InserRowID1 tr').length);
 
-                $(this).find("td:eq(2) input").val(amount.toFixed(2));
-            }
-            if (elementID == 5) {
-                const amount = (grossSalary / 100) * 29;
+//     // alert('totalRows: ', totalRows)
+//     if (grossSalary != 0 && totalRows != 0) {
+//         $("#bmGridID1 tbody tr").each(function () {
+//             const elementID = Number($(this).find("td:eq(0) input").attr("id"));
+//             if (elementID == 1) {
+//                 const amount = (grossSalary / 100) * 58.5;
+//                 $(this).find("td:eq(2) input").val(amount.toFixed(2));
+//             }
+//             if (elementID == 2) {
+//                 const amount = (grossSalary / 100) * 6.5;
 
-                $(this).find("td:eq(2) input").val(amount.toFixed(2));
-            }
-            if (elementID == 6) {
-                const amount = (grossSalary / 100) * 6;
+//                 $(this).find("td:eq(2) input").val(amount.toFixed(2));
+//             }
+//             if (elementID == 5) {
+//                 const amount = (grossSalary / 100) * 29;
 
-                $(this).find("td:eq(2) input").val(amount.toFixed(2));
-            }
-        });
+//                 $(this).find("td:eq(2) input").val(amount.toFixed(2));
+//             }
+//             if (elementID == 6) {
+//                 const amount = (grossSalary / 100) * 6;
 
-        $("#bmGridID2 tbody tr").each(function () {
-            const elementID = Number($(this).find("td:eq(0) input").attr("id"));
-            if (elementID == 17) {
-                $(this).find("td:eq(2) input").val(130);
-            }
-        });
-    }
+//                 $(this).find("td:eq(2) input").val(amount.toFixed(2));
+//             }
+//         });
 
-    calculateTotal();
+//         $("#bmGridID2 tbody tr").each(function () {
+//             const elementID = Number($(this).find("td:eq(0) input").attr("id"));
+//             if (elementID == 17) {
+//                 $(this).find("td:eq(2) input").val(130);
+//             }
+//         });
+//     }
 
-});
+//     calculateTotal();
+
+// });
+
+
 
 // async function fillPayrollElementTableGrid(empID, empUpID) {
 //     try {
@@ -765,7 +768,7 @@ async function fillPayrollElementTableGrid(empID, empUpID) {
         }
 
         const data = await response.json();
-        console.log("data: ", data);
+        console.log("fillPayrollElementTableGrid data: ", data);
         listofPayrollElement = data;
 
         // Clear the table before adding new rows
@@ -1058,7 +1061,7 @@ function handleTableRowClick2() {
             `<tr>
                 <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                 <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
-                <td><input type="text" style="text-align: right" value="" /></td></tr>`;
+                <td><input type="text" class="allowanceInput" style="text-align: right !important" value="" /></td></tr>`;
         $("#InserRowID1").append(temp);
     }
     if (ElemenT_TYPE == "Deduction") {
@@ -1066,7 +1069,7 @@ function handleTableRowClick2() {
             `<tr>
                 <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
                 <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
-                <td><input type="text" style="text-align: right" value="" /></td></tr>`;
+                <td><input type="text" class="deductionInput" style="text-align: right !important" value="" /></td></tr>`;
         $("#InserRowID2").append(temp);
     }
 

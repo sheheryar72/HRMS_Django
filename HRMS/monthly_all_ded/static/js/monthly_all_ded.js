@@ -62,9 +62,11 @@ async function Working_Dept_Func(){
 
     const W_deptID = document.getElementById("Current_Department").value;
     const W_Department = document.getElementById("W_Department").value;
+    const Payroll_ID = Number(document.getElementById("Period").name);
+
     document.getElementById("W_Department_Loader").classList.remove('d-none')
     try {
-        const response = await fetch(`${BASE_URL}/monthly_all_ded/getall_dept_element/${W_deptID}/${W_Department}`);
+        const response = await fetch(`${BASE_URL}/monthly_all_ded/getall_dept_element/${W_deptID}/${W_Department}/${Payroll_ID}`);
         if (!response.ok) {
             throw new Error('Failed to fetch Grade');
         }
@@ -74,13 +76,19 @@ async function Working_Dept_Func(){
         console.log("W_Department data: ", data);
 
         document.getElementById("InserRowHeadID").innerHTML =
-            `<th style="width: 10%;">S.No</th><th style="width: 12%;">Emp ID</th><th style="width: 40%;">Emp Name</th><th style="width: 15%;">HR Code</th><th style="width: 10%;">Grade</th>`;
+            `<th style="width: 15% !important;">S.No</th><th style="width: 15% !important;">ID</th><th style="width: 50% !important;">Name</th><th style="width: 17%;">Code</th><th style="width: 10%;">Grade</th>`;
 
         data[1]["Element"].forEach(element => {
             // element_col_ID = `${element.Element_Name}_${element.Element_ID}`
             let element_col_ID = `${element.Element_Name}_${element.Element_ID}`;
-            element_col_ID = element_col_ID.replace(/ /g, '_');
+            console.log('element_col_ID 1: ', element_col_ID)
+            element_col_ID = element_col_ID.trim().replace(/ /g, '_');
+            // thElement.id = element_col_ID.replace(/\s+/g, ''); // Removes all spaces
+
+            console.log('element_col_ID 2: ', element_col_ID)
+            // debugger
             temp += `<th style="width: 20%;" id="${element_col_ID}">${element.Element_Name}</th>`;
+
         });
 
         document.getElementById("InserRowHeadID").innerHTML += temp;
@@ -135,7 +143,10 @@ async function Working_Dept_Func(){
                 // let readonly = 5 >= table_row_length ? '' : 'readonly'; // Check if the current row exceeds the maximum rows for this column
                 // debugger
 
-                element_columns += `<td><input type="number" class="form-control form-control-sm" value="${emp["Element_Amount"][element_name_col] || ''}"  ${readonly}></td>`;
+
+            //    console.log('emp["Element_Amount"][element_name_col]: ', emp["Element_Amount"][element_name_col])
+
+                element_columns += `<td><input type="number" class="form-control form-control-sm" style="text-align: right; direction: rtl;" value="${emp["Element_Amount"][element_name_col] || ''}"  ${readonly}></td>`;
             });
 
             element_columns += '</tr>';
@@ -260,10 +271,11 @@ async function getAllDeptElemet() {
         const data = await response.json();
         let temp = '', temp2 = '', counter = 1;
 
-        console.log('data: ', data)
+        console.log('getAllDeptElemet data: ', data)
 
         current_period_id = data.Period.PAYROLL_ID
-        document.getElementById("Period").value = data.Period.MNTH_NAME;
+        document.getElementById("Period").value = `${data.Period.MNTH_NAME} - ${data.Period.FinYear}`;
+        document.getElementById("Period").name = data.Period.PAYROLL_ID;
         document.getElementById("Department").value = data.Department.Dept_Descr;
 
         document.getElementById("InserRowHeadID").innerHTML = `<th style="width: 13%;">Emp_ID</th><th style="width: 20%;">Employee_Name</th>`;
@@ -312,6 +324,9 @@ $(document).ready(function () {
     if(w_dept.length == 1){
         alert(w_dept)
     }
+
+    const Current_Department = Number(document.getElementById("Current_Department").value);
+    const W_Department = Number(document.getElementById("W_Department").value);
 
     // getAll_Dept_ByID(W_deptID);
     getAllDeptElemet(W_deptID);
@@ -362,7 +377,8 @@ async function current_payrollperiod() {
     }
     const data = await response.json();
     console.log("current_payrollperiod: ", data)
-    document.getElementById("Period").value = data.MNTH_NAME
+    document.getElementById("Period").value = `${data.MNTH_NAME} - ${data.FinYear}`;
+    document.getElementById("Period").name = data.PERIOD_ID
     current_period_id = data.PERIOD_ID
 }
 
@@ -395,7 +411,8 @@ function GetTableData() {
         $(this).find('td').each(function (index) {
             let columnName = $('#GridID thead tr th').eq(index).attr('id');
             let cellValue = $(this).find('input').val();
-            // console.log('celvalue: ', cellValue)
+            console.log('columnName: ', columnName)
+            console.log('celvalue: ', cellValue)
             if (cellValue == '') {
                 cellValue = 0;
             }

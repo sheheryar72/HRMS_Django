@@ -327,6 +327,33 @@ function handleInsertClick() {
     const Stop_Salary = document.getElementById("Stop_Salary").value;
     const CO_ID = document.getElementById("CO_ID").value;
 
+    const fields = [
+        // { value: Emp_Up_ID, name: "Employee Update ID", element: document.getElementById("Emp_Up_ID") },
+        { value: Emp_Up_Date, name: "Employee Update Date", element: document.getElementById("Emp_Up_Date") },
+        { value: Emp_ID, name: "Employee ID", element: document.getElementById("Emp_ID") },
+        { value: HR_Emp_ID, name: "HR Employee ID", element: document.getElementById("HR_Emp_ID") },
+        { value: Emp_Category, name: "Employee Category", element: document.getElementById("Emp_Category") },
+        { value: Dsg_ID, name: "Designation ID", element: document.getElementById("DSG_ID") },
+        { value: Dept_ID, name: "Department ID", element: document.getElementById("Dept_ID") },
+        { value: Grade_ID, name: "Grade ID", element: document.getElementById("Grade_ID") },
+        { value: Marital_Status, name: "Marital Status", element: document.getElementById("Marital_Status") },
+        // { value: No_of_Children, name: "Number of Children", element: document.getElementById("No_of_Children") },
+        { value: grossSalary, name: "Gross Salary", element: document.getElementById("GrossSalary") },
+        { value: Transfer_Type, name: "Transfer Type", element: document.getElementById("Transfer_Type") },
+        // { value: Account_No, name: "Account Number", element: document.getElementById("Account_No") },
+        // { value: Bank_Name, name: "Bank Name", element: document.getElementById("Bank_Name") },
+        { value: Stop_Salary, name: "Stop Salary", element: document.getElementById("Stop_Salary") },
+        { value: CO_ID, name: "CO ID", element: document.getElementById("CO_ID") }
+    ];
+
+    for (let i = 0; i < fields.length; i++) {
+        if (!fields[i].value) {
+            alert(fields[i].name + " cannot be empty");
+            fields[i].element.focus();
+            return;
+        }
+    }
+
     let dataArray = [];
 
     $("#bmGridID1 tbody tr").each(function () {
@@ -724,64 +751,213 @@ document.getElementById("elementGridIconId").addEventListener("click", function 
     fillPayrollElementTableGrid(Emp_ID, Emp_Up_ID_);
 });
 
-document.getElementById("calculateGrossSalary").addEventListener('click', function () {
 
+
+document.getElementById("calculateGrossSalary").addEventListener('click', function () {
 
     const grossSalary = Number(document.getElementById("GrossSalary").value);
     const Last_GrossSalary = Number(document.getElementById("Last_GrossSalary").value);
     const Last_Increment_Amt = Number(document.getElementById("Last_Increment_Amt").value);
 
-    var total_gross = Last_GrossSalary + Last_Increment_Amt
+    const total_gross = Last_GrossSalary + Last_Increment_Amt;
 
-    // debugger
-    var totalRows = Number($('#InserRowID1 tr').length);
+    if (Last_GrossSalary !== 0 && total_gross !== 0) {
 
-    let totalAllowance_fixed_gross = 0, totalAllowance_fixed_additional = 0
+        // Check if row exists for a specific Element_ID
+        function doesRowExist(elementID) {
+            let exists = false;
+            $("#bmGridID1 tbody tr").each(function () {
+                if (Number($(this).find("td:eq(0) input").attr("id")) === elementID) {
+                    exists = true;
+                    return false; // break loop
+                }
+            });
+            return exists;
+        }
 
-    // alert('totalRows: ', totalRows)
-    if (Last_GrossSalary != 0 && total_gross != 0) {
+        // Add row to bmGridID1 if it doesn't exist
+        function addRowIfNotExist(elementID, elementName, elementCategory) {
+            if (!doesRowExist(elementID)) {
+                const temp = `<tr>
+                    <td><input type="text" id="${elementID}" value="${elementName}" readonly /></td>
+                    <td><input type="text" value="${elementCategory}" readonly /></td>
+                    <td><input class="allowanceInput" style="text-align: right !important;" type="text" value="" /></td>
+                </tr>`;
+                $("#bmGridID1 tbody").append(temp);
+            }
+        }
 
-        // defaultElements();
+        // Add default rows if they don't exist
+        addRowIfNotExist(1, "Basic Salary", "Fixed Gross");
+        addRowIfNotExist(2, "Medical Allowance", "Fixed Gross");
+        addRowIfNotExist(5, "House Rent Allowance", "Fixed Gross");
+        addRowIfNotExist(6, "Utilities Allowance", "Fixed Gross");
 
+        // Now proceed with the calculation
         $("#bmGridID1 tbody tr").each(function () {
             const elementID = Number($(this).find("td:eq(0) input").attr("id"));
-            const Element_Allowance = $(this).find("td:eq(0) input").val();
-            const Element_Category = $(this).find("td:eq(1) input").val();
-            const Element_Amount = $(this).find("td:eq(2) input").val();
             const _amount = (total_gross / 100) * 65;
             const basic_sal = (_amount / 100) * 90;
-            if (elementID == 1) {
+            if (elementID === 1) {
                 $(this).find("td:eq(2) input").val(basic_sal.toFixed(2));
             }
-            if (elementID == 2) {
+            if (elementID === 2) {
                 const medical_sal = (_amount / 100) * 10;
                 $(this).find("td:eq(2) input").val(medical_sal.toFixed(2));
             }
-            if (elementID == 5) {
+            if (elementID === 5) {
                 const amount = (grossSalary / 100) * 29;
-
                 $(this).find("td:eq(2) input").val(amount.toFixed(2));
             }
-            if (elementID == 6) {
+            if (elementID === 6) {
                 const amount = (grossSalary / 100) * 6;
-
                 $(this).find("td:eq(2) input").val(amount.toFixed(2));
             }
         });
 
+        // bmGridID2 Deduction calculation (example for elementID 17)
         $("#bmGridID2 tbody tr").each(function () {
             const elementID = Number($(this).find("td:eq(0) input").attr("id"));
-            if (elementID == 17) {
+            if (elementID === 17) {
                 $(this).find("td:eq(2) input").val(130);
             }
         });
+
     } else {
-        alert("Kindly check your Gross Salary and Increment Amount")
+        alert("Kindly check your Gross Salary and Increment Amount");
     }
 
-    calculateTotal();
+    calculateTotal(); // Recalculate totals after modification
 
 });
+
+
+
+
+// document.getElementById("calculateGrossSalary").addEventListener('click', function () {
+
+//     const grossSalary = Number(document.getElementById("GrossSalary").value);
+//     const Last_GrossSalary = Number(document.getElementById("Last_GrossSalary").value);
+//     const Last_Increment_Amt = Number(document.getElementById("Last_Increment_Amt").value);
+
+//     var total_gross = Last_GrossSalary + Last_Increment_Amt 
+
+//     // debugger
+//     var totalRows = Number($('#InserRowID1 tr').length);
+
+//     let totalAllowance_fixed_gross = 0, totalAllowance_fixed_additional = 0
+
+//     // alert('totalRows: ', totalRows)
+//     if (Last_GrossSalary != 0 && total_gross != 0) {
+
+//         // defaultElements();
+
+//         // if (ElemenT_TYPE == "Allowance") {
+//         //     var temp =
+//         //         `<tr>
+//         //         <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
+//         //         <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
+//         //         <td><input class="allowanceInput" style="text-align: right !important;" type="text" value="" /></td></tr>`;
+//         //     $("#InserRowID1").append(temp);
+//         // }
+//         // if (ElemenT_TYPE == "Deduction") {
+//         //     var temp =
+//         //         `<tr>
+//         //         <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
+//         //         <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
+//         //         <td><input class="allowanceInput" style="text-align: right !important;" type="text" value="" /></td></tr>`;
+//         //     $("#InserRowID2").append(temp);
+//         // }
+
+//         $("#bmGridID1 tbody tr").each(function () {
+//             const elementID = Number($(this).find("td:eq(0) input").attr("id"));
+//             var temp = `<tr>
+//                 <td><input type="text" id="${ElemenT_ID}" value="${ElemenT_NAME}" readonly /></td>
+//                 <td><input type="text" value="${ElemenT_CATEGORY}" readonly /></td>
+//                 <td><input class="allowanceInput" style="text-align: right !important;" type="text" value="" /></td></tr>`;
+//                 $("#InserRowID1").append(temp);
+//         })
+
+//         for(let i=0; i<4; i++){
+//             $("#bmGridID1 tbody tr").each(function () {
+//                 const elementID = Number($(this).find("td:eq(0) input").attr("id"));
+//                 // if(elementID != 1 && elementID == 2 || elementID == 5 || elementID == 6){
+//                 //     var temp = `<tr>
+//                 // <td><input type="text" id="${1}" value="${"Basic Salary"}" readonly /></td>
+//                 // <td><input type="text" value="${"Fixed Gross"}" readonly /></td>
+//                 // <td><input class="allowanceInput" style="text-align: right !important;" type="text" value="" /></td></tr>`;
+//                 // $("#InserRowID1").append(temp);
+//                 // }
+//             })
+//         }
+
+//         $("#bmGridID1 tbody tr").each(function () {
+//             const elementID = Number($(this).find("td:eq(0) input").attr("id"));
+//             const Element_Allowance = $(this).find("td:eq(0) input").val();
+//             const Element_Category = $(this).find("td:eq(1) input").val();
+//             const Element_Amount = $(this).find("td:eq(2) input").val();
+//             const _amount = (total_gross / 100) * 65;
+//             const basic_sal = (_amount / 100) * 90;
+//             if (elementID == 1) {
+//                 $(this).find("td:eq(2) input").val(basic_sal.toFixed(2));
+//             }
+//             if (elementID == 2) {
+//                 const medical_sal = (_amount / 100) * 10;
+//                 $(this).find("td:eq(2) input").val(medical_sal.toFixed(2));
+//             }
+//             if (elementID == 5) {
+//                 const amount = (grossSalary / 100) * 29;
+
+//                 $(this).find("td:eq(2) input").val(amount.toFixed(2));
+//             }
+//             if (elementID == 6) {
+//                 const amount = (grossSalary / 100) * 6;
+
+//                 $(this).find("td:eq(2) input").val(amount.toFixed(2));
+//             }
+//         });
+
+
+
+//         // $("#bmGridID1 tbody tr").each(function () {
+//         //     const elementID = Number($(this).find("td:eq(0) input").attr("id"));
+//         //     const Element_Allowance = $(this).find("td:eq(0) input").val();
+//         //     const Element_Category = $(this).find("td:eq(1) input").val();
+//         //     const Element_Amount = $(this).find("td:eq(2) input").val();
+//         //     const _amount = (total_gross / 100) * 65;
+//         //     const basic_sal = (_amount / 100) * 90;
+//         //     if (elementID == 1) {
+//         //         $(this).find("td:eq(2) input").val(basic_sal.toFixed(2));
+//         //     }
+//         //     if (elementID == 2) {
+//         //         const medical_sal = (_amount / 100) * 10;
+//         //         $(this).find("td:eq(2) input").val(medical_sal.toFixed(2));
+//         //     }
+//         //     if (elementID == 5) {
+//         //         const amount = (grossSalary / 100) * 29;
+
+//         //         $(this).find("td:eq(2) input").val(amount.toFixed(2));
+//         //     }
+//         //     if (elementID == 6) {
+//         //         const amount = (grossSalary / 100) * 6;
+
+//         //         $(this).find("td:eq(2) input").val(amount.toFixed(2));
+//         //     }
+//         // });
+
+//         $("#bmGridID2 tbody tr").each(function () {
+//             const elementID = Number($(this).find("td:eq(0) input").attr("id"));
+//             if (elementID == 17) {
+//                 $(this).find("td:eq(2) input").val(130);
+//             }
+//         });
+//     } else {
+//         alert("Kindly check your Gross Salary and Increment Amount")
+//     }
+
+//     calculateTotal();
+
+// });
 
 async function fillPayrollElementTableGrid(empID, empUpID) {
     try {
@@ -958,6 +1134,7 @@ function handleTableRowClick6() {
     document.getElementById("saveNewBtnId").classList.add("d-none");
     document.getElementById("updateFormData").classList.add("d-none");
 
+    document.getElementById('empupdateGridIconId').removeAttribute('data-target');
     // salary_update_form_status_func(1)
 }
 

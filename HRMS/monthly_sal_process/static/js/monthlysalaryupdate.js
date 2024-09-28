@@ -397,6 +397,36 @@ function handleUpdateClick() {
     const Bank_Name = document.getElementById("Bank_Name").value;
     const Stop_Salary = document.getElementById("Stop_Salary").value;
     const CO_ID = document.getElementById("CO_ID").value;
+    const Payroll_ID = document.getElementById("Search_Payroll_ID").value;
+
+
+    const fields = [
+        // { value: Emp_Up_ID, name: "Employee Update ID", element: document.getElementById("Emp_Up_ID") },
+        { value: Emp_Up_Date, name: "Employee Update Date", element: document.getElementById("Emp_Up_Date") },
+        { value: Emp_ID, name: "Employee ID", element: document.getElementById("Emp_ID") },
+        { value: HR_Emp_ID, name: "HR Employee ID", element: document.getElementById("HR_Emp_ID") },
+        { value: Emp_Category, name: "Employee Category", element: document.getElementById("Emp_Category") },
+        { value: Dsg_ID, name: "Designation ID", element: document.getElementById("DSG_ID") },
+        { value: Dept_ID, name: "Department ID", element: document.getElementById("Dept_ID") },
+        { value: Grade_ID, name: "Grade ID", element: document.getElementById("Grade_ID") },
+        { value: Marital_Status, name: "Marital Status", element: document.getElementById("Marital_Status") },
+        // { value: No_of_Children, name: "Number of Children", element: document.getElementById("No_of_Children") },
+        { value: grossSalary, name: "Gross Salary", element: document.getElementById("GrossSalary") },
+        { value: Transfer_Type, name: "Transfer Type", element: document.getElementById("Transfer_Type") },
+        // { value: Account_No, name: "Account Number", element: document.getElementById("Account_No") },
+        // { value: Bank_Name, name: "Bank Name", element: document.getElementById("Bank_Name") },
+        { value: Stop_Salary, name: "Stop Salary", element: document.getElementById("Stop_Salary") },
+        { value: CO_ID, name: "CO ID", element: document.getElementById("CO_ID") }
+    ];
+
+    for (let i = 0; i < fields.length; i++) {
+        if (!fields[i].value) {
+            alert(fields[i].name + " cannot be empty");
+            fields[i].element.focus();
+            return;
+        }
+    }
+
 
     let dataArray = [];
 
@@ -437,7 +467,8 @@ function handleUpdateClick() {
         Transfer_Type: Transfer_Type,
         Account_No: Account_No,
         Bank_Name: Bank_Name,
-        Stop_Salary: Boolean(Stop_Salary)
+        Stop_Salary: Boolean(Stop_Salary),
+        Payroll_ID: Number(Payroll_ID)
     }
     // alert('update salary')
     // alert(Emp_Up_ID)

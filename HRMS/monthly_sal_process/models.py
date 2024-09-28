@@ -25,10 +25,10 @@ class HR_Emp_Monthly_Sal_Mstr(models.Model):
     Bank_Name = models.CharField(max_length=100, null=True)
     Stop_Salary = models.BooleanField(default=False)
     Payroll_ID = models.ForeignKey(HR_PAYROLL_PERIOD, db_column='Payroll_ID', to_field='PAYROLL_ID', on_delete=models.CASCADE)
-    MDays = models.IntegerField()
-    WDAYS = models.IntegerField()
-    ADAYS = models.IntegerField()
-    JLDAYS = models.IntegerField()
+    MDays = models.IntegerField(blank=True, null=True)
+    WDAYS = models.IntegerField(blank=True, null=True)
+    ADAYS = models.IntegerField(blank=True, null=True)
+    JLDAYS = models.IntegerField(blank=True, null=True)
 
     class Meta:
         managed = False

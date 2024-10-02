@@ -171,7 +171,11 @@ def update_salary_update(request, empupid):
                         print("detail updated")
                     else:
                         return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            return Response(master_serializer.data, status=status.HTTP_200_OK)
+            # return Response(master_serializer.data, status=status.HTTP_200_OK)
+                return Response(master_serializer.data, status=status.HTTP_200_OK)
+            else:
+                # Return validation errors for the master
+                return Response(master_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

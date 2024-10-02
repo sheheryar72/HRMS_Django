@@ -326,6 +326,8 @@ function handleInsertClick() {
     const Bank_Name = document.getElementById("Bank_Name").value;
     const Stop_Salary = document.getElementById("Stop_Salary").value;
     const CO_ID = document.getElementById("CO_ID").value;
+    const Last_GrossSalary = document.getElementById("Last_GrossSalary").value;
+    const Last_Increment_Amt = document.getElementById("Last_Increment_Amt").value;
 
     const fields = [
         // { value: Emp_Up_ID, name: "Employee Update ID", element: document.getElementById("Emp_Up_ID") },
@@ -395,7 +397,9 @@ function handleInsertClick() {
         Account_No: Account_No,
         Bank_Name: Bank_Name,
         Stop_Salary: Stop_Salary,
-        CO_ID: CO_ID
+        CO_ID: CO_ID,
+        Last_GrossSalary: Last_GrossSalary,
+        Last_Increment_Amt: Last_Increment_Amt
     }
 
     console.log("addsalarymaster masterData: ", masterData)
@@ -454,8 +458,12 @@ function handleUpdateClick() {
     const Bank_Name = document.getElementById("Bank_Name").value;
     const Stop_Salary = document.getElementById("Stop_Salary").value;
     const CO_ID = document.getElementById("CO_ID").value;
+    const Last_GrossSalary = document.getElementById("Last_GrossSalary").value;
+    const Last_Increment_Amt = document.getElementById("Last_Increment_Amt").value;
 
     let dataArray = [];
+
+    console.log('Emp_Up_Date update: ', Emp_Up_Date)
 
     $("#bmGridID1 tbody tr").each(function () {
         var rowData = {};
@@ -495,7 +503,9 @@ function handleUpdateClick() {
         Account_No: Account_No,
         Bank_Name: Bank_Name,
         Stop_Salary: Stop_Salary,
-        CO_ID: CO_ID
+        CO_ID: CO_ID,
+        Last_GrossSalary: Last_GrossSalary,
+        Last_Increment_Amt: Last_Increment_Amt
     }
     // alert('update salary')
     // alert(Emp_Up_ID)
@@ -798,6 +808,7 @@ document.getElementById("calculateGrossSalary").addEventListener('click', functi
             const elementID = Number($(this).find("td:eq(0) input").attr("id"));
             const _amount = (total_gross / 100) * 65;
             const basic_sal = (_amount / 100) * 90;
+
             if (elementID === 1) {
                 $(this).find("td:eq(2) input").val(basic_sal.toFixed(2));
             }

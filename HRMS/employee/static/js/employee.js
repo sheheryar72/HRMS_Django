@@ -77,6 +77,8 @@ function handleCancelClick() {
     document.getElementById("Confirmation_Date").value = '';
     document.getElementById("CNIC_Issue_Date").value = '';
     document.getElementById("CNIC_Exp_Date").value = '';
+    document.getElementById("Last_Working_Date").value = '';
+    document.getElementById("TEL_EXT").value = '';
     // document.getElementById("previewImage").src = "{% get_media_prefix %}profile/avatar.png"
 
     document.getElementById("updateFormData").classList.add("d-none");
@@ -204,6 +206,8 @@ function handleInsertClick() {
     const Confirmation_Date = document.getElementById("Confirmation_Date").value;
     const CNIC_Issue_Date = document.getElementById("CNIC_Issue_Date").value;
     const CNIC_Exp_Date = document.getElementById("CNIC_Exp_Date").value;
+    const Last_Working_Date = document.getElementById("Last_Working_Date").value;
+    const TEL_EXT = document.getElementById("TEL_EXT").value;
 
     // console.log('profileImage: ', document.getElementById('profileImage').files[0])
 
@@ -232,6 +236,8 @@ function handleInsertClick() {
     formData.append('Confirmation_Date', Confirmation_Date);
     formData.append('CNIC_Issue_Date', CNIC_Issue_Date);
     formData.append('CNIC_Exp_Date', CNIC_Exp_Date);
+    formData.append('Last_Working_Date', Last_Working_Date);
+    formData.append('TEL_EXT', TEL_EXT);
 
     if(HR_Emp_ID != '' && Emp_Name != '' && Joining_Date != '' && CT_ID != '' && DateOfBirth != '' && Joining_Dept_ID != ''
         && Joining_Dsg_ID != '' && CNIC_No != '' && CNIC_Issue_Date != '' && CNIC_Exp_Date != '' && Gender != '' 
@@ -399,6 +405,9 @@ function handleUpdateClick() {
     const Confirmation_Date = document.getElementById("Confirmation_Date").value;
     const CNIC_Issue_Date = document.getElementById("CNIC_Issue_Date").value;
     const CNIC_Exp_Date = document.getElementById("CNIC_Exp_Date").value;
+    const Last_Working_Date = document.getElementById("Last_Working_Date").value;
+    const TEL_EXT = document.getElementById("TEL_EXT").value;
+
 
     // console.log('profileImage: ', document.getElementById('profileImage').files[0])
 
@@ -428,6 +437,8 @@ function handleUpdateClick() {
     formData.append('Confirmation_Date', Confirmation_Date);
     formData.append('CNIC_Issue_Date', CNIC_Issue_Date);
     formData.append('CNIC_Exp_Date', CNIC_Exp_Date);
+    formData.append('Last_Working_Date', Last_Working_Date);
+    formData.append('TEL_EXT', TEL_EXT);
 
     if(HR_Emp_ID != '' && Emp_Name != '' && Joining_Date != '' && CT_ID != '' && DateOfBirth != '' && Joining_Dept_ID != ''
         && Joining_Dsg_ID != '' && CNIC_No != '' && CNIC_Issue_Date != '' && CNIC_Exp_Date != '' && Gender != '' 
@@ -505,6 +516,8 @@ function fillFormDataFromDB(id) {
         document.getElementById("Co_ID").value = data.Co_ID
         document.getElementById("Joining_Dept_ID").value = data.Joining_Dept_ID
         document.getElementById("Emp_Status").value = data.Emp_Status
+        document.getElementById("Last_Working_Date").value = moment(data.Last_Working_Date).format("YYYY-MM-DD");
+        document.getElementById("TEL_EXT").value = data.TEL_EXT
         // console.log('data.profileimage: ', data.profileimage)
         // document.getElementById("profileImage").value = data.profileimage
         // document.getElementById("profileImage").src = "/media/media/profile/salman.jpg";

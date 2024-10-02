@@ -128,6 +128,9 @@ def insert_employee(request):
         employee.Religion = emp_data.get('Religion', '')
         employee.Co_ID = emp_data.get('Co_ID', 1)  # Default value for Co_ID
 
+        # employee.Last_Working_Date = emp_data.get('Last_Working_Date', '')
+        employee.TEL_EXT = emp_data.get('TEL_EXT', '')
+
         # Handle foreign keys with default values      
 
         ct_id = emp_data.get('CT_ID')
@@ -164,6 +167,10 @@ def insert_employee(request):
         date_of_birth = emp_data.get('DateOfBirth')
         if date_of_birth:
             employee.DateOfBirth = timezone.datetime.strptime(date_of_birth, "%Y-%m-%d").date()
+
+        Last_Working_Date = emp_data.get('Last_Working_Date')
+        if Last_Working_Date:
+            employee.Last_Working_Date = timezone.datetime.strptime(Last_Working_Date, "%Y-%m-%d").date()
 
         # Handle profile image (if required)
         # if 'ProfileImage' in request.FILES:
@@ -238,6 +245,7 @@ def update_employee(request, emp_id):
         employee.CNIC_No = emp_data.get('CNIC_No', employee.CNIC_No)
         employee.Religion = emp_data.get('Religion', employee.Religion)
         employee.Co_ID = emp_data.get('Co_ID', employee.Co_ID)
+        employee.TEL_EXT = emp_data.get('TEL_EXT', '')
 
         # Handle foreign keys
         ct_id = emp_data.get('CT_ID')
@@ -275,6 +283,10 @@ def update_employee(request, emp_id):
         date_of_birth = emp_data.get('DateOfBirth')
         if date_of_birth:
             employee.DateOfBirth = timezone.datetime.strptime(date_of_birth, "%Y-%m-%d").date()
+
+        Last_Working_Date = emp_data.get('Last_Working_Date')
+        if Last_Working_Date:
+            employee.Last_Working_Date = timezone.datetime.strptime(Last_Working_Date, "%Y-%m-%d").date()
 
         # Handle profile image
         if 'ProfileImage' in request.FILES:

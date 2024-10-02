@@ -601,8 +601,6 @@ def transfer_data_to_salary_process2(request, payroll_id, fuel_rate):
 #         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
      
 
-    
-
         
 @api_view(['GET'])
 def getall_payrollperiod(request):
@@ -625,7 +623,7 @@ def getall_payrollperiod(request):
         return Response({'error': str(e)}, status=500)
 
 @api_view(['GET'])
-def get_active_period(request):
+def get_active_period_old(request):
     try:
         payroll_period = HR_PAYROLL_PERIOD.objects.filter(PERIOD_STATUS=True, FYID__FYID=1).select_related('MNTH_ID', 'FYID').first()
 
@@ -644,6 +642,28 @@ def get_active_period(request):
         return Response(data=data, status=200)
     except Exception as e:
         return Response({'error': str(e)}, status=500)
+
+
+@api_view(['GET'])
+def get_active_period(request):
+    with connection.cursor() as cursor:
+        # Run the raw SQL query
+        cursor.execute("SELECT Payroll_ID, FYID, MNTH_SHORT_NAME, PERIOD_STATUS, Yr FROM HR_PAYROLL_PERIOD_V WHERE PERIOD_STATUS = 1")
+        
+        # Fetch all results
+        rows = cursor.fetchall()
+        
+        # Get column names
+        columns = [col[0] for col in cursor.description]
+        
+        # Convert query results to list of dictionaries
+        result = [dict(zip(columns, row)) for row in rows]
+
+        print('active period: ', result)
+
+    # Return the result as JSON
+    return JsonResponse(result, safe=False)
+
 
 @api_view(['GET'])  
 def getall_salaryprocess(request):

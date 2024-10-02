@@ -366,7 +366,8 @@ document.getElementById(INSERT_BUTTON_ID).addEventListener("click", function () 
 // }
 
 async function current_payrollperiod() {
-    const response = await fetch(`${BASE_URL}/monthly_all_ded/current_payrollperiod/`, {
+    // const response = await fetch(`${BASE_URL}/monthly_all_ded/current_payrollperiod/`, {
+    const response = await fetch(`${BASE_URL}/salaryprocess/get_active_period`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -377,9 +378,9 @@ async function current_payrollperiod() {
     }
     const data = await response.json();
     console.log("current_payrollperiod: ", data)
-    document.getElementById("Period").value = `${data.MNTH_NAME} - ${data.FinYear}`;
-    document.getElementById("Period").name = data.PERIOD_ID
-    current_period_id = data.PERIOD_ID
+    document.getElementById("Period").value = `${data[0].MNTH_SHORT_NAME} - ${data[0].Yr}`;
+    document.getElementById("Period").name = data[0].Payroll_ID
+    current_period_id = data[0].Payroll_ID
 }
 
 async function Insert_Monthly_PE() {

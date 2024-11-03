@@ -411,8 +411,14 @@ document.getElementById("Working_Dept_ID").addEventListener("click", function ()
     document.getElementById("insertBtnId").classList.add("d-none")
     document.getElementById("updateBtnId").classList.remove("d-none")
     
+    // debugger
+    // if(this.event == 'change'){
+    //     document.getElementById("W_Department_Loader").classList.remove('d-none')
+    // }
     getWDAByID(this.value);
     GetAllWDAByID(this.value);
+    // debugger
+    // document.getElementById("W_Department_Loader").classList.add('d-none')
 });
 
 function displaySuccessMessage(message) {

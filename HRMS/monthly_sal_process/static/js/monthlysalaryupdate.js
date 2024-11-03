@@ -651,7 +651,7 @@ function calculateTotal() {
         if (Element_Category == 'Fixed Gross') {
             totalAllowance_fixed_gross += Number(Element_Amount);
         }
-        if (Element_Category == 'Fixed Additional') {
+        if (Element_Category == 'Fixed Additional' || Element_Category == 'Additional') {
             totalAllowance_fixed_additional += Number(Element_Amount);
         }
     })

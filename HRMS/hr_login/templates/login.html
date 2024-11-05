@@ -139,13 +139,43 @@
                     document.getElementById('message').innerHTML = '<div class="alert alert-success">Login Successful! Redirecting...</div>';
                     setTimeout(function () {
                         window.location.href = "/dashboard/";
-                    }, 2000);   
+                    }, 2000);
                 },
                 error: function (error) {
                     console.log('error: ', error);
                     document.getElementById('message').innerHTML = '<div class="alert alert-danger">Error: Incorrect username or password!</div>';
                 }
             });
+
+
+
+
+            // const response = fetch(`/login/authenticate/`, {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //     },
+            //     body: JSON.stringify({ 'username': user_name, 'password': user_password }),
+            // });
+
+            // console.log('response: ', response)
+
+            // if (response.status === 200) {
+            //     const data = response.json();
+            //     var res = response
+            //     console.log('res: ', res)
+            //     localStorage.setItem('Profile_ID', res.data.Profile_ID)
+            //     localStorage.setItem('Dept_ID', res.data.Dept_ID)
+            //     localStorage.setItem('Dept_Descr', res.data.Dept_Descr)
+            //     localStorage.setItem('Emp_ID', res.data.Emp_ID)
+            //     localStorage.setItem('Emp_Name', res.data.Emp_Name)
+            //     // localStorage.setItem('HR_Emp_ID', res.data.HR_Emp_ID)
+            //     document.getElementById('message').innerHTML = '<div class="alert alert-success">Login Successful! Redirecting...</div>';
+            //     setTimeout(function () {
+            //         // window.location.href = "/dashboard/";
+            //     }, 2000);
+            // }
+
         });
 
         // Function to get the CSRF token from the cookie

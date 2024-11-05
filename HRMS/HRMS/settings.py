@@ -74,12 +74,11 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
-    # 'django.middleware.csrf.CsrfViewMiddleware',
+    'HRMS.middlewares.custom_middleware.BypassCSRFMiddleware',  # Insert this line
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    # 'django.middleware.debug.DebugMiddleware',
-    # 'middlewares.RequestLoggingMiddleware'
 ]
 
 CORS_ALLOWED_ORIGINS = [

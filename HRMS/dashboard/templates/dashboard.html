@@ -1,11 +1,12 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Your Title{% endblock %}</title>
-    
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{% static 'boostrap/css/bootstrap.min.css' %}">
     <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css"> -->
@@ -44,10 +45,11 @@
         <div id="content">
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
                 <span class="menu-icon" id="sidebarCollapse">&#9776;</span>
-        
-                <div class=" text-center" id="formHeading" style="color: #343a40; font-size: 30px; width: 90%; line-height: 3.77rem; font-weight: 800 !important; font-family: system-ui; text-transform: uppercase;">
-                     {% block pagetitle %} Dashboard {% endblock %}
-                </div> 
+
+                <div class=" text-center" id="formHeading"
+                    style="color: #343a40; font-size: 30px; width: 90%; line-height: 3.77rem; font-weight: 800 !important; font-family: system-ui; text-transform: uppercase;">
+                    {% block pagetitle %} Dashboard {% endblock %}
+                </div>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 </div>
@@ -61,7 +63,7 @@
                         <a class="dropdown-item" href="#"><i class="fas fa-user-plus"></i> Signup</a>
                         <a class="dropdown-item" href="#"><i class="fas fa-user-edit"></i> Edit Personal Info</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                        <a class="dropdown-item" id="signout_btn" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
                     </div>
                 </div>
             </nav>
@@ -69,7 +71,7 @@
             <div>
                 {% block content %}
                 <div class="text-center mt-4">
-                <!-- <h1>Welcome to HRMS</h1> -->
+                    <!-- <h1>Welcome to HRMS</h1> -->
                 </div>
                 {% endblock %}
             </div>
@@ -83,10 +85,44 @@
 
     <script>
         $(document).ready(function () {
+            // alert('dashboard')
             $('#sidebarCollapse').on('click', function () {
                 $('#sidebar').toggleClass('active');
             });
         });
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            // const auth_token = localStorage.getItem("auth_token")
+            const Profile_ID = localStorage.getItem("Profile_ID");
+            // alert('test')
+            // console.log('auth_token: ', auth_token)
+            console.log('Profile_ID: ', Profile_ID)
+            // console.log('token: ', token)
+
+            if (Profile_ID == '' || Profile_ID == null) {
+                logout_func()
+            }
+
+            const csrftoken = getCookie('csrftoken')
+            console.log('csrftoken: ', csrftoken)
+            if (csrftoken == null) {
+                logout_func()
+            }
+
+            document.getElementById("signout_btn").addEventListener("click", function (event) {
+                logout_func()
+                event.preventDefault();
+            });
+
+        })
+
+        function logout_func() {
+            console.log('logout_func called!')
+            localStorage.clear();
+            window.location.href = "{% url 'signout_user' %}";
+        }
+
     </script>
 
 </body>

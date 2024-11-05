@@ -207,23 +207,24 @@ function onClickFunc(formID, formDescr) {
         window.open('/loan/');
     } else if (formID === 9) {
         window.open('/leaves/')
-    } else if (formID === 7) { 
+    } else if (formID === 7) {
         window.open('/payroll_period/')
     } else if (formID === 8) {
         window.open('/payroll_element/')
     } else if (formID === 12) {
         window.open('/salaryupdate/')
-    }   else if (formID === 13) {
+    } else if (formID === 13) {
         window.open('/wda/')
-    }    else if (formID === 15) {
+    } else if (formID === 15) {
         window.open('/monthly_all_ded/')
-    }     else if (formID === 17) {
+    } else if (formID === 17) {
         window.open('/region/')
-    } 
+    }
 }
 
 window.onload = function () {
     $(document).ready(function () {
+        alert('shehery')
         const Profile_ID = localStorage.getItem('Profile_ID')
         // const User_ID = localStorage.getItem('User_ID')
         const BASE_URL = window.location.origin;

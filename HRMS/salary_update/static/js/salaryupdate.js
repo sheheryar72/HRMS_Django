@@ -472,7 +472,7 @@ function handleUpdateClick() {
         rowData.Amount = Number($(this).find("td:eq(2) input").val());
         rowData.Element_Type = "Allowance";
         if (rowData.Amount != 0)
-            dataArray.push(rowData);
+            dataArray.push(rowData);``
     });
 
     $("#bmGridID2 tbody tr").each(function () {
@@ -484,7 +484,7 @@ function handleUpdateClick() {
         if (rowData.Amount != 0)
             dataArray.push(rowData);
     });
-    
+
 
     let masterData = {
         Emp_Up_ID: Emp_Up_ID,

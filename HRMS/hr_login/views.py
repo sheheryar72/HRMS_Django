@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db import connection
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -14,6 +14,30 @@ from django.contrib.auth.hashers import check_password
 from employee.models import HR_Employees
 from django.contrib.auth import login as auth_login
 # from profile import Profile
+from django.contrib.auth import authenticate, login, logout
+from rest_framework.authtoken.models import Token
+
+def staff_required(view_func):
+    def _wrapped_view(request, *args, **kwargs):
+        
+        if not request.user.is_authenticated:
+            logout(request)
+            response = redirect('login_view')
+            # Delete the authentication-related cookies
+            response.delete_cookie('sessionid')
+            response.delete_cookie('csrftoken')
+            return response
+
+        if not (request.user.is_superuser or request.user.is_staff):
+            logout(request)
+            response = redirect('login_view')
+            response.delete_cookie('sessionid') 
+            response.delete_cookie('csrftoken')
+            return response
+
+        return view_func(request, *args, **kwargs)
+    
+    return _wrapped_view
 
 def sheheryar_test2(request):
     return HttpResponse("Hi This is second request")  
@@ -33,42 +57,43 @@ def login3_view(request):
     print('login2 called')
     return render(request, template_name='dashboard.html')
     
-@csrf_exempt
-@api_view(['POST'])
-def authenticate_user(request):
-    try:
-        # Get user credentials from the request
-        username = request.data.get('username')
-        password = request.data.get('password')
+# @csrf_exempt
+# @api_view(['POST'])
+# @permission_classes([AllowAny])
+# def authenticate_user(request):
+#     try:
+#         # Get user credentials from the request
+#         username = request.data.get('username')
+#         password = request.data.get('password')
 
-        print('username: ', username)
-        print('password: ', password)
+#         print('username: ', username)
+#         print('password: ', password)
 
-        # user = UserLogin.objects.filter(User_Name=username, User_Password=password)
+#         # user = UserLogin.objects.filter(User_Name=username, User_Password=password)
 
-        with connection.cursor() as cursor:
-            cursor.execute("select User_ID, User_Name, User_Email, User_Password, User_Email, User_Status, Emp_ID from User_Login WHERE User_Name = %s AND User_Password = %s", [username, password])
-            user = cursor.fetchone()
+#         with connection.cursor() as cursor:
+#             cursor.execute("select User_ID, User_Name, User_Email, User_Password, User_Email, User_Status, Emp_ID from User_Login WHERE User_Name = %s AND User_Password = %s", [username, password])
+#             user = cursor.fetchone()
 
 
-        if user is not None and user[1] == username and user[3] == password:  # Assuming User_Password is at index 3 in the result
-            # Authentication successful
-            print('user 6: ')
-            # emp_user = HR_Employees.objects.get(pk=user[6])
-            # print('emp_user: ', emp_user)
-            # data = {
-            #     'Emp_ID': emp_user.Emp_ID,
-            #     'Emp_Name': emp_user.Emp_Name,
-            #     'HR_Emp_ID': emp_user.HR_Emp_ID,
-            #     'Dep_ID': emp_user.Joining_Dept_ID.Dept_ID,
-            #     'Dept_Descr': emp_user.Joining_Dept_ID.Dept_Descr
-            # }
-            return JsonResponse({'data': user, 'message': 'Login successful!'})
-        else:
-            return JsonResponse({'error': 'Invalid username or password.'}, status=400)
+#         if user is not None and user[1] == username and user[3] == password:  # Assuming User_Password is at index 3 in the result
+#             # Authentication successful
+#             print('user 6: ')
+#             # emp_user = HR_Employees.objects.get(pk=user[6])
+#             # print('emp_user: ', emp_user)
+#             # data = {
+#             #     'Emp_ID': emp_user.Emp_ID,
+#             #     'Emp_Name': emp_user.Emp_Name,
+#             #     'HR_Emp_ID': emp_user.HR_Emp_ID,
+#             #     'Dep_ID': emp_user.Joining_Dept_ID.Dept_ID,
+#             #     'Dept_Descr': emp_user.Joining_Dept_ID.Dept_Descr
+#             # }
+#             return JsonResponse({'data': user, 'message': 'Login successful!'})
+#         else:
+#             return JsonResponse({'error': 'Invalid username or password.'}, status=400)
 
-    except Exception as e:
-        return JsonResponse({'error': 'Authentication failed. Please check your credentials.'}, status=400)
+#     except Exception as e:
+#         return JsonResponse({'error': 'Authentication failed. Please check your credentials.'}, status=400)
 
 
 @csrf_exempt
@@ -85,6 +110,14 @@ def authenticate_user2(request):
             return JsonResponse({'error': 'Both username and password are required.'}, status=400)
 
         user = authenticate(username=username, password=password)
+        
+        print('user: ', user)
+
+        if user is not None:
+            login(request, user)
+
+        # token, created = Token.objects.get_or_create(user=user)
+        # print('token: ', token)
 
         if user is not None:
             auth_login(request, user)
@@ -104,6 +137,8 @@ def authenticate_user2(request):
 
                 data = {
                     'Profile_ID': user_profile.id,
+                    'token': None
+                    # 'token': token.key if token else None
                     # 'Email': user_profile.Emp_ID_id.Email,
                     # 'Dept_ID': user_profile.Emp_ID_id.Joining_Dept_ID.Dept_ID,
                     # 'Dept_Descr': user_profile.Emp_ID_id.Joining_Dept_ID.Dept_Descr,
@@ -121,6 +156,17 @@ def authenticate_user2(request):
     except Exception as e:
         print('Exception:', e)
         return JsonResponse({'error': 'Authentication failed. Please check your credentials.'}, status=400)
+
+@csrf_exempt
+# @api_view(['GET'])
+# @permission_classes([AllowAny])
+def signout_user(request):
+    print('signout_user')
+    logout(request)
+    response = redirect('login_view')
+    response.delete_cookie('sessionid')
+    response.delete_cookie('csrftoken')
+    return response
 
 
 # @csrf_exempt

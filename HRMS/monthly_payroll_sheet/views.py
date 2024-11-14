@@ -51,11 +51,12 @@ def get_monthly_pay_sheet(request, payroll_id):
         Mobile_Installment_26, Food_Panda_27, Tot_Deductions, Tot_AC_To_WD, 
         Tot_Net_Salary, Transfer_Type, Account_No, Bank_Name
     FROM HR_MONTHLY_PAY_SHEET_V
+    WHERE Payroll_ID = %s
     """
 
     try:
         with connection.cursor() as cursor:
-            cursor.execute(query)
+            cursor.execute(query, [payroll_id])
             columns = [column[0] for column in cursor.description]
             rows = cursor.fetchall()
             data = [dict(zip(columns, row)) for row in rows]

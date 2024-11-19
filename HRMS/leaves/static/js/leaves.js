@@ -1,5 +1,5 @@
 const BASE_URL = window.location.origin;
-var table;
+var table, table5;
 const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';
 const CANCEL_BUTTON_ID = 'CancelFormData';
@@ -20,13 +20,28 @@ function initializeDataTable() {
                 targets: 2,
                 className: "text-left",
             },
-            { 
-                targets: [8, 9, 10, 11, 12, 13], 
+            {
+                targets: [8, 9, 10, 11, 12, 13],
                 className: 'text-right' // Align numeric columns to the right
             }
         ],
         lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]
     });
+
+    table5 = $('#GridID5').DataTable({
+        destroy: true,
+        duplicate: false,
+        ordering: false,
+        pageLength: 5,
+        // 'columnDefs': [
+        //     {
+        //         "targets": 1,
+        //         "className": "text-left",
+        //     }
+        // ],
+        lengthMenu: [[5, 10, 20, -1], [5, 10, 20, 'All']]
+    });
+
 }
 
 // Handle click on table row
@@ -137,12 +152,12 @@ function fillFinYearDropDown() {
 
 async function getLeaveById(id) {
     try {
-        const response = await fetch(`${BASE_URL}/leaves/${id}/`);
+        const response = await fetch(`${BASE_URL}/leaves/getbyid/${id}`);
         if (!response.ok) {
             throw new Error('Failed to fetch Leave');
         }
         const data = await response.json();
-        return data;4
+        return data; 4
     } catch (error) {
         console.error(`Error fetching Leave with ID ${id}:`, error);
         return null;
@@ -339,10 +354,79 @@ function displayErrorMessage(message) {
     }, 2000); // Remove the message after 3 seconds
 }
 
+
+
+document.getElementById("leaveGridIconId").addEventListener("click", async function () {
+    const Leave_ID = Number(document.getElementById("Leave_ID").value);
+    console.log('Leave ID: ', Leave_ID);
+
+    let data = null; // Declare `data` outside the `if` block
+
+    if (Leave_ID !== 0) {
+        try {
+            data = await getLeaveById(Leave_ID);
+        } catch (error) {
+            console.error("Error fetching leave data:", error);
+            alert("An error occurred while fetching leave data. Please try again.");
+            $("#orangeModalSubscription4").modal('hide');
+            return;
+        }
+    } else {
+        alert("Please select leave first!");
+        $("#orangeModalSubscription4").modal('hide');
+        return;
+    }
+
+    console.log('Leave By ID Data: ', data);
+
+    if (data) {
+        try {
+            // Validate the required fields in the data object
+            if (
+                typeof data.CL === "number" &&
+                typeof data.SL === "number" &&
+                typeof data.EL_OP === "number" &&
+                typeof data.EL === "number" &&
+                typeof data.EGL === "number"
+            ) {
+                table5.clear().draw();
+                table5.row.add([
+                    data.Emp_Name,
+                    data.LA_CL,
+                    data.LA_SL,
+                    data.LA_EL_OP,
+                    data.LA_EL,
+                    data.LA_EGL,
+                    data.CL - data.LA_CL,
+                    data.SL - data.LA_SL,
+                    data.EL_OP - data.LA_EL_OP,
+                    data.EL - data.LA_EL,
+                    data.EGL - data.LA_EGL,
+                    data.Tot_LA
+                ]).draw(false);
+            } else {
+                throw new Error("Incomplete leave data received.");
+            }
+        } catch (error) {
+            console.error("Error processing leave data:", error);
+            alert("Failed to process leave data. Please verify the input and try again.");
+            $("#orangeModalSubscription4").modal('hide');
+        }
+    } else {
+        console.error("No data returned for Leave ID:", Leave_ID);
+        alert("Failed to fetch leave data!");
+        $("#orangeModalSubscription4").modal('hide');
+    }
+});
+
+
+
 $(document).ready(function () {
     initializeDataTable();
 
     document.getElementById('Joining_Date').valueAsDate = new Date();
+
+    // $('#GridID5 tbody').on('click', 'tr', handleTableRowClick3);
 
     // $('#GridID tbody').on('click', 'tr', handleTableRowClick);
     $('#GridID tbody').on('click', '.roweditclass', handleTableRowClick);

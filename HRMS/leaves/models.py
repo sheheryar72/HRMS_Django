@@ -11,6 +11,13 @@ class HR_Leaves(models.Model):
     SL = models.IntegerField()
     EL = models.IntegerField()
     EGL = models.IntegerField()
+    EL_OP = models.IntegerField()
+    LA_CL = models.IntegerField()
+    LA_SL = models.IntegerField()
+    LA_EL_OP = models.IntegerField()
+    LA_EL = models.IntegerField()
+    LA_EGL = models.IntegerField()
+    Tot_LA = models.IntegerField()
 
     class Meta:
         managed = False

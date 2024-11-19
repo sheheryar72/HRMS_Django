@@ -33,7 +33,13 @@ def getall(request):
                 'CL': item.CL,
                 'SL': item.SL,
                 'EL': item.EL,
-                'EGL': item.EGL
+                'LA_EL': item.LA_EL,
+                'EGL': item.EGL,
+                'LA_CL': item.LA_CL,
+                'LA_SL': item.LA_SL,
+                'LA_EGL': item.LA_EGL,
+                'LA_EL_OP': item.LA_EL_OP,
+                'Tot_LA': item.Tot_LA
             }
             data.append(leaves_data)
 
@@ -45,11 +51,31 @@ def getall(request):
 def getbyid(request, id):
     try:
         try:
-            leaves = HR_Leaves.objects.get(pk=id)
+            item = HR_Leaves.objects.get(pk=id)
+            leaves_data = {
+                'Leaves_ID': item.Leaves_ID,
+                'FYID': item.FYID.FYID,
+                'FinYear': item.FYID.FinYear,
+                'Emp_ID': item.Emp_ID.Emp_ID,
+                'Joining_Date': item.Emp_ID.Joining_Date,
+                'Emp_Name': item.Emp_ID.Emp_Name,
+                'HR_Emp_ID': item.Emp_ID.HR_Emp_ID,
+                'EL_OP': item.EL_OP,
+                'CL': item.CL,
+                'SL': item.SL,
+                'EL': item.EL,
+                'LA_EL': item.LA_EL,
+                'EGL': item.EGL,
+                'LA_CL': item.LA_CL,
+                'LA_SL': item.LA_SL,
+                'LA_EGL': item.LA_EGL,
+                'LA_EL_OP': item.LA_EL_OP,
+                'Tot_LA': item.Tot_LA
+            }
         except Exception as e:
             return Response({'no data found': str(e)}, status.HTTP_404_NOT_FOUND)
-        serializer = HR_Leaves_Serializer(leaves)
-        return Response(serializer.data, status.HTTP_200_OK)
+        # serializer = HR_Leaves_Serializer(leaves)
+        return Response(leaves_data, status.HTTP_200_OK)
     except Exception as e:
         return Response({'error': str(e)}, status.HTTP_500_INTERNAL_SERVER_ERROR)
     

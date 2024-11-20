@@ -29,6 +29,7 @@ class HR_Emp_Monthly_Sal_Mstr(models.Model):
     WDAYS = models.IntegerField(blank=True, null=True)
     ADAYS = models.IntegerField(blank=True, null=True)
     JLDAYS = models.IntegerField(blank=True, null=True)
+    Salary_Status = models.CharField(max_length=150, null=True, blank=True)
 
     class Meta:
         managed = False

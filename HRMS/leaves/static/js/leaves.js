@@ -45,7 +45,7 @@ function initializeDataTable() {
 }
 
 // Handle click on table row
-function handleTableRowClick() {
+async function handleTableRowClick() {
     const rowData = table.row($(this).closest('tr')).data();
     const Leave_ID = rowData[1];
     const FYID = rowData[2];
@@ -68,6 +68,26 @@ function handleTableRowClick() {
     document.getElementById('Joining_Date').value = moment(Joining_Date).format("YYYY-MM-DD");
     document.getElementById("updateFormData").classList.remove("d-none");
     document.getElementById("insertFormData").classList.add("d-none");
+
+    data = await getLeaveById(Leave_ID);
+
+    $('#EL_OP').val(EL_OP);
+    $('#CL').val(data.CL);
+    $('#SL').val(data.SL);
+    $('#EL').val(data.EL);
+    $('#EGL').val(data.EGL);
+    
+    $('#LA_EL_OP').val(data.LA_EL_OP);
+    $('#LA_CL').val(data.LA_CL);
+    $('#LA_SL').val(data.LA_SL);
+    $('#LA_EL').val(data.LA_EL);
+    $('#LA_EGL').val(data.LA_EGL);
+
+    $('#R_EL_OP').val(EL_OP - data.EL_OP);
+    $('#R_CL').val(data.CL - data.LA_CL);
+    $('#R_SL').val(data.SL - data.LA_SL);
+    $('#R_EL').val(data.EL - data.LA_EL);
+    $('#R_EGL').val(data.EGL - data.LA_EGL);
 }
 
 // Handle click on delete button in table row
@@ -97,6 +117,13 @@ function handleCancelClick() {
     document.getElementById("SL").value = 0;
     document.getElementById("EL").value = 0;
     document.getElementById("EGL").value = 0;
+
+    document.getElementById("LA_EL_OP").value = 0;
+    document.getElementById("LA_CL").value = 0;
+    document.getElementById("LA_SL").value = 0;
+    document.getElementById("LA_EL").value = 0;
+    document.getElementById("LA_EGL").value = 0;
+
     document.getElementById("Joining_Date").value = '';
 }
 
@@ -297,6 +324,12 @@ function handleInsertClick() {
     const EL = document.getElementById("EL").value;
     const EGL = document.getElementById("EGL").value;
 
+    const LA_EL_OP = document.getElementById("LA_EL_OP").value;
+    const LA_CL = document.getElementById("LA_CL").value;
+    const LA_SL = document.getElementById("LA_SL").value;
+    const LA_EL = document.getElementById("LA_EL").value;
+    const LA_EGL = document.getElementById("LA_EGL").value;
+
     const data = {
         Leaves_ID: Number(Leave_ID),
         FYID: Number(FYID),
@@ -305,7 +338,12 @@ function handleInsertClick() {
         CL: Number(CL),
         SL: Number(SL),
         EL: Number(EL),
-        EGL: Number(EGL)
+        EGL: Number(EGL),
+        LA_EL_OP: Number(LA_EL_OP),
+        LA_CL: Number(LA_CL),
+        LA_SL: Number(LA_SL),
+        LA_EL: Number(LA_EL),
+        LA_EGL: Number(LA_EGL)
     }
     createLeave(data);
 }
@@ -320,6 +358,12 @@ function handleUpdateClick() {
     const EL = document.getElementById("EL").value;
     const EGL = document.getElementById("EGL").value;
 
+    const LA_EL_OP = document.getElementById("LA_EL_OP").value;
+    const LA_CL = document.getElementById("LA_CL").value;
+    const LA_SL = document.getElementById("LA_SL").value;
+    const LA_EL = document.getElementById("LA_EL").value;
+    const LA_EGL = document.getElementById("LA_EGL").value;
+
     const data = {
         Leaves_ID: Number(Leave_ID),
         FYID: Number(FYID),
@@ -328,7 +372,12 @@ function handleUpdateClick() {
         CL: Number(CL),
         SL: Number(SL),
         EL: Number(EL),
-        EGL: Number(EGL)
+        EGL: Number(EGL),
+        LA_EL_OP: Number(LA_EL_OP),
+        LA_CL: Number(LA_CL),
+        LA_SL: Number(LA_SL),
+        LA_EL: Number(LA_EL),
+        LA_EGL: Number(LA_EGL)
     }
     updateLeave(Leave_ID, data);
     fillTableGrid();
@@ -356,68 +405,68 @@ function displayErrorMessage(message) {
 
 
 
-document.getElementById("leaveGridIconId").addEventListener("click", async function () {
-    const Leave_ID = Number(document.getElementById("Leave_ID").value);
-    console.log('Leave ID: ', Leave_ID);
+// document.getElementById("leaveGridIconId").addEventListener("click", async function () {
+//     const Leave_ID = Number(document.getElementById("Leave_ID").value);
+//     console.log('Leave ID: ', Leave_ID);
 
-    let data = null; // Declare `data` outside the `if` block
+//     let data = null; // Declare `data` outside the `if` block
 
-    if (Leave_ID !== 0) {
-        try {
-            data = await getLeaveById(Leave_ID);
-        } catch (error) {
-            console.error("Error fetching leave data:", error);
-            alert("An error occurred while fetching leave data. Please try again.");
-            $("#orangeModalSubscription4").modal('hide');
-            return;
-        }
-    } else {
-        alert("Please select leave first!");
-        $("#orangeModalSubscription4").modal('hide');
-        return;
-    }
+//     if (Leave_ID !== 0) {
+//         try {
+//             data = await getLeaveById(Leave_ID);
+//         } catch (error) {
+//             console.error("Error fetching leave data:", error);
+//             alert("An error occurred while fetching leave data. Please try again.");
+//             $("#orangeModalSubscription4").modal('hide');
+//             return;
+//         }
+//     } else {
+//         alert("Please select leave first!");
+//         $("#orangeModalSubscription4").modal('hide');
+//         return;
+//     }
 
-    console.log('Leave By ID Data: ', data);
+//     console.log('Leave By ID Data: ', data);
 
-    if (data) {
-        try {
-            // Validate the required fields in the data object
-            if (
-                typeof data.CL === "number" &&
-                typeof data.SL === "number" &&
-                typeof data.EL_OP === "number" &&
-                typeof data.EL === "number" &&
-                typeof data.EGL === "number"
-            ) {
-                table5.clear().draw();
-                table5.row.add([
-                    data.Emp_Name,
-                    data.LA_CL,
-                    data.LA_SL,
-                    data.LA_EL_OP,
-                    data.LA_EL,
-                    data.LA_EGL,
-                    data.CL - data.LA_CL,
-                    data.SL - data.LA_SL,
-                    data.EL_OP - data.LA_EL_OP,
-                    data.EL - data.LA_EL,
-                    data.EGL - data.LA_EGL,
-                    data.Tot_LA
-                ]).draw(false);
-            } else {
-                throw new Error("Incomplete leave data received.");
-            }
-        } catch (error) {
-            console.error("Error processing leave data:", error);
-            alert("Failed to process leave data. Please verify the input and try again.");
-            $("#orangeModalSubscription4").modal('hide');
-        }
-    } else {
-        console.error("No data returned for Leave ID:", Leave_ID);
-        alert("Failed to fetch leave data!");
-        $("#orangeModalSubscription4").modal('hide');
-    }
-});
+//     if (data) {
+//         try {
+//             // Validate the required fields in the data object
+//             if (
+//                 typeof data.CL === "number" &&
+//                 typeof data.SL === "number" &&
+//                 typeof data.EL_OP === "number" &&
+//                 typeof data.EL === "number" &&
+//                 typeof data.EGL === "number"
+//             ) {
+//                 table5.clear().draw();
+//                 table5.row.add([
+//                     data.Emp_Name,
+//                     data.LA_CL,
+//                     data.LA_SL,
+//                     data.LA_EL_OP,
+//                     data.LA_EL,
+//                     data.LA_EGL,
+//                     data.CL - data.LA_CL,
+//                     data.SL - data.LA_SL,
+//                     data.EL_OP - data.LA_EL_OP,
+//                     data.EL - data.LA_EL,
+//                     data.EGL - data.LA_EGL,
+//                     data.Tot_LA
+//                 ]).draw(false);
+//             } else {
+//                 throw new Error("Incomplete leave data received.");
+//             }
+//         } catch (error) {
+//             console.error("Error processing leave data:", error);
+//             alert("Failed to process leave data. Please verify the input and try again.");
+//             $("#orangeModalSubscription4").modal('hide');
+//         }
+//     } else {
+//         console.error("No data returned for Leave ID:", Leave_ID);
+//         alert("Failed to fetch leave data!");
+//         $("#orangeModalSubscription4").modal('hide');
+//     }
+// });
 
 
 

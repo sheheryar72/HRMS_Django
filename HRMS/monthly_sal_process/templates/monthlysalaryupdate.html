@@ -206,6 +206,23 @@
                             </select>
                         </div>
                     </div>
+                    <!-- <div class="form-group row align-items-center">
+                        <label for="input5" class="col-sm-2 col-form-label">Gross Salary<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" class="form-control" style="text-align: right;" id="GrossSalary" placeholder="Gross Salary" readonly>
+                        </div>
+                        <label for="input6" class="col-sm-2 col-form-label">Salary Status<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control form-control-sm"  id="Salary_Status">
+                                <option value="Salary in Pending">Salary in Pending</option>
+                                <option value="Salary Processed">Salary Processed</option>
+                            </select>
+                        </div>
+                        <input type="text" class="form-control form-control-sm" id="addOption" placeholder="Add custom value">
+                        <button class="btn btn-sm btn-dark" id="addOptionButton" type="button">Add</button>
+                    </div> -->
+                    
+
                     <div class="form-group row align-items-center">
                         <label for="input5" class="col-sm-2 col-form-label">Gross Salary<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
@@ -213,18 +230,25 @@
                         </div>
                         <label for="input6" class="col-sm-2 col-form-label">Salary Status<span class="text-danger"> *</span></label>
                         <div class="col-sm-4">
-                            <select class="form-control form-control-sm" disabled id="Salary_Status">
+                            <select class="form-control form-control-sm" id="Salary_Status">
                                 <option value="Salary in Pending">Salary in Pending</option>
                                 <option value="Salary Processed">Salary Processed</option>
+                                <option value="Add custom value">Add custom value</option>
                             </select>
                         </div>
-                        <!-- <div class="col-sm-2"></div> -->
-
-                        <!-- <div class="col-sm-4">
-                            <button type="button" class="btn btn-priamry" style="background-color: green; color: white;"
-                                id="calculateGrossSalary">Calculate Gross Salary</button>
-                        </div> -->
                     </div>
+                    <div class="form-group row align-items-center" id="customValueContainer" style="display: none;">
+                        <!-- <div class="col-sm-4"></div> -->
+                        <label for="addOption" class="col-sm-2 col-form-label">Custom Value</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control form-control-sm" id="addOption" placeholder="Add custom value">
+                        </div>
+                        <div class="col-sm-1 text-right">
+                            <button class="btn btn-sm btn-dark" id="addOptionButton" type="button">Add</button>
+                        </div>
+                    </div>
+
+                    
                     <div class="form-group row align-items-center">
                         <label for="input5" class="col-sm-2 col-form-label">Remarks</label>
                         <div class="col-sm-10">

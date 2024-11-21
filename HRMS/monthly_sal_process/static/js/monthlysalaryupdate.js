@@ -132,6 +132,7 @@ function handleCancelClick() {
     document.getElementById("Emp_Category").selectedIndex = 0;
     document.getElementById("Marital_Status").selectedIndex = 0;
     document.getElementById("updateFormData").classList.add("d-none");
+    document.getElementById("Salary_Status").selectedIndex = 0
     // document.getElementById("saveNewBtnId").classList.add("d-none");
     // document.getElementById("insertFormData").classList.remove("d-none");
 
@@ -398,6 +399,7 @@ function handleUpdateClick() {
     const Stop_Salary = document.getElementById("Stop_Salary").value;
     const CO_ID = document.getElementById("CO_ID").value;
     const Payroll_ID = document.getElementById("Search_Payroll_ID").value;
+    const Salary_Status = document.getElementById("Salary_Status").value;
 
 
     const fields = [
@@ -468,7 +470,8 @@ function handleUpdateClick() {
         Account_No: Account_No,
         Bank_Name: Bank_Name,
         Stop_Salary: Boolean(Stop_Salary),
-        Payroll_ID: Number(Payroll_ID)
+        Payroll_ID: Number(Payroll_ID),
+        Salary_Status: Salary_Status
     }
     // alert('update salary')
     // alert(Emp_Up_ID)
@@ -477,7 +480,7 @@ function handleUpdateClick() {
 
         $.post({
             // url: BASE_URL + `salaryupdate/updatesalary/${Emp_Up_ID}/`,
-            url: BASE_URL + `/salaryprocess/updatesalary/${Emp_Up_ID}`,
+            url: BASE_URL + `/salaryprocess/updatesalary/${Emp_Up_ID}/${Payroll_ID}`,
             contentType: 'application/json',
             data: JSON.stringify({
                 masterData: masterData,
@@ -977,6 +980,8 @@ function handleTableRowClick3() {
 
 }
 
+
+
 function GetAll_Salary_update_BYID(emp_up_Id, empId, payroll_id) {
     console.log("emp_up_Id: ", emp_up_Id)
     console.log("empId: ", empId)
@@ -1005,6 +1010,7 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId, payroll_id) {
         document.getElementById("Bank_Name").value = data[0].Bank_Name;
         document.getElementById("Stop_Salary").value = data[0].Stop_Salary ? 1 : 0;
         document.getElementById("CO_ID").value = data[0].Co_ID;
+        document.getElementById("Salary_Status").value = data[0].Salary_Status;
         // document.getElementById("Payroll_ID").value = data[0].Payroll_Name;
 
         document.getElementById("InserRowID1").innerHTML = '';
@@ -1116,6 +1122,88 @@ function get_active_period() {
         document.getElementById("Search_Payroll_ID").innerHTML = temp;
     });
 }
+
+function get_salarystatus_distinct() {
+    getAllDataFromDB(`${BASE_URL}/salaryprocess/get_salarystatus_distinct`, 'Salary Status').then((data) => {
+        console.log("get_salarystatus_distinct response: ", data);
+        var temp = ''
+        data.forEach(element => {
+            temp += `<option value="${element.Stop_Salary}">${element.Stop_Salary}</option>`
+        });
+        document.getElementById("Salary_Status").innerHTML = temp;
+    });
+}
+
+// document.getElementById('addOptionButton').addEventListener('click', function() {
+//     const customValue = document.getElementById('addOption').value.trim();
+
+//     if (customValue) {
+//         const dropdown = document.getElementById('Salary_Status');
+//         // Check if the value already exists in the dropdown
+//         const exists = Array.from(dropdown.options).some(option => option.value === customValue);
+
+//         if (!exists) {
+//             const newOption = document.createElement('option');
+//             newOption.value = customValue;
+//             newOption.textContent = customValue;
+//             dropdown.appendChild(newOption);
+//             // alert('Custom value added to the dropdown!');
+//         } else {
+//             alert('This value already exists in the dropdown.');
+//         }
+
+//         // Clear the input field
+//         document.getElementById('addOption').value = '';
+//     } else {
+//         alert('Please enter a value to add.');
+//     }
+// });
+
+
+// Reference to dropdown and the custom value container
+const dropdown = document.getElementById("Salary_Status");
+const customValueContainer = document.getElementById("customValueContainer");
+
+// Show or hide the custom value container based on dropdown selection
+dropdown.addEventListener("change", function () {
+    if (dropdown.value === "Add custom value") {
+        customValueContainer.style.display = "flex"; // Show the input and button
+    } else {
+        customValueContainer.style.display = "none"; // Hide the input and button
+    }
+});
+
+// Add the custom value to the dropdown
+document.getElementById("addOptionButton").addEventListener("click", function () {
+    const customValue = document.getElementById("addOption").value.trim();
+
+    if (customValue) {
+        // Check if the value already exists in the dropdown
+        const exists = Array.from(dropdown.options).some(option => option.value === customValue);
+        if (!exists) {
+            // Add the custom value to the dropdown
+            const newOption = document.createElement("option");
+            newOption.value = customValue;
+            newOption.textContent = customValue;
+            dropdown.appendChild(newOption);
+
+            // Select the newly added option
+            dropdown.value = customValue;
+
+            // Hide the custom value container
+            customValueContainer.style.display = "none";
+
+            // Clear the input field
+            document.getElementById("addOption").value = "";
+        } else {
+            alert("This value already exists in the dropdown!");
+        }
+    } else {
+        alert("Please enter a value to add!");
+    }
+});
+
+
 
 $(document).ready(function () {
     initializeDataTable();

@@ -878,7 +878,7 @@ def add_salary_update(request):
 def update_salary_update(request, empupid, payroll_id):
     try:
         # import pdb
-        # pdb.set_trace
+        # pdb.set_trace()
         # Fetch master data
         try:
             master_instance = HR_Emp_Monthly_Sal_Mstr.objects.filter(Emp_Up_ID=empupid, Payroll_ID__PAYROLL_ID=payroll_id).first()
@@ -889,44 +889,49 @@ def update_salary_update(request, empupid, payroll_id):
         print('request.data.get("masterData": sheheryar', request.data.get("masterData", {}))
         # Handle master data update
         master_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(master_instance, data=request.data.get("masterData", {}), partial=True)
-        if master_serializer.is_valid():
-            # print('master_serializer: ', master_serializer)
-            master_instance = master_serializer.save()
 
-            # Retrieve detail data list from the request
-            detailList = request.data.get('detailList', [])
-            for detail_data in detailList:
-                # Prepare the data to be saved
-                detail_data['Emp_Up_ID'] = master_instance.Emp_Up_ID
-                detail_data['Emp_ID'] = master_instance.Emp_ID.Emp_ID
-                detail_data['Payroll_ID'] = master_instance.Payroll_ID.PAYROLL_ID
-
-                # Check if a matching record already exists
-                detail_instance = HR_Emp_Monthly_Sal_Dtl.objects.filter(
-                    Emp_Up_ID=master_instance.Emp_Up_ID,
-                    Emp_ID=master_instance.Emp_ID.Emp_ID,
-                    Payroll_ID=master_instance.Payroll_ID.PAYROLL_ID,
-                    Element_ID=detail_data.get('Element_ID')  # Assuming 'Element_ID' uniquely identifies the record
-                ).first()
-
-                print('detail_instance: ', detail_instance)
-                if detail_instance:
-                    # Update existing record
-                    detail_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(detail_instance, data=detail_data, partial=True)
-                else:
-                    # Create a new record if none exists
-                    detail_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(data=detail_data)
-
-                # Validate and save each detail record
-                if detail_serializer.is_valid():
-                    detail_serializer.save()
-                    print(f"Detail record saved for Element_ID: {detail_data.get('Element_ID')}")
-                else:
-                    return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-            return Response(master_serializer.data, status=status.HTTP_200_OK)
-        else:
+        if not master_serializer.is_valid():
             return Response(master_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        master_instance = master_serializer.save()
+        print('master_serializer.data: ', master_serializer.data)
+        print('master_instance: ', master_instance)
+        print('master data saved')
+
+        # Retrieve detail data list from the request
+        detailList = request.data.get('detailList', [])
+        for detail_data in detailList:
+            # Prepare the data to be saved
+            detail_data['Emp_Up_ID'] = master_instance.Emp_Up_ID
+            detail_data['Emp_ID'] = master_instance.Emp_ID.Emp_ID
+            detail_data['Payroll_ID'] = master_instance.Payroll_ID.PAYROLL_ID
+
+            # Check if a matching record already exists
+            detail_instance = HR_Emp_Monthly_Sal_Dtl.objects.filter(
+                Emp_Up_ID=master_instance.Emp_Up_ID,
+                Emp_ID=master_instance.Emp_ID.Emp_ID,
+                Payroll_ID=master_instance.Payroll_ID.PAYROLL_ID,
+                Element_ID=detail_data.get('Element_ID')  # Assuming 'Element_ID' uniquely identifies the record
+            ).first()
+
+            print('detail_instance: ', detail_instance)
+            if detail_instance:
+                # Update existing record
+                detail_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(detail_instance, data=detail_data, partial=True)
+            else:
+                # Create a new record if none exists
+                detail_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(data=detail_data)
+
+            # Validate and save each detail record
+            if detail_serializer.is_valid():
+                detail_serializer.save()
+                print(f"Detail record saved for Element_ID: {detail_data.get('Element_ID')}")
+            else:
+                return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(master_serializer.data, status=status.HTTP_200_OK)
+        # else:
+            # return Response(master_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 

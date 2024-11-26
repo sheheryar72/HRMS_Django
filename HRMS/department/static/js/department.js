@@ -4,6 +4,7 @@ const INSERT_BUTTON_ID = 'insertFormData';
 const UPDATE_BUTTON_ID = 'updateFormData';
 const CANCEL_BUTTON_ID = 'CancelFormData';
 
+
 function initializeDataTable() {
     table = $('#GridID').DataTable({
         destroy: true,

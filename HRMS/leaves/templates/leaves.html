@@ -62,70 +62,74 @@
 
           <!-- ELO, EL, CL, SL, EGL in one row -->
           <div class="form-group row align-items-center">
-            <div class="col">
-              <label for="EL_OP">ELO<span class="text-danger"> *</span></label>
-              <input type="number" class="form-control" id="EL_OP" style="text-align: right;" placeholder="ELO">
+            <div class="col-2">
+              <label for="EL_OP">OP EL<span class="text-danger"> *</span></label>
+              <input type="number" class="form-control leave_balance_class" id="EL_OP" style="text-align: right;" placeholder="ELO">
             </div>
-            <div class="col">
-              <label for="EL">EL<span class="text-danger"> *</span></label>
-              <input type="number" class="form-control" id="EL" style="text-align: right;" placeholder="EL">
+            <div class="col-2">
+              <label for="EL_OP">EL<span class="text-danger"> *</span></label>
+              <input type="number" class="form-control leave_balance_class" id="EL" style="text-align: right;" placeholder="ELO">
             </div>
-            <div class="col">
+            <div class="col-2">
+              <label for="EL">Total EL<span class="text-danger"> *</span></label>
+              <input type="number" class="form-control leave_balance_class" id="TOTAL_EL" style="text-align: right;" placeholder="EL">
+            </div>
+            <div class="col-2">
               <label for="CL">CL<span class="text-danger"> *</span></label>
-              <input type="number" class="form-control" id="CL" style="text-align: right;" placeholder="CL">
+              <input type="number" class="form-control leave_balance_class" id="CL" style="text-align: right;" placeholder="CL">
             </div>
-            <div class="col">
+            <div class="col-2">
               <label for="SL">SL<span class="text-danger"> *</span></label>
-              <input type="number" class="form-control" id="SL" style="text-align: right;" placeholder="SL">
+              <input type="number" class="form-control leave_balance_class" id="SL" style="text-align: right;" placeholder="SL">
             </div>
-            <div class="col">
+            <div class="col-2">
               <label for="EGL">EGL<span class="text-danger"> *</span></label>
-              <input type="number" class="form-control" id="EGL" style="text-align: right;" placeholder="EGL">
+              <input type="number" class="form-control leave_balance_class" id="EGL" style="text-align: right;" placeholder="EGL">
             </div>
           </div>
 
           <div class="form-group row align-items-center">
-            <div class="col">
-              <label for="EL_OP">Avaial ELO<span class="text-danger"> *</span></label>
-              <input type="number" class="form-control" id="LA_EL_OP" style="text-align: right;" placeholder="ELO">
+            <div class="col-4 mt-4">
+              <label for="EL_OP">Availed Leave :<span class="text-danger"></span></label>
+              <!-- <input type="number" class="form-control" id="LA_EL_OP" style="text-align: right;" placeholder="ELO"> -->
             </div>
-            <div class="col">
-              <label for="EL">Avaial EL<span class="text-danger"> *</span></label>
-              <input type="number" class="form-control" id="LA_EL" style="text-align: right;" placeholder="EL">
+            <div class="col-2">
+              <label for="EL">EL<span class="text-danger"> *</span></label>
+              <input type="number" class="form-control leave_balance_class" id="LA_EL" style="text-align: right;" placeholder="EL">
             </div>
-            <div class="col">
-              <label for="CL">Avaial CL<span class="text-danger"> *</span></label>
-              <input type="number" class="form-control" id="LA_CL" style="text-align: right;" placeholder="CL">
+            <div class="col-2">
+              <label for="CL">CL<span class="text-danger"> *</span></label>
+              <input type="number" class="form-control leave_balance_class" id="LA_CL" style="text-align: right;" placeholder="CL">
             </div>
-            <div class="col">
-              <label for="SL">Avaial SL<span class="text-danger"> *</span></label>
-              <input type="number" class="form-control" id="LA_SL" style="text-align: right;" placeholder="SL">
+            <div class="col-2">
+              <label for="SL">SL<span class="text-danger"> *</span></label>
+              <input type="number" class="form-control leave_balance_class" id="LA_SL" style="text-align: right;" placeholder="SL">
             </div>
-            <div class="col">
-              <label for="EGL">Avaial EGL<span class="text-danger"> *</span></label>
-              <input type="number" class="form-control" id="LA_EGL" style="text-align: right;" placeholder="EGL">
+            <div class="col-2">
+              <label for="EGL">EGL<span class="text-danger"> *</span></label>
+              <input type="number" class="form-control leave_balance_class" id="LA_EGL" style="text-align: right;" placeholder="EGL">
             </div>
           </div>
 
           <div class="form-group row align-items-center">
-            <div class="col">
-              <label for="EL_OP">Remaining ELO</label>
-              <input type="number" class="form-control" id="R_EL_OP" style="text-align: right;" readonly placeholder="ELO">
+            <div class="col-4 mt-4">
+              <label for="EL_OP">Balance Leave :</label>
+              <!-- <input type="number" class="form-control" id="R_EL_OP" style="text-align: right;" readonly placeholder="ELO"> -->
             </div>
-            <div class="col">
-              <label for="EL">Remaining EL</label>
-              <input type="number" class="form-control" id="R_EL" style="text-align: right;" readonly placeholder="EL">
+            <div class="col-2">
+              <label for="EL">EL</label>
+              <input type="number" class="form-control" id="Balance_EL" style="text-align: right;" readonly placeholder="EL">
             </div>
-            <div class="col">
-              <label for="CL">Remaining CL</label>
+            <div class="col-2">
+              <label for="CL">CL</label>
               <input type="number" class="form-control" id="R_CL" style="text-align: right;" readonly placeholder="CL">
             </div>
-            <div class="col">
-              <label for="SL">Remaining SL</label>
+            <div class="col-2">
+              <label for="SL">SL</label>
               <input type="number" class="form-control" id="R_SL" style="text-align: right;" readonly placeholder="SL">
             </div>
-            <div class="col">
-              <label for="EGL">Remaining EGL</label>
+            <div class="col-2">
+              <label for="EGL">EGL</label>
               <input type="number" class="form-control" id="R_EGL" style="text-align: right;" readonly placeholder="EGL">
             </div>
           </div>

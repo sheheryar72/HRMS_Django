@@ -14,7 +14,7 @@ class HR_Leaves(models.Model):
     EL_OP = models.IntegerField(null=True)
     LA_CL = models.IntegerField(null=True)
     LA_SL = models.IntegerField(null=True)
-    LA_EL_OP = models.IntegerField(null=True)
+    # LA_EL_OP = models.IntegerField(null=True)
     LA_EL = models.IntegerField(null=True)
     LA_EGL = models.IntegerField(null=True)
     Tot_LA = models.IntegerField(null=True)

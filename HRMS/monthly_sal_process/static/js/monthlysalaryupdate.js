@@ -1128,9 +1128,11 @@ function get_salarystatus_distinct() {
         console.log("get_salarystatus_distinct response: ", data);
         var temp = ''
         data.forEach(element => {
-            temp += `<option value="${element.Stop_Salary}">${element.Stop_Salary}</option>`
+            if(element != ""){
+                temp += `<option value="${element}">${element}</option>`
+            }
         });
-        document.getElementById("Salary_Status").innerHTML = temp;
+        document.getElementById("Salary_Status").innerHTML += temp;
     });
 }
 
@@ -1216,6 +1218,7 @@ $(document).ready(function () {
     fillDesignationTableGrid()
     fillEmployeeTableGrid()
     fillGradeTableGrid()
+    get_salarystatus_distinct()
     // fillPayrollElementTableGrid()
     document.getElementById("InserRowID1").innerHTML = "";
     document.getElementById("InserRowID2").innerHTML = "";

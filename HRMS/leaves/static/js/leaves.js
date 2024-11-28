@@ -60,10 +60,10 @@ async function handleTableRowClick() {
     $('#FYID').val(FYID);
     $('#Emp_ID').val(Emp_ID);
     $('#EL_OP').val(EL_OP);
+    $('#EL').val(EL);
+    $('#TOTAL_EL').val(EL_OP + EL);
     $('#CL').val(CL);
     $('#SL').val(SL);
-    $('#EL').val(EL);
-    $('#EL').val(EL);
     $('#EGL').val(EGL);
     document.getElementById('Joining_Date').value = moment(Joining_Date).format("YYYY-MM-DD");
     document.getElementById("updateFormData").classList.remove("d-none");
@@ -71,24 +71,106 @@ async function handleTableRowClick() {
 
     data = await getLeaveById(Leave_ID);
 
-    $('#EL_OP').val(EL_OP);
+    let TOTAL_EL = data.EL_OP + data.EL
+
+    $('#EL').val(data.EL);
+    $('#EL_OP').val(data.EL_OP);
+    $('#TOTAL_EL').val(TOTAL_EL);
     $('#CL').val(data.CL);
     $('#SL').val(data.SL);
-    $('#EL').val(data.EL);
     $('#EGL').val(data.EGL);
     
-    $('#LA_EL_OP').val(data.LA_EL_OP);
+    let LA_EL = data.LA_EL
+
+    $('#LA_EL').val(LA_EL);
+    // $('#LA_EL').val(data.LA_EL);
     $('#LA_CL').val(data.LA_CL);
     $('#LA_SL').val(data.LA_SL);
-    $('#LA_EL').val(data.LA_EL);
     $('#LA_EGL').val(data.LA_EGL);
 
-    $('#R_EL_OP').val(EL_OP - data.EL_OP);
+    let BALANCE_EL = TOTAL_EL - LA_EL
+
+    $('#Balance_EL').val(BALANCE_EL);
     $('#R_CL').val(data.CL - data.LA_CL);
     $('#R_SL').val(data.SL - data.LA_SL);
-    $('#R_EL').val(data.EL - data.LA_EL);
     $('#R_EGL').val(data.EGL - data.LA_EGL);
 }
+
+
+// Attach event listener to all elements with the 'leave_balance_class' class
+Array.from(document.getElementsByClassName('leave_balance_class')).forEach(element => {
+    element.addEventListener('focusout', function() {
+        // Get input values and convert them to numbers
+        const EL = parseFloat(document.getElementById("EL").value) || 0;
+        const EL_OP = parseFloat(document.getElementById("EL_OP").value) || 0;
+        const CL = parseFloat(document.getElementById("CL").value) || 0;
+        const SL = parseFloat(document.getElementById("SL").value) || 0;
+        const EGL = parseFloat(document.getElementById("EGL").value) || 0;
+
+        const LA_EL = parseFloat(document.getElementById("LA_EL").value) || 0;
+        const LA_CL = parseFloat(document.getElementById("LA_CL").value) || 0;
+        const LA_SL = parseFloat(document.getElementById("LA_SL").value) || 0;
+        const LA_EGL = parseFloat(document.getElementById("LA_EGL").value) || 0;
+
+        // Calculate totals and balances
+        const TOTAL_EL = EL + EL_OP;
+        const Balance_EL = TOTAL_EL - LA_EL;
+        const R_CL = CL - LA_CL;
+        const R_SL = SL - LA_SL;
+        const R_EGL = EGL - LA_EGL;
+
+        // Set calculated values back to the respective fields
+        document.getElementById("TOTAL_EL").value = TOTAL_EL;
+        document.getElementById("Balance_EL").value = Balance_EL;
+        document.getElementById("R_CL").value = R_CL;
+        document.getElementById("R_SL").value = R_SL;
+        document.getElementById("R_EGL").value = R_EGL;
+    });
+});
+
+
+
+// document.getElementsByClassName('leave_balance_class').addEventListener('focusout', function(){
+    
+//     const EL = document.getElementById("EL").value;
+//     const EL_OP = document.getElementById("EL_OP").value;
+//     // const TOTAL_EL = document.getElementById("TOTAL_EL").value;
+//     const CL = document.getElementById("CL").value;
+//     const SL = document.getElementById("SL").value;
+//     const EGL = document.getElementById("EGL").value;
+
+//     const LA_EL = document.getElementById("LA_EL").value;
+//     const LA_CL = document.getElementById("LA_CL").value;
+//     const LA_SL = document.getElementById("LA_SL").value;
+//     const LA_EGL = document.getElementById("LA_EGL").value;
+
+//     // const Balance_EL = document.getElementById("Balance_EL").value;
+//     // const R_CL = document.getElementById("R_CL").value;
+//     // const R_SL = document.getElementById("R_SL").value;
+//     // const R_EGL = document.getElementById("R_EGL").value;
+
+//     let TOTAL_EL = EL + EL_OP
+
+//     // $('#EL').val(EL);
+//     // $('#EL_OP').val(EL_OP);
+//     $('#TOTAL_EL').val(TOTAL_EL);
+//     // $('#CL').val(CL);
+//     // $('#SL').val(SL);
+//     // $('#EGL').val(EGL);
+    
+//     $('#LA_EL').val(LA_EL);
+//     // $('#LA_CL').val(LA_CL);
+//     // $('#LA_SL').val(LA_SL);
+//     // $('#LA_EL').val(LA_EL);
+//     // $('#LA_EGL').val(LA_EGL);
+
+//     $('#Balance_EL').val(TOTAL_EL - LA_EL);
+//     $('#R_CL').val(CL - LA_CL);
+//     $('#R_SL').val(SL - LA_SL);
+//     $('#R_EGL').val(EGL - LA_EGL);
+
+// })
+
 
 // Handle click on delete button in table row
 function handleDeleteButtonClick() {
@@ -118,11 +200,16 @@ function handleCancelClick() {
     document.getElementById("EL").value = 0;
     document.getElementById("EGL").value = 0;
 
-    document.getElementById("LA_EL_OP").value = 0;
+    // document.getElementById("LA_EL_OP").value = 0;
     document.getElementById("LA_CL").value = 0;
     document.getElementById("LA_SL").value = 0;
     document.getElementById("LA_EL").value = 0;
     document.getElementById("LA_EGL").value = 0;
+
+    document.getElementById("Balance_EL").value = 0;
+    document.getElementById("R_SL").value = 0;
+    document.getElementById("R_CL").value = 0;
+    document.getElementById("R_EGL").value = 0;
 
     document.getElementById("Joining_Date").value = '';
 }
@@ -318,17 +405,21 @@ function handleInsertClick() {
     const Leave_ID = document.getElementById("Leave_ID").value;
     const FYID = document.getElementById("FYID").value;
     const Emp_ID = document.getElementById("Emp_ID").value;
+
     const EL_OP = document.getElementById("EL_OP").value;
     const CL = document.getElementById("CL").value;
     const SL = document.getElementById("SL").value;
     const EL = document.getElementById("EL").value;
     const EGL = document.getElementById("EGL").value;
 
-    const LA_EL_OP = document.getElementById("LA_EL_OP").value;
+    // const LA_EL_OP = document.getElementById("LA_EL_OP").value;
+    const LA_EL = document.getElementById("LA_EL").value;
     const LA_CL = document.getElementById("LA_CL").value;
     const LA_SL = document.getElementById("LA_SL").value;
-    const LA_EL = document.getElementById("LA_EL").value;
     const LA_EGL = document.getElementById("LA_EGL").value;
+    // const LA_EL = document.getElementById("LA_EL").value;
+
+    let Total_Avail = Number(LA_EL) + Number(LA_CL) + Number(LA_SL) + Number(LA_EGL)
 
     const data = {
         Leaves_ID: Number(Leave_ID),
@@ -339,11 +430,11 @@ function handleInsertClick() {
         SL: Number(SL),
         EL: Number(EL),
         EGL: Number(EGL),
-        LA_EL_OP: Number(LA_EL_OP),
         LA_CL: Number(LA_CL),
         LA_SL: Number(LA_SL),
-        LA_EL: Number(LA_EL),
-        LA_EGL: Number(LA_EGL)
+        LA_EL: Number(LA_E),
+        LA_EGL: Number(LA_EGL),
+        Tot_LA: Number(Total_Avail)
     }
     createLeave(data);
 }
@@ -358,11 +449,12 @@ function handleUpdateClick() {
     const EL = document.getElementById("EL").value;
     const EGL = document.getElementById("EGL").value;
 
-    const LA_EL_OP = document.getElementById("LA_EL_OP").value;
+    const LA_EL = document.getElementById("LA_EL").value;
     const LA_CL = document.getElementById("LA_CL").value;
     const LA_SL = document.getElementById("LA_SL").value;
-    const LA_EL = document.getElementById("LA_EL").value;
     const LA_EGL = document.getElementById("LA_EGL").value;
+
+    let Total_Avail = Number(LA_EL) + Number(LA_CL) + Number(LA_SL) + Number(LA_EGL)
 
     const data = {
         Leaves_ID: Number(Leave_ID),
@@ -373,11 +465,11 @@ function handleUpdateClick() {
         SL: Number(SL),
         EL: Number(EL),
         EGL: Number(EGL),
-        LA_EL_OP: Number(LA_EL_OP),
         LA_CL: Number(LA_CL),
         LA_SL: Number(LA_SL),
         LA_EL: Number(LA_EL),
-        LA_EGL: Number(LA_EGL)
+        LA_EGL: Number(LA_EGL),
+        Tot_LA: Number(Total_Avail)
     }
     updateLeave(Leave_ID, data);
     fillTableGrid();

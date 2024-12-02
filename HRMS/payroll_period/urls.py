@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import payrollperiod_view, get_all_finYear, get_byid_finYear, add_finYear, delete_finYear, update_finYear, get_allpayrollperiod, update_month
+# from .views import payrollperiod_view, get_all_finYear, get_byid_finYear, add_finYear, delete_finYear, update_finYear, get_allpayrollperiod, update_month
+from .views import *
 
 urlpatterns = [
     path('', payrollperiod_view),
@@ -10,6 +11,8 @@ urlpatterns = [
     path('delete/<int:id>', delete_finYear, name='delete_finYear'),
     path('getallpayrollperiod/<int:id>', get_allpayrollperiod, name='get_allpayrollperiod'),
     path('updatemonth/<int:id>', update_month, name='upate_month'),
+    path('update_payroll_final_status/<int:id>/<str:payroll_type>/<int:payroll_status>', update_payroll_final_status, name='update_payroll_final_status'
+)
 ]
 
     

@@ -225,7 +225,9 @@ def get_allpayrollperiod(request, id):
                 'MNTH_ID': item.MNTH_ID.MNTH_ID,
                 'MNTH_NO': item.MNTH_ID.MNTH_NO,
                 'MNTH_NAME': item.MNTH_ID.MNTH_NAME,
-                'MNTH_SHORT_NAME': item.MNTH_ID.MNTH_SHORT_NAME
+                'MNTH_SHORT_NAME': item.MNTH_ID.MNTH_SHORT_NAME,
+                'PAYROLL_FINAL': item.PAYROLL_FINAL,
+                'PAYSHEET_FINAL': item.PAYSHEET_FINAL
             }
             data_list.append(single_pp)
 
@@ -260,3 +262,80 @@ def update_month(request, id):
 
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# @api_view(['PUT'])
+# def update_payroll_final_status(request, id, payroll_type, payroll_status):
+#     # try:
+#     #      # Deactivate all other payroll periods
+#     #     if payroll_type == 'paysheet':
+#     #         HR_PAYROLL_PERIOD.objects.get(pk=id).update(PAYSHEET_FINAL=payroll_status)
+#     #     elif payroll_type == 'process':
+#     #         HR_PAYROLL_PERIOD.objects.get(pk=id).update(PAYROLL_FINAL=payroll_status)
+
+#     #     queryData = HR_PAYROLL_PERIOD.objects.get(pk=id)
+#     #     queryData.
+#     # except HR_PAYROLL_PERIOD.DoesNotExist:
+#     #     return Response({'error': 'Payroll Month not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+#     try:
+#         queryData = HR_PAYROLL_PERIOD.objects.get(pk=id)
+#         print('queryData: ', queryData.__dict__)
+#         print('payroll_type: ', payroll_type)
+#         if payroll_type == 'paysheet':
+#             print('if paysheet')
+#             queryData.PAYSHEET_FINAL = True
+#         elif payroll_type == 'process':
+#             print('if process')
+#             queryData.PAYROLL_FINAL = True
+
+#         queryData.save()
+#         serializer = HR_PAYROLL_PERIOD_Serializer(queryData)
+#         if serializer.is_valid():
+#         #     updated_instance = serializer.save()
+#         #     serialized_data = HR_PAYROLL_PERIOD_Serializer(updated_instance).data
+#             return Response(serializer, status=status.HTTP_200_OK)
+
+#         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+#     except Exception as e:
+#         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['PUT'])
+def update_payroll_final_status(request, id, payroll_type, payroll_status):
+    try:
+        # Convert payroll_status to a boolean if it's 1 or 0
+        if isinstance(payroll_status, int):
+            payroll_status = bool(payroll_status)
+        elif isinstance(payroll_status, str):
+            payroll_status = payroll_status.lower() == 'true'
+        else:
+            return Response({'error': 'Invalid payroll_status value'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Fetch the HR_PAYROLL_PERIOD instance
+        try:
+            queryData = HR_PAYROLL_PERIOD.objects.get(pk=id)
+        except HR_PAYROLL_PERIOD.DoesNotExist:
+            return Response({'error': 'Payroll Month not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Update based on payroll_type
+        if payroll_type == 'paysheet':
+            queryData.PAYSHEET_FINAL = payroll_status
+        elif payroll_type == 'process':
+            queryData.PAYROLL_FINAL = payroll_status
+        else:
+            return Response({'error': 'Invalid payroll_type'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Save the updated instance
+        queryData.save()
+
+        # Serialize and return the updated instance
+        serializer = HR_PAYROLL_PERIOD_Serializer(queryData)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({'error': f"An error occurred: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+

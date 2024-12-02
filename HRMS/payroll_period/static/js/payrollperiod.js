@@ -96,6 +96,25 @@ function handlePeriodMonthTableRowClick() {
     }
 }
 
+async function updatePeriodMonth(id) {
+    try {
+        const response = await fetch(`${BASE_URL}/payroll_period/updatemonth/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Failed to Update Period Month');
+        }
+        return true;
+    } catch (error) {
+        console.error(`Error Which Activating Period Month with ID ${id}:`, error);
+        return false;
+    }
+}
+
 function handleCancelClick() {
     document.getElementById("FYID").readOnly = true;
     document.getElementById("FYID").value = '';
@@ -359,9 +378,9 @@ async function deleteFinancialYear(id) {
     }
 }
 
-async function updatePeriodMonth(id) {
+async function update_payroll_final_status(id, payroll_type, payroll_status) {
     try {
-        const response = await fetch(`${BASE_URL}/payroll_period/updatemonth/${id}`, {
+        const response = await fetch(`${BASE_URL}/payroll_period/update_payroll_final_status/${id}/${payroll_type}/${payroll_status}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -377,6 +396,8 @@ async function updatePeriodMonth(id) {
         return false;
     }
 }
+
+
 
 function fillTableGrid() {
     getAllFinancialYears().then((data) => {
@@ -398,6 +419,29 @@ function fillTableGrid() {
     });
 }
 
+function updatePayrollStatus(payroll_type, payroll_status, payroll_id){
+    // alert()
+
+    // const rowData = table2.row($(this).closest('tr')).data();
+    // console.log('rowData: ', rowData);
+    // const PERIOD_ID = rowData[1];
+    // const FINID = rowData[2];
+    console.log('payroll_id: ', payroll_id);
+    console.log('Payroll_Final_Check: ', payroll_status);
+    console.log('payroll_type: ', payroll_type);
+    if (confirm("Are you sure you want to Active this Period Month?")) {
+        update_payroll_final_status(payroll_id, payroll_type, payroll_status).then(success => {
+            if (success) {
+                displaySuccessMessage('Period Month activated successfully!');
+                fillTable2Grid(payroll_id); 
+            } else {
+                displayErrorMessage('Failed to activate Period Month. Please try again.');
+            }
+        });
+    }
+
+}
+
 function fillTable2Grid(id = current_finyear.FYID) {
     console.log('fillTable2Grid: ' ,id)
     getAllPayrollPeriod(id).then((data) => {
@@ -405,15 +449,41 @@ function fillTable2Grid(id = current_finyear.FYID) {
         var counter = 1;
         table2.clear().draw();
         for (var i = 0; i < data.length; i++) {
-            var actionButton = '<button class="action-btn btn-success rowperiodmonthclass">Active</button>';
+
+            // var actionButton = '<button class="action-btn btn-success rowperiodmonthclass">Active</button>';
+
+            var actionButton = `
+        <button class="status-toggle rowperiodmonthclass" style="background-color: green; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px;">
+            ${data[i].PERIOD_STATUS ? 'Active' : 'Not Active'}
+        </button>
+        `;
+
+        //     var action_paysheet_final = `<span class="mark-true" onclick="updatePayrollStatus('paysheet', 1, ${data[i].ID})">
+        //   <i class="fas fa-check-circle" style="color: green; cursor: pointer;"></i>
+        // </span>
+        // <span class="mark-false" onclick="updatePayrollStatus('paysheet', 0)">
+        //   <i class="fas fa-times-circle" style="color: red; cursor: pointer;"></i>
+        // </span>`
+
+        var action_paysheet_final = `
+        <button class="status-toggle" onclick="updatePayrollStatus('paysheet', ${data[i].PAYSHEET_FINAL ? '0': '1'}, ${data[i].ID})" style="background-color: green; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px;">
+            ${data[i].PAYSHEET_FINAL ? 'Final' : 'Not Final'}
+        </button>
+        `;
+
+        var action_process_final = `
+        <button class="status-toggle" onclick="updatePayrollStatus('process', ${data[i].PAYROLL_FINAL ? '0': '1'}, ${data[i].ID})" style="background-color: green; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px;">
+            ${data[i].PAYROLL_FINAL ? 'Final' : 'Not Final'}
+        </button>
+        `;
         //     var row = [counter, data[i].ID, data[i].FYID, data[i].FinYear, data[i].MNTH_ID,
         //     data[i].MNTH_NO, data[i].MNTH_NAME, data[i].MNTH_SHORT_NAME, data[i].PERIOD_STATUS ? 'Active' : 'In-Active',
         //     // data[i].FianYear.FYID == current_finyear.FYID ? actionButton : ''
         // actionButton];
 
             var row = [counter, data[i].ID, data[i].FYID, data[i].FinYear, data[i].MNTH_ID,
-            data[i].MNTH_NO, data[i].MNTH_NAME, data[i].MNTH_SHORT_NAME, data[i].PERIOD_STATUS ? 'Active' : 'In-Active',
-        actionButton];
+            data[i].MNTH_NO, data[i].MNTH_NAME, data[i].MNTH_SHORT_NAME,
+        actionButton,action_paysheet_final, action_process_final];
 
             table2.row.add(row).draw(false);
             counter++;

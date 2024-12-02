@@ -20,6 +20,17 @@ label{
 .form-group {
     margin-bottom: 0.5rem !important;
 }
+
+
+.status-toggle {
+  font-size: 10px;
+  font-weight: bold;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.status-toggle:hover {
+  opacity: 0.9;
+}
 </style>
 
 <div class="container">
@@ -88,15 +99,17 @@ label{
         <thead class="" style="background-color: black;">
           <tr>
             <th style="width: 7%;">S. No</th>
-            <th style="width: 9%;">ID</th>
-            <th style="width: 15%;">Fin Year ID</th>
-            <th style="width: 15%;">Fin Year</th>
+            <th style="width: 5%;">ID</th>
+            <th style="width: 10%;">Fin Year ID</th>
+            <th style="width: 10%;">Fin Year</th>
             <th style="width: 10%;">Month ID</th>
-            <th style="width: 10%;">Month No</th>
+            <th style="width: 8%;">Month No</th>
             <th style="width: 10%;">Month Name</th>
-            <th style="width: 10%;">M.S Name</th>
-            <th style="width: 10%;">Period Status</th>
-            <th style="width: 7%;">Action</th>
+            <th style="width: 8%;">M.S Name</th>
+            <!-- <th style="width: 10%;">Period Status</th> -->
+            <th style="width: 10%;">Action</th>
+            <th style="width: 12%;">Sheet Final</th>
+            <th style="width: 12%;">Process Final</th>
           </tr>
         </thead>
         <tbody id="InserRowID2">

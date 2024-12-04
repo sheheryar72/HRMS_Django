@@ -873,111 +873,80 @@ def add_salary_update(request):
 #         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
 @api_view(['POST'])
 def update_salary_update(request, empupid, payroll_id):
+    """
+    Updates salary master and detail records for a given employee and payroll.
+    """
     try:
-        # import pdb
-        # pdb.set_trace()
-        # Fetch master data
-        try:
-            master_instance = HR_Emp_Monthly_Sal_Mstr.objects.filter(Emp_Up_ID=empupid, Payroll_ID__PAYROLL_ID=payroll_id).first()
-            print('master_instance: ', master_instance.__dict__)
-        except HR_Emp_Monthly_Sal_Mstr.DoesNotExist:
+        # Fetch master instance
+        master_instance = HR_Emp_Monthly_Sal_Mstr.objects.filter(
+            Emp_Up_ID=empupid, 
+            Payroll_ID__PAYROLL_ID=payroll_id
+        ).first()
+        
+        if not master_instance:
             return Response({'error': 'No salary record found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Log fetched master instance
+        print('Master instance fetched:', master_instance)
 
-        print('request.data.get("masterData": sheheryar', request.data.get("masterData", {}))
-        # Handle master data update
-        master_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(master_instance, data=request.data.get("masterData", {}), partial=True)
+        # Validate and update master data
+        master_data = request.data.get("masterData", {})
+        master_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(
+            master_instance, 
+            data=master_data, 
+            partial=True
+        )
 
         if not master_serializer.is_valid():
             return Response(master_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        master_instance = master_serializer.save()
-        print('master_serializer.data: ', master_serializer.data)
-        print('master_instance: ', master_instance)
-        print('master data saved')
+        # Save changes to master instance
+        with transaction.atomic():
+            master_instance = master_serializer.save()
 
-        # Retrieve detail data list from the request
-        detailList = request.data.get('detailList', [])
-        for detail_data in detailList:
-            # Prepare the data to be saved
-            detail_data['Emp_Up_ID'] = master_instance.Emp_Up_ID
-            detail_data['Emp_ID'] = master_instance.Emp_ID.Emp_ID
-            detail_data['Payroll_ID'] = master_instance.Payroll_ID.PAYROLL_ID
+        print('Master data updated successfully.')
 
-            # Check if a matching record already exists
+        # Process detail data
+        detail_list = request.data.get('detailList', [])
+        for detail_data in detail_list:
+            detail_data.update({
+                'Emp_Up_ID': master_data.get("Emp_Up_ID"),
+                'Emp_ID': master_data.get("Emp_ID"),
+                'Payroll_ID': master_data.get("Payroll_ID")
+            })
+
+            # Check if detail record exists
             detail_instance = HR_Emp_Monthly_Sal_Dtl.objects.filter(
-                Emp_Up_ID=master_instance.Emp_Up_ID,
-                Emp_ID=master_instance.Emp_ID.Emp_ID,
-                Payroll_ID=master_instance.Payroll_ID.PAYROLL_ID,
-                Element_ID=detail_data.get('Element_ID')  # Assuming 'Element_ID' uniquely identifies the record
+                Emp_Up_ID=master_data.get("Emp_Up_ID"),
+                Emp_ID=master_data.get("Emp_ID"),
+                Payroll_ID=master_data.get("Payroll_ID"),
+                Element_ID=detail_data.get('Element_ID')
             ).first()
 
-            print('detail_instance: ', detail_instance)
-            if detail_instance:
-                # Update existing record
-                detail_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(detail_instance, data=detail_data, partial=True)
-            else:
-                # Create a new record if none exists
-                detail_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(data=detail_data)
+            # Choose serializer for update or create
+            detail_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(
+                detail_instance, 
+                data=detail_data, 
+                partial=bool(detail_instance)
+            )
 
-            # Validate and save each detail record
-            if detail_serializer.is_valid():
-                detail_serializer.save()
-                print(f"Detail record saved for Element_ID: {detail_data.get('Element_ID')}")
-            else:
+            if not detail_serializer.is_valid():
                 return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Save detail record
+            with transaction.atomic():
+                detail_serializer.save()
 
+            print(f"Detail record processed for Element_ID: {detail_data.get('Element_ID')}")
+
+        # Return success response
         return Response(master_serializer.data, status=status.HTTP_200_OK)
-        # else:
-            # return Response(master_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     except Exception as e:
+        print(f"Error occurred: {e}")
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-# @api_view(['POST'])
-# def update_salary_update_old(request, empupid):
-    try:
-        # Fetch master data
-        try:
-            master_instance = HR_Emp_Monthly_Sal_Mstr.objects.get(pk=empupid)
-        except HR_Emp_Monthly_Sal_Mstr.DoesNotExist:
-            return Response({'error': 'No salary record found'}, status=status.HTTP_404_NOT_FOUND)
-
-        # Handle master data update
-        master_serializer = HR_Emp_Monthly_Sal_Mstr_Serializer(master_instance, data=request.data.get("masterData", {}), partial=True)
-        if master_serializer.is_valid():
-            master_instance = master_serializer.save()
-            print("Master updated")
-            print("Master serializer data:", master_serializer.data)
-            print('master_instance.Emp_ID: ', master_instance.Emp_ID)
-
-            detailList = request.data.get('detailList', [])
-            for detail_data in detailList:
-                detail_data['Emp_Up_ID'] = master_instance.Emp_Up_ID
-                detail_data['Emp_ID'] = master_instance.Emp_ID.Emp_ID
-                detail_data['Payroll_ID'] = master_instance.Payroll_ID.PAYROLL_ID
-
-                # Handle detail data update
-                detail_serializer = HR_Emp_Monthly_Sal_Dtl_Serializer(data=detail_data)
-                if detail_serializer.is_valid():
-                    detail_serializer.save()
-                    print("Detail updated")
-                else:
-                    return Response(detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-                
-            return Response(master_serializer.data, status=status.HTTP_200_OK)
-        else:
-            # Print serializer errors for debugging
-            print("Master serializer errors:", master_serializer.errors)
-            return Response(master_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    except Exception as e:
-        # Print exception for debugging
-        print("Exception:", str(e))
-        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-    
 
 # @api_view(['PUT'])
 # def update_salary_Update(request, pk):
@@ -1075,6 +1044,7 @@ def getall_master_byid(request, empUpID, empID, payroll_id):
                     "Bank_Name": data.Emp_Up_ID.Bank_Name,
                     "Stop_Salary": data.Emp_Up_ID.Stop_Salary,
                     'Payroll_ID': data.Payroll_ID.PAYROLL_ID,
+                    'Salary_Status': data.Emp_Up_ID.Salary_Status,
                     'Payroll_Name': f'{data.Payroll_ID.MNTH_ID.MNTH_NAME} {data.Payroll_ID.FYID.FinYear}',
                 }
         

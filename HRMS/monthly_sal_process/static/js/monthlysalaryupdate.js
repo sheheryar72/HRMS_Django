@@ -414,7 +414,7 @@ function handleUpdateClick() {
         { value: Marital_Status, name: "Marital Status", element: document.getElementById("Marital_Status") },
         // { value: No_of_Children, name: "Number of Children", element: document.getElementById("No_of_Children") },
         { value: grossSalary, name: "Gross Salary", element: document.getElementById("GrossSalary") },
-        { value: Transfer_Type, name: "Transfer Type", element: document.getElementById("Transfer_Type") },
+        // { value: Transfer_Type, name: "Transfer Type", element: document.getElementById("Transfer_Type") },
         // { value: Account_No, name: "Account Number", element: document.getElementById("Account_No") },
         // { value: Bank_Name, name: "Bank Name", element: document.getElementById("Bank_Name") },
         { value: Stop_Salary, name: "Stop Salary", element: document.getElementById("Stop_Salary") },

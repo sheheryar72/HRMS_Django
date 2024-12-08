@@ -48,7 +48,7 @@
 
                 <div class=" text-center" id="formHeading"
                     style="color: #343a40; font-size: 30px; width: 90%; line-height: 3.77rem; font-weight: 800 !important; font-family: system-ui; text-transform: uppercase;">
-                    {% block pagetitle %} Dashboard {% endblock %}
+                    {% block pagetitle %} HRMS Dashboard {% endblock %}
                 </div>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -93,12 +93,11 @@
 
         document.addEventListener("DOMContentLoaded", function () {
 
-            // const auth_token = localStorage.getItem("auth_token")
+            const Emp_Name = localStorage.getItem("Emp_Name");
+            document.getElementById('current_username').innerText = Emp_Name;
             const Profile_ID = localStorage.getItem("Profile_ID");
-            // alert('test')
-            // console.log('auth_token: ', auth_token)
             console.log('Profile_ID: ', Profile_ID)
-            // console.log('token: ', token)
+            // alert('test')
 
             if (Profile_ID == '' || Profile_ID == null) {
                 logout_func()

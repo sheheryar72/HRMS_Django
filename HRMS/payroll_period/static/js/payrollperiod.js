@@ -419,13 +419,13 @@ function fillTableGrid() {
     });
 }
 
-function updatePayrollStatus(payroll_type, payroll_status, payroll_id){
+function updatePayrollStatus(thisDoc, payroll_type, payroll_status, payroll_id){
     // alert()
 
-    // const rowData = table2.row($(this).closest('tr')).data();
+    const rowData = table2.row($(thisDoc).closest('tr')).data();
     // console.log('rowData: ', rowData);
     // const PERIOD_ID = rowData[1];
-    // const FINID = rowData[2];
+    const FINID = rowData[2];
     console.log('payroll_id: ', payroll_id);
     console.log('Payroll_Final_Check: ', payroll_status);
     console.log('payroll_type: ', payroll_type);
@@ -433,7 +433,8 @@ function updatePayrollStatus(payroll_type, payroll_status, payroll_id){
         update_payroll_final_status(payroll_id, payroll_type, payroll_status).then(success => {
             if (success) {
                 displaySuccessMessage('Period Month activated successfully!');
-                fillTable2Grid(payroll_id); 
+                // fillTable2Grid(payroll_id); 
+                fillTable2Grid(FINID);
             } else {
                 displayErrorMessage('Failed to activate Period Month. Please try again.');
             }
@@ -466,13 +467,13 @@ function fillTable2Grid(id = current_finyear.FYID) {
         // </span>`
 
         var action_paysheet_final = `
-        <button class="status-toggle" onclick="updatePayrollStatus('paysheet', ${data[i].PAYSHEET_FINAL ? '0': '1'}, ${data[i].ID})" style="background-color: green; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px;">
+        <button class="status-toggle" onclick="updatePayrollStatus(this, 'paysheet', ${data[i].PAYSHEET_FINAL ? '0': '1'}, ${data[i].ID})" style="background-color: green; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px;">
             ${data[i].PAYSHEET_FINAL ? 'Final' : 'Not Final'}
         </button>
         `;
 
         var action_process_final = `
-        <button class="status-toggle" onclick="updatePayrollStatus('process', ${data[i].PAYROLL_FINAL ? '0': '1'}, ${data[i].ID})" style="background-color: green; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px;">
+        <button class="status-toggle" onclick="updatePayrollStatus(this, 'process', ${data[i].PAYROLL_FINAL ? '0': '1'}, ${data[i].ID})" style="background-color: green; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 5px;">
             ${data[i].PAYROLL_FINAL ? 'Final' : 'Not Final'}
         </button>
         `;

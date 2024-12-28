@@ -8,7 +8,7 @@ from payroll_period. models import HR_PAYROLL_PERIOD
 
 class HR_Emp_Monthly_Sal_Mstr(models.Model):
     Emp_Up_ID = models.AutoField(primary_key=True)
-    Emp_Up_Date = models.DateTimeField(auto_now_add=True)
+    Emp_Up_Date = models.DateField(auto_now_add=True)
     Emp_Category = models.CharField(max_length=100)
     Marital_Status = models.CharField(max_length=50)
     No_of_Children = models.IntegerField(null=True, blank=True)

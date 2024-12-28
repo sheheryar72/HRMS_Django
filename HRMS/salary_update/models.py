@@ -7,7 +7,7 @@ from payroll_element.models import HR_Payroll_Elements
 
 class HR_Emp_Sal_Update_Mstr(models.Model):
     Emp_Up_ID = models.IntegerField(primary_key=True)
-    Emp_Up_Date = models.DateTimeField(auto_now_add=False)
+    Emp_Up_Date = models.DateField(auto_now_add=False)
     Emp_Category = models.CharField(max_length=100)
     Marital_Status = models.CharField(max_length=50)
     No_of_Children = models.IntegerField(null=True, blank=True)

@@ -1,0 +1,123 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+
+
+# Django specific
+*.log
+*.pot
+*.pyc
+*.pyo
+*.sqlite3
+db.sqlite3
+*.env
+
+# Django migrations
+**/migrations/
+!**/migrations/__init__.py
+
+# Media and static files
+media/
+static/
+staticfiles/
+node_modules/
+
+# Environment variables
+.env
+*.env
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*.swnl
+*.swo
+*.swoa
+*.swpl
+*.swnl
+
+# macOS specific
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Python virtual environment
+venv/
+env/
+ubuntu_venv/
+
+# pipenv specific
+Pipfile.lock
+Pipfile
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+
+# Test and debugging files
+test-results/
+pytest_cache/
+.tox/
+
+# .NET Specific
+# User-specific files
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+*.ilk
+*.meta
+*.obj
+*.pch
+*.pdb
+*.rsp
+*.suo
+*.tlb
+*.tli
+*.tmp
+*.log
+*.vspscc
+.vscode/
+.vs/
+
+# Distribution files
+*.exe
+*.dll
+*.pyc
+*.pyo
+*.log
+*.sql
+*.sqlite
+
+# Package files
+*.nupkg
+*.snupkg
+
+# OS Generated Files
+*.DS_Store
+*.AppleDouble
+*.LSOverride
+Thumbs.db
+Desktop.ini

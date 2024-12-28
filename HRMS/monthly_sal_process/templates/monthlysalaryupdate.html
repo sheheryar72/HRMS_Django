@@ -1,0 +1,444 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %} Monthly Salary Update {% endblock %}
+{% block pagetitle %} Monthly Salary Update {% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/salaryprocess.css' %}">
+
+<style>
+    .form-control[readonly] {
+        background-color: #343a40;
+        color: #FFF;
+        opacity: 1;
+    }
+
+    .SearchIconCLass {
+        padding: 2px;
+        color: white;
+        border: solid white 3px;
+    }
+
+    /* Ensure the modal content is not wider than the screen */
+    .modal-dialog {
+        max-width: 50%;
+    }
+
+    /* Allow table cells to wrap content */
+    .table td,
+    .table th {
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    /* Prevent table cells from collapsing */
+    .table td,
+    .table th {
+        border-collapse: separate;
+    }
+
+    /* Set the width of the table to auto */
+    .table-auto {
+        width: auto;
+    }
+
+    /* Set the table-layout property to auto to adjust column widths based on content */
+    .table {
+        table-layout: auto;
+    }
+
+    /* Ensure column names are shown in one line */
+    .table th {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    tbody#InserRowID1 input {
+        width: -webkit-fill-available;
+    }
+
+    tbody#InserRowID2 input {
+        width: -webkit-fill-available;
+    }
+    .text-danger {
+        color: red;
+        font-size: 15px;
+    }
+.dropdown_disable {
+    pointer-events: none;  /* Disable interaction */
+    background-color: #f0f0f0; /* Change background to indicate non-interactivity */
+    color: #888; /* Change text color to indicate non-interactivity */
+    cursor: not-allowed; /* Change cursor to indicate non-interactivity */
+}
+</style>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-10"> <!-- Increased form width -->
+            <div class="form-container">
+                <form id="myForm">
+                    <div id="alertMessage"></div>
+                    <!-- First row -->
+                    <div class="form-group row align-items-center">
+                        <label for="Payroll_ID" class="col-sm-2 col-form-label col-form-label-sm">Period</label>
+                        <div class="col-sm-4">
+                            <select class="form-control form-control-sm" id="Search_Payroll_ID">
+                            </select>
+                        </div>
+                    
+                        <label for="Emp_Up_ID" class="col-sm-2 col-form-label col-form-label-sm">Update ID</label>
+                        <div class="col-sm-3">
+                            <input type="number" class="form-control form-control-sm" id="Emp_Up_ID" readonly />
+                        </div>
+                    
+                        <div class="col-sm-1 d-flex align-items-center">
+                            <i class="fa fa-search SearchIconCLass" id="empupdateGridIconId" data-toggle="modal" data-target="#orangeModalSubscription4" style="cursor: pointer;"></i>
+                        </div>
+                    </div>
+                    <div class="form-group row align-items-center">
+                        <label for="input1" class="col-sm-2 col-form-label">Emp ID</label>
+                        <div class="col-sm-4">
+                            <input type="number" class="form-control" id="Emp_ID_" placeholder="Salary Update ID"
+                                readonly>
+                        </div>
+                        <label for="input1" class="col-sm-2 col-form-label">Update Date<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <input type="date" class="form-control" id="Emp_Up_Date" placeholder="Salary Date" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group row align-items-center">
+                        <label for="input5" class="col-sm-2 col-form-label">Employee<span class="text-danger"> *</span></label>
+                        <div class="col-sm-6">
+                            <select class="form-control form-control-sm dropdown_disable" id="Emp_ID" disabled aria-readonly="true">
+                            </select>
+                        </div>
+                        <label for="input5" class="col-sm-2 col-form-label">HR Emp Code<span class="text-danger"> *</span></label>
+                        <div class="col-sm-2">
+                            <input type="number" class="form-control form-control-sm" id="HR_Emp_ID"
+                                placeholder="HR Code" readonly />
+                        </div>
+                    </div>
+                    <div class="form-group row align-items-center">
+                        <label for="input5" class="col-sm-2 col-form-label">Designation<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control form-control-sm dropdown_disable" id="DSG_ID" disabled>
+                            </select>
+                        </div>
+                        <label for="input5" class="col-sm-2 col-form-label">Company<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control form-control-sm dropdown_disable" id="CO_ID" disabled>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- <div class="form-group row align-items-center">
+                        <label for="input5" class="col-sm-2 col-form-label">Department<span class="text-danger"> *</span></label>
+                        <div class="col-sm-5">
+                            <select class="form-control form-control-sm dropdown_disable" disabled id="Dept_ID">
+                            </select>
+                        </div>
+                        <label for="input5" class="col-sm-2 col-form-label">Payroll Period<span class="text-danger"> *</span></label>
+                        <div class="col-sm-3">
+                            <input type="text" class="form-control form-control-sm" id="Payroll_ID" placeholder="Payroll Payroll" readonly />
+                        </div>
+                    </div> -->
+                    <div class="form-group row align-items-center">
+                        <label for="input5" class="col-sm-2 col-form-label">Department<span class="text-danger"> *</span></label>
+                        <div class="col-sm-10">
+                            <select class="form-control form-control-sm dropdown_disable" disabled id="Dept_ID">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row align-items-center">
+                        <label for="input5" class="col-sm-2 col-form-label">Grade<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control form-control-sm dropdown_disable" disabled id="Grade_ID">
+                            </select>
+                        </div>
+                        <label for="input5" class="col-sm-2 col-form-label">Emp Category<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control form-control-sm dropdown_disable" disabled id="Emp_Category">
+                                <option value="Manager">Manager</option>
+                                <option value="Executive Staff">Executive Staff</option>
+                                <option value="Jonior Stafff">Jonior Stafff</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row align-items-center">
+                        <label for="input5" class="col-sm-2 col-form-label">Marital Status<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control form-control-sm dropdown_disable" disabled id="Marital_Status">
+                                <option value="Single">Single</option>
+                                <option value="Married">Married</option>
+                            </select>
+                        </div>
+                        <label for="input6" class="col-sm-2 col-form-label">No of Children</label>
+                        <div class="col-sm-4">  
+                            <input type="number" class="form-control" id="No_of_Children" readonly placeholder="No of Children">
+                        </div>
+                    </div>
+                    <div class="form-group row align-items-center">
+                        <label for="input6" class="col-sm-2 col-form-label">Transfer Type<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control form-control-sm dropdown_disable" disabled id="Transfer_Type">
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Check">Check</option>
+                                <option value="Cash">Cash</option>
+                            </select>
+                        </div>
+                        <label for="input6" class="col-sm-2 col-form-label">Account No<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" class="form-control" id="Account_No" readonly placeholder="Account No">
+                        </div>
+                    </div>
+                    <div class="form-group row align-items-center">
+                        <label for="input6" class="col-sm-2 col-form-label">Bank Name<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <input type="text" class="form-control" id="Bank_Name" readonly placeholder="Bank Name">
+                        </div>
+                        <label for="input6" class="col-sm-2 col-form-label">Stop Salary<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control form-control-sm" disabled id="Stop_Salary">
+                                <option value="0">Not Stop</option>
+                                <option value="1">Stop</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- <div class="form-group row align-items-center">
+                        <label for="input5" class="col-sm-2 col-form-label">Gross Salary<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" class="form-control" style="text-align: right;" id="GrossSalary" placeholder="Gross Salary" readonly>
+                        </div>
+                        <label for="input6" class="col-sm-2 col-form-label">Salary Status<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control form-control-sm"  id="Salary_Status">
+                                <option value="Salary in Pending">Salary in Pending</option>
+                                <option value="Salary Processed">Salary Processed</option>
+                            </select>
+                        </div>
+                        <input type="text" class="form-control form-control-sm" id="addOption" placeholder="Add custom value">
+                        <button class="btn btn-sm btn-dark" id="addOptionButton" type="button">Add</button>
+                    </div> -->
+                    
+
+                    <div class="form-group row align-items-center">
+                        <label for="input5" class="col-sm-2 col-form-label">Gross Salary<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <input type="number" class="form-control" style="text-align: right;" id="GrossSalary" placeholder="Gross Salary" readonly>
+                        </div>
+                        <label for="input6" class="col-sm-2 col-form-label">Salary Status<span class="text-danger"> *</span></label>
+                        <div class="col-sm-4">
+                            <select class="form-control form-control-sm" id="Salary_Status">
+                                <!-- <option value="Salary in Pending">Salary in Pending</option> -->
+                                <!-- <option value="Salary Processed">Salary Processed</option> -->
+                                <option value="Add custom value">Add custom value</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row align-items-center" id="customValueContainer" style="display: none;">
+                        <!-- <div class="col-sm-4"></div> -->
+                        <label for="addOption" class="col-sm-2 col-form-label">Custom Value</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control form-control-sm" id="addOption" placeholder="Add custom value">
+                        </div>
+                        <div class="col-sm-1 text-right">
+                            <button class="btn btn-sm btn-dark" id="addOptionButton" type="button">Add</button>
+                        </div>
+                    </div>
+
+                    
+                    <div class="form-group row align-items-center">
+                        <label for="input5" class="col-sm-2 col-form-label">Remarks</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="Remarks" placeholder="Remarks">
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <!-- <button type="button" id="insertFormData" class="btn btn-dark mr-2">Create</button> -->
+                        <button type="button" id="updateFormData" class="btn btn-dark mr-2 d-none">Update</button>
+                        <!-- <button type="button" id="saveNewBtnId" class="btn btn-dark mr-2 d-none">Save as New</button> -->
+                        <button type="button" id="CancelFormData" class="btn btn-dark">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section>
+
+
+    <div class="mt-3">
+        <div class="row">
+            <div class="col-sm-2">
+            </div>
+            <div class="col-sm-2">
+                <div class="form-group">
+                    <span class="form-label">Select Element: </span>
+                </div>
+            </div>
+
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <!-- <select class="form-control" name="" id="Element_Descr"></select> -->
+                    <input type="text" class="form-control" placeholder="Element" id="Element_Descr" readonly />
+                </div>
+            </div>
+            <!-- <div class="col-sm-1">
+                <div class="form-group">
+                    <button class="btn btn-priamry form-control" id="addElement">Add Element</button>
+                </div>
+            </div> -->
+
+            <div class="col-sm-1">
+                <div class="form-group">
+                    <i class="fa fa-search SearchIconCLass" id="elementGridIconId" data-toggle="modal"
+                        data-target="#orangeModalSubscription3" style="color: black; border: solid black 3px;"></i>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</section>
+<div class="row">
+
+    <div class="col-sm-6">
+
+        <div class="container mt-3">
+            <table id="bmGridID1" class="table table-dark table-hover table-sm table-bordered"
+                style="font-size: 0.8rem;">
+                <thead style="background-color: black;">
+                    <tr>
+                        <!-- <th style="width: 6%;">S. No</th> -->
+                        <th style="width: 25%;">Allowance</th>
+                        <th style="width: 15%;">Category</th>
+                        <th style="width: 20%; text-align: right;">Amount</th>
+                        <!-- <th style="width: 7%;">Action</th> -->
+                    </tr>
+                </thead>
+                <tbody id="InserRowID1" class="ElementGridClass">
+                </tbody>
+            </table>
+            <h5 id="totalAllowance_fixed_gross" style="text-align: end;">Total Allowance Fixed Gross: 0</h5>
+            <h5 id="totalAllowance_fixed_additional" style="text-align: end;">Total Allowance Fixed Additional: 0</h5>
+            <h5 id="totalAllowance" style="text-align: end;">Total Allowance: 0</h5>
+        </div>
+
+    </div>
+    <div class="col-sm-6">
+
+        <div class="container mt-3">
+            <table id="bmGridID2" class="table table-dark table-hover table-sm table-bordered"
+                style="font-size: 0.8rem;">
+                <thead style="background-color: black;">
+                    <tr>
+                        <!-- <th style="width: 6%;">S. No</th> -->
+                        <th style="width: 25%;">Deduction</th>
+                        <th style="width: 15%;">Category</th>
+                        <th style="width: 20%; text-align: right;">Amount</th>
+                        <!-- <th style="width: 7%;">Action</th> -->
+                    </tr>
+                </thead>
+                <tbody id="InserRowID2" class="ElementGridClass">
+                </tbody>
+            </table>
+            <h5 id="totalDeduction" style="text-align: end;">Total Deduction: 0</h5>
+        </div>
+
+    </div>
+</div>
+
+<section>
+    <!--Boostrap Model Start-->
+    <div class="modal fade" id="orangeModalSubscription3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        -moz-text-size-adjust aria-hidden="true">
+        <div class="modal-dialog modal-notify modal-warning" role="document">
+            <!--Content-->
+            <div class="modal-content" style="width: fit-content">
+                <!--Header-->
+                <div class="modal-header text-center">
+                    <h4 class="modal-title white-text w-100 font-weight-bold py-2" id="modelTitleId"></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true" class="white-text">&times;</span>
+                    </button>
+                </div>
+
+                <!--Body-->
+                <div class="modal-body">
+                    <section id="Ac_ModelFormGridId">
+
+                        <table class="table" id="GridID4">
+                            <thead class="thead-dark">
+                                <tr id="unique" style="font-size: 10px">
+                                    <th class="text-center" scope="col">Element ID</th>
+                                    <th class="text-left" scope="col" id="popupGridCodeComNameId">Element Name</th>
+                                    <th class="text-left" scope="col" id="popupGridCodeComNameId">Element Type</th>
+                                    <th class="text-left" scope="col" id="popupGridCodeComNameId">Element Category</th>
+                                </tr>
+                            </thead>
+                            <tbody id="InserRowID4" style="font-size: 10px">
+                            </tbody>
+                        </table>
+
+                    </section>
+                </div>
+
+            </div>
+            <!--/.Content-->
+        </div>
+    </div>
+    <!--Boostrap Model End-->
+</section>
+
+<section>
+    <!-- Bootstrap Modal Start -->
+    <div class="modal fade" id="orangeModalSubscription4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-notify modal-warning" role="document">
+            <!-- Content -->
+            <div class="modal-content">
+                <!-- Header -->
+                <div class="modal-header text-center">
+                    <h4 class="modal-title font-weight-bold py-2" id="modelTitleId"></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Body -->
+                <div class="modal-body">
+                    <section id="Ac_ModelFormGridId">
+                        <div class="table-responsive">
+                            <table id="GridID5" class="table table-hover table-sm table-bordered table-auto">
+                                <thead class="thead-dark">
+                                    <tr style="font-size: 10px">
+                                        <th>Emp Update ID</th>
+                                        <th>Employee ID</th>
+                                        <th>HR Employee ID</th>
+                                        <th>Employee Name</th>
+                                        <th>Designation</th>
+                                        <th>Department</th>
+                                        <th>Update Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="InserRowID5" style="font-size: 10px">
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <!-- /.Content -->
+        </div>
+    </div>
+    <!-- Bootstrap Modal End -->
+</section>
+
+
+
+<script src="{% static 'js/monthlysalaryupdate.js' %}"></script>
+
+
+{% endblock %}

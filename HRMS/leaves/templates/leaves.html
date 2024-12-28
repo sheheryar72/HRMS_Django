@@ -1,0 +1,231 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %} Leave {% endblock %}
+{% block pagetitle %} Leave {% endblock %} 
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/leaves.css' %}">
+
+<style>
+  .form-control[readonly] {
+    background-color: #343a40;
+    color: #FFF ;
+    opacity: 1;
+}
+.SearchIconCLass {
+    padding: 2px;
+    color: white;
+    border: solid white 3px;
+}
+</style>
+
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="form-container">
+        <form id="myForm">
+          <div id="alertMessage"></div>
+
+          <!-- First row -->
+          <div class="form-group row align-items-center">
+            <label for="input1" class="col-sm-2 col-form-label">Leave ID</label> 
+            <div class="col-sm-3">
+              <input type="number" class="form-control" id="Leave_ID" placeholder="Leave ID" readonly>
+            </div>
+            <label for="input5" class="col-sm-2 col-form-label">Fin Year<span class="text-danger"> *</span></label> 
+            <div class="col-sm-5">
+              <select class="form-control form-control-sm" id="FYID"></select>
+            </div>
+          </div>
+
+          <!-- Employee field -->
+          <div class="form-group row align-items-center">
+            <label for="input5" class="col-sm-2 col-form-label">Employee<span class="text-danger"> *</span></label> 
+            <div class="col-sm-10">
+              <select class="form-control form-control-sm" id="Emp_ID"></select>
+            </div>
+            <!-- <div class="col-sm-1 d-flex align-items-center">
+              <i class="fa fa-search SearchIconCLass" id="leaveGridIconId" data-toggle="modal" data-target="#orangeModalSubscription4" style="cursor: pointer;"></i>
+            </div> -->
+          </div>
+
+          <!-- Joining Date -->
+          <div class="form-group row align-items-center">
+            <label for="input5" class="col-sm-2 col-form-label">Joining Date<span class="text-danger"> *</span></label> 
+            <div class="col-sm-4">
+              <input type="date" class="form-control" id="Joining_Date">
+            </div>
+          </div>
+
+          <!-- ELO, EL, CL, SL, EGL in one row -->
+          <div class="form-group row align-items-center">
+            <div class="col-2">
+              <label for="EL_OP">OP EL<span class="text-danger"> *</span></label>
+              <input type="number" class="form-control leave_balance_class" id="EL_OP" style="text-align: right;" placeholder="ELO">
+            </div>
+            <div class="col-2">
+              <label for="EL_OP">EL<span class="text-danger"> *</span></label>
+              <input type="number" class="form-control leave_balance_class" id="EL" style="text-align: right;" placeholder="ELO">
+            </div>
+            <div class="col-2">
+              <label for="EL">Total EL<span class="text-danger"> *</span></label>
+              <input type="number" class="form-control leave_balance_class" id="TOTAL_EL" style="text-align: right;" placeholder="EL">
+            </div>
+            <div class="col-2">
+              <label for="CL">CL<span class="text-danger"> *</span></label>
+              <input type="number" class="form-control leave_balance_class" id="CL" style="text-align: right;" placeholder="CL">
+            </div>
+            <div class="col-2">
+              <label for="SL">SL<span class="text-danger"> *</span></label>
+              <input type="number" class="form-control leave_balance_class" id="SL" style="text-align: right;" placeholder="SL">
+            </div>
+            <div class="col-2">
+              <label for="EGL">EGL<span class="text-danger"> *</span></label>
+              <input type="number" class="form-control leave_balance_class" id="EGL" style="text-align: right;" placeholder="EGL">
+            </div>
+          </div>
+
+          <div class="form-group row align-items-center">
+            <div class="col-4">
+              <label for="EL_OP">Availed Leave :<span class="text-danger"></span></label>
+              <!-- <input type="number" class="form-control" id="LA_EL_OP" style="text-align: right;" placeholder="ELO"> -->
+            </div>
+            <div class="col-2">
+              <!-- <label for="EL">EL<span class="text-danger"> *</span></label> -->
+              <input type="number" class="form-control leave_balance_class" id="LA_EL" style="text-align: right;" placeholder="EL">
+            </div>
+            <div class="col-2">
+              <!-- <label for="CL">CL<span class="text-danger"> *</span></label> -->
+              <input type="number" class="form-control leave_balance_class" id="LA_CL" style="text-align: right;" placeholder="CL">
+            </div>
+            <div class="col-2">
+              <!-- <label for="SL">SL<span class="text-danger"> *</span></label> -->
+              <input type="number" class="form-control leave_balance_class" id="LA_SL" style="text-align: right;" placeholder="SL">
+            </div>
+            <div class="col-2">
+              <!-- <label for="EGL">EGL<span class="text-danger"> *</span></label> -->
+              <input type="number" class="form-control leave_balance_class" id="LA_EGL" style="text-align: right;" placeholder="EGL">
+            </div>
+          </div>
+
+          <div class="form-group row align-items-center">
+            <div class="col-4 mt-4">
+              <label for="EL_OP">Balance Leave :</label>
+              <!-- <input type="number" class="form-control" id="R_EL_OP" style="text-align: right;" readonly placeholder="ELO"> -->
+            </div>
+            <div class="col-2">
+              <label for="EL">EL</label>
+              <input type="number" class="form-control" id="Balance_EL" style="text-align: right;" readonly placeholder="EL">
+            </div>
+            <div class="col-2">
+              <label for="CL">CL</label>
+              <input type="number" class="form-control" id="R_CL" style="text-align: right;" readonly placeholder="CL">
+            </div>
+            <div class="col-2">
+              <label for="SL">SL</label>
+              <input type="number" class="form-control" id="R_SL" style="text-align: right;" readonly placeholder="SL">
+            </div>
+            <div class="col-2">
+              <label for="EGL">EGL</label>
+              <input type="number" class="form-control" id="R_EGL" style="text-align: right;" readonly placeholder="EGL">
+            </div>
+          </div>
+
+          <!-- Buttons -->
+          <div class="text-center">
+            <button type="button" id="insertFormData" class="btn btn-dark mr-2">Create</button>
+            <button type="button" id="updateFormData" class="btn btn-dark mr-2 d-none">Update</button>
+            <button type="button" id="CancelFormData" class="btn btn-dark">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="mt-3" style="max-width: 100%; margin-left: 5%; margin-right: 5%;">
+  <table id="GridID" class="table table-dark table-hover table-sm table-bordered" style="font-size: 0.8rem;">
+      <thead style="background-color: black;">
+        <tr>
+          <th style="width: 5%;">S. No</th>
+          <th style="width: 7%;">Leave ID</th>
+          <th style="width: 6%;">Fin ID</th>
+          <th style="width: 9%;">Fin Year</th>
+          <th style="width: 7%;">Emp ID</th>
+          <th style="width: 7%;">HR Emp ID</th>
+          <th style="width: 25%;">Emp Name</th>
+          <th style="width: 15%;">Joining Date</th>
+          <th style="width: 6%; text-align: right;">EL Op</th>
+          <th style="width: 6%; text-align: right;">Casual</th>
+          <th style="width: 6%; text-align: right;">Sick</th>
+          <th style="width: 6%; text-align: right;">Earned</th>
+          <th style="width: 6%; text-align: right;">EGL</th>
+          <th style="width: 6%; text-align: right;">Total</th>
+          <th style="width: 7%;">Action</th>
+        </tr>
+      </thead>
+      <tbody id="InserRowID">
+      </tbody>
+    </table>
+  </div>
+
+
+  <section>
+    <!-- Bootstrap Modal Start -->
+    <div class="modal fade" id="orangeModalSubscription4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-notify modal-warning" role="document">
+            <!-- Content -->
+            <div class="modal-content">
+                <!-- Header -->
+                <div class="modal-header text-center">
+                    <h4 class="modal-title font-weight-bold py-2" id="modelTitleId"></h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <!-- Body -->
+                <div class="modal-body">
+                    <section id="Ac_ModelFormGridId">
+                        <div class="table-responsive">
+                            <table id="GridID5" class="table table-hover table-sm table-bordered table-auto">
+                                <thead class="thead-dark">
+                                    <tr style="font-size: 10px">
+                                        <th>Employee Name</th>
+                                        <th>LA CL</th>
+                                        <th>LA SL</th>
+                                        <th>LA EL OP</th>
+                                        <th>LA EL</th>
+                                        <th>LA EGL</th>
+                                        <th>Remaining CL</th>
+                                        <th>Remaining SL</th>
+                                        <th>Remaining EL OP</th>
+                                        <th>Remaining EL</th>
+                                        <th>Remaining EGL</th>
+                                        <th>Tot LA</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="InserRowID5" style="font-size: 10px">
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                </div>
+            </div>
+            <!-- /.Content -->
+        </div>
+    </div>
+    <!-- Bootstrap Modal End -->
+</section>
+
+
+  
+<script src="{% static 'js/leaves.js' %}"></script>
+
+
+{% endblock %}

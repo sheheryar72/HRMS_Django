@@ -1,0 +1,129 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Your Title{% endblock %}</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'boostrap/css/bootstrap.min.css' %}">
+    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.6.2/css/bootstrap.min.css"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" > -->
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> -->
+
+    <!-- Font Awesome CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
+
+    <!-- Bootstrap JS -->
+    <script src="{% static 'boostrap/js/bootstrap.bundle.min.js' %}"></script>
+    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.6.0/js/bootstrap.bundle.min.js"></script> -->
+
+    <!-- Your custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+
+    <style>
+        #sidebarMenu a {
+            text-decoration: none;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="wrapper">
+        {% include 'sidebar.html' %}
+
+        <div id="content">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <span class="menu-icon" id="sidebarCollapse">&#9776;</span>
+
+                <div class=" text-center" id="formHeading"
+                    style="color: #343a40; font-size: 30px; width: 90%; line-height: 3.77rem; font-weight: 800 !important; font-family: system-ui; text-transform: uppercase;">
+                    {% block pagetitle %} HRMS Dashboard {% endblock %}
+                </div>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                </div>
+                <div class="dropdown" id="profileDropdown" style="left: -12%;">
+                    <button class="btn btn-dark dropdown-toggle rounded-circle" type="button" id="dropdownMenuButton"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <a class="dropdown-item" href="#"><i class="fas fa-sign-in-alt"></i> Login</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-user-plus"></i> Signup</a>
+                        <a class="dropdown-item" href="#"><i class="fas fa-user-edit"></i> Edit Personal Info</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" id="signout_btn" href="#"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </nav>
+
+            <div>
+                {% block content %}
+                <div class="text-center mt-4">
+                    <!-- <h1>Welcome to HRMS</h1> -->
+                </div>
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.min.js"></script>
+    <script src="{% static 'js/sidebar.js' %}"></script>
+    <script src="{% static 'js/common.js' %}"></script>
+
+    <script>
+        $(document).ready(function () {
+            // alert('dashboard')
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const Emp_Name = localStorage.getItem("Emp_Name");
+            document.getElementById('current_username').innerText = Emp_Name;
+            const Profile_ID = localStorage.getItem("Profile_ID");
+            console.log('Profile_ID: ', Profile_ID)
+            // alert('test')
+
+            if (Profile_ID == '' || Profile_ID == null) {
+                logout_func()
+            }
+
+            const csrftoken = getCookie('csrftoken')
+            console.log('csrftoken: ', csrftoken)
+            if (csrftoken == null) {
+                logout_func()
+            }
+
+            document.getElementById("signout_btn").addEventListener("click", function (event) {
+                logout_func()
+                event.preventDefault();
+            });
+
+        })
+
+        function logout_func() {
+            console.log('logout_func called!')
+            localStorage.clear();
+            window.location.href = "{% url 'signout_user' %}";
+        }
+
+    </script>
+
+</body>
+
+</html>

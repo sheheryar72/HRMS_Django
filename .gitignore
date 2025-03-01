@@ -79,6 +79,9 @@ pytest_cache/
 *.user
 *.userosscache
 *.sln.docstates
+*.cache
+*.props
+*.json
 
 # Build results
 [Dd]ebug/

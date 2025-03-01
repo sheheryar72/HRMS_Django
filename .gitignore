@@ -23,7 +23,7 @@ db.sqlite3
 
 # Media and static files
 media/
-static/
+# static/
 staticfiles/
 node_modules/
 

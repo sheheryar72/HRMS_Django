@@ -141,15 +141,16 @@ SHELL_PLUS = "ipython"
 
 DATABASES = {
     'default': {
-        'ENGINE': 'mssql',
-        'NAME': 'ATS_HRMS_TEST',
+        'ENGINE': 'mssql', 
+        'NAME': 'ATS_HRMS',
         'USER': 'tech',
         'PASSWORD': 'tech',
         'HOST': '192.168.20.166', 
         'PORT': '1433',  # Leave it as an empty string for the default port
         'OPTIONS': {
-            'driver': 'ODBC Driver 18 for SQL Server',
-            'extra_params': 'TrustServerCertificate=yes',
+            'driver': 'ODBC Driver 17 for SQL Server',
+            # 'driver': 'ODBC Driver 18 for SQL Server',
+            # 'extra_params': 'TrustServerCertificate=yes',
         },
     },
     # 'erp_admin': {

@@ -18,6 +18,7 @@ function get_active_period() {
     getAllDataFromDB(`${BASE_URL}/salaryprocess/get_active_period`, 'Payroll Period').then((data) => {
         console.log("getall_payrollperiod response: ", data);
         var temp = `<option value="${data[0].Payroll_ID}">${data[0].MNTH_SHORT_NAME} - ${data[0].Yr}</option>`
+        // var temp = `<option value="${data[0].Payroll_ID}">${data[0].MNTH_SHORT_NAME} - ${data[0].Yr}</option>`
         // var temp = `<option value="${data.PAYROLL_ID}">${data.MNTH_NAME} - ${data.FinYear}</option>`
         // var temp = `${data.MNTH_NAME} - ${data.FinYear}`
         document.getElementById("Payroll_ID").innerHTML = temp;

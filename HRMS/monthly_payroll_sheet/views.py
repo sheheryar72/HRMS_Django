@@ -14,6 +14,9 @@ from django.db import connection
 import pyodbc
 import logging
 from payroll_period.models import HR_PAYROLL_PERIOD
+# from celery import shared_task
+from celery import shared_task
+from django.db import connection, transaction
 
 logger = logging.getLogger(__name__)
 
@@ -67,7 +70,7 @@ def get_monthly_pay_sheet(request, payroll_id):
         logger.error(f"Error fetching monthly pay sheet data: {str(e)}")
         return JsonResponse({'status': 'error', 'message': 'Failed to fetch data'}, status=500)
 
-
+# this is currently working now
 @require_http_methods(["GET"])
 def execute_monthly_pay_sheet(request, payroll_id):
     """
@@ -293,6 +296,35 @@ def execute_monthly_pay_sheet5(request, payroll_id):
             'ResponseCode': 500,
             'Message': f'Error occurred: {str(e)}',
             'Data': None
+        })
+
+#clery function
+# now we are calling SP from django this is working now
+@shared_task
+def execute_monthly_pay_sheet_celery(request,payroll_id):
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SET NOCOUNT ON; EXEC HR_Monthly_Pay_Sheet_SP @m_Payroll_ID=%s",
+                [payroll_id]
+            )
+            while cursor.nextset():
+                pass  # consume extra result sets
+
+        # ✅ After SP executes, fetch updated records
+        data = get_monthly_pay_sheet(request, payroll_id)
+
+        return JsonResponse({
+            "ResponseCode": 200 if data else 204,
+            "Message": "Pay sheet process executed successfully" if data else "No data returned",
+            "Data": data,
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            "ResponseCode": 500,
+            "Message": f"Error while executing Pay Sheet Process: {str(e)}",
+            "Data": None,
         })
 
 # api_view(['get_payrollsheet'])

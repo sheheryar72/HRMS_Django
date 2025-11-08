@@ -142,7 +142,7 @@ SHELL_PLUS = "ipython"
 DATABASES = {
     'default': {
         'ENGINE': 'mssql', 
-        'NAME': 'ATS_HRMS',
+        'NAME': 'ATS_HRMS_TEST',
         'USER': 'tech',
         'PASSWORD': 'tech',
         'HOST': '192.168.20.166', 

@@ -143,6 +143,7 @@ function handleCancelClick() {
     document.getElementById('totalAllowance_fixed_additional').innerText = `Total Allowance Fixed Additional: 0.00`
     document.getElementById('totalAllowance').innerText = `Total Allowance: 0.00`
     document.getElementById('totalDeduction').innerText = `Total Deduction: 0.00`
+    document.getElementById('totalNetpay').innerText = `Total Net Pay: 0.00`
 
     document.getElementById("Transfer_Type").selectedIndex = 0;
     document.getElementById("Account_No").value = '';
@@ -668,6 +669,7 @@ function calculateTotal() {
 
     document.getElementById('totalAllowance').innerText = `Total Allowance: ${allowanceTotal.toFixed(2)}`
     document.getElementById('totalDeduction').innerText = `Total Deduction: ${deductionTotal.toFixed(2)}`
+    document.getElementById('totalNetPay').innerText = `Total Net Pay: ${(allowanceTotal - deductionTotal).toFixed(2)}`
 }
 
 
@@ -1050,6 +1052,7 @@ function GetAll_Salary_update_BYID(emp_up_Id, empId, payroll_id) {
 
         document.getElementById("totalAllowance").innerHTML = `Total Allowance: ${totalAllowance.toFixed(2)}`
         document.getElementById("totalDeduction").innerHTML = `Total Deduction: ${totalDeduction.toFixed(2)}`
+        document.getElementById("totalNetPay").innerHTML = `Total Net Pay: ${(totalAllowance - totalDeduction).toFixed(2)}`
 
         document.getElementById("totalAllowance_fixed_gross").innerHTML = `Total Allowance Fixed Gross: ${totalAllowance_fixed_gross.toFixed(2)}`
         document.getElementById("totalAllowance_fixed_additional").innerHTML = `Total Allowance Fixed Additional: ${totalAllowance_fixed_additional.toFixed(2)}`

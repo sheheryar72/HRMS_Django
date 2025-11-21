@@ -17,12 +17,16 @@ from payroll_period.models import HR_PAYROLL_PERIOD
 # from celery import shared_task
 from celery import shared_task
 from django.db import connection, transaction
+from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(__name__)
 
 
 def payroll_sheet_view(request):
     return render(request=request, template_name='payrollsheet.html')
+
+def doj_report_view(request):
+    return render(request=request, template_name='doj_report.html')
 
 def payroll_sheet_process_view(request):
     return render(request=request, template_name='payrollsheetprocess.html')
@@ -297,6 +301,51 @@ def execute_monthly_pay_sheet5(request, payroll_id):
             'Message': f'Error occurred: {str(e)}',
             'Data': None
         })
+
+import json
+
+# @csrf_exempt
+# @require_http_methods(["POST"])
+
+@csrf_exempt
+# @api_view(['POST'])
+def get_doj_report(request):
+    try:
+        body = json.loads(request.body.decode("utf-8"))
+        from_date = body.get("from_date")
+        to_date = body.get("to_date")
+
+        base_query = """
+            SELECT 
+                TYPE,
+                Emp_ID,
+                Emp_Name,
+                HR_Emp_ID,
+                JL_DATE AS Joining_Date,
+                Emp_Status
+            FROM HR_EMP_DOJ_LWD_V
+        """
+
+        where_clause = ""
+        params = []
+        # import pdb; pdb.set_trace()
+        if from_date and to_date:
+            where_clause = " WHERE JL_DATE BETWEEN %s AND %s "
+            params = [from_date, to_date]
+
+        final_query = base_query + where_clause + " ORDER BY JL_DATE ASC"
+
+        with connection.cursor() as cursor:
+            cursor.execute(final_query, params)
+            columns = [col[0] for col in cursor.description]
+            rows = cursor.fetchall()
+            data = [dict(zip(columns, row)) for row in rows]
+
+        return JsonResponse({"status": "success", "data": data}, status=200)
+
+    except Exception as e:
+        logger.error(f"Error: {e}")
+        return JsonResponse({"status": "error", "message": "Server error"}, status=500)
 
 #clery function
 # now we are calling SP from django this is working now

@@ -1,0 +1,103 @@
+{% extends 'dashboard.html' %}
+{% load static %}
+
+{% block title %} Date of Joining Report {% endblock %}
+{% block pagetitle %} Date of Joining Report {% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'css/payrollsheet.css' %}">
+
+<!-- DataTables CSS -->
+<link rel="stylesheet" 
+href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
+<style>
+    .form-control[readonly] {
+        background-color: #343a40;
+        color: #FFF;
+        opacity: 1;
+    }
+
+    .table-container {
+        margin: 20px;
+    }
+
+    .table td, .table th {
+        vertical-align: middle;
+        white-space: nowrap;
+    }
+
+    #dojTable thead th {
+        background: #343a40 !important;
+        color: white !important;
+        text-align: center;
+    }
+</style>
+
+<div class="container">
+
+    <!-- Filters Section -->
+    <div class="row justify-content-center mb-4">
+        <div class="col-lg-8">
+            <div class="form-container">
+                <form id="filterForm">
+                    <div id="alertMessage"></div>
+
+                    <!-- From Date & To Date in Same Row -->
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label col-form-label-sm">From</label>
+                        <div class="col-sm-4">
+                            <input type="date" id="from_date" class="form-control form-control-sm">
+                        </div>
+
+                        <label class="col-sm-2 col-form-label col-form-label-sm">To</label>
+                        <div class="col-sm-4">
+                            <input type="date" id="to_date" class="form-control form-control-sm">
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="button" id="monthly_paysheet_btn" class="btn btn-success mr-2">
+                            Find Payroll Sheet
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Table Section -->
+<div class="container table-container">
+    <div class="text-center">
+        <h3 class="my-2">Monthly Pay Sheet (Summary)</h3>
+    </div>
+
+    <div class="table-responsive">
+        <table id="dojTable" class="table table-striped table-bordered">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Employee Name</th>
+                    <th>HR Code</th>
+                    <th>Joining Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody id="table-body">
+                <!-- Data inserted by JS -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- JS Dependencies -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="{% static 'js/doj_report.js' %}"></script>
+
+{% endblock %}

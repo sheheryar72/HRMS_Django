@@ -803,16 +803,30 @@ document.getElementById("calculateGrossSalary").addEventListener('click', functi
 
         // if(HR_Emp_ID != 10101 || HR_Emp_ID != 10210 || HR_Emp_ID != 10216){
             // Add default rows if they don't exist
-            addRowIfNotExist(1, "Basic Salary", "Fixed Gross");
-            addRowIfNotExist(2, "Medical Allowance", "Fixed Gross");
-            addRowIfNotExist(5, "House Rent Allowance", "Fixed Gross");
-            addRowIfNotExist(6, "Utilities Allowance", "Fixed Gross");
+            // addRowIfNotExist(1, "Basic Salary", "Fixed Gross");
+            // addRowIfNotExist(2, "Medical Allowance", "Fixed Gross");
+            // addRowIfNotExist(5, "House Rent Allowance", "Fixed Gross");
+            // addRowIfNotExist(6, "Utilities Allowance", "Fixed Gross");
         // }else{
         //     if(HR_Emp_ID == 10101){
         //         addRowIfNotExist(1, "Basic Salary", "Fixed Gross");
         //         addRowIfNotExist(1, "Basic Salary", "Fixed Gross");
         //     }
         // }
+
+        let dojDate = new Date(DOJ);
+        // Extract month and year
+        let month = dojDate.getMonth() + 1; // getMonth() gives 0–11, so add +1
+        let year = dojDate.getFullYear();
+        if (year > 2020 || (year === 2020 && month > 9)) {
+            addRowIfNotExist(1, "Basic Salary", "Fixed Gross");
+            addRowIfNotExist(2, "Medical Allowance", "Fixed Gross");
+            addRowIfNotExist(5, "House Rent Allowance", "Fixed Gross");
+            addRowIfNotExist(6, "Utilities Allowance", "Fixed Gross");
+        } else {
+            addRowIfNotExist(1, "Basic Salary", "Fixed Gross");
+            addRowIfNotExist(2, "Medical Allowance", "Fixed Gross");
+        }
 
         // Now proceed with the calculation
         $("#bmGridID1 tbody tr").each(function () {
@@ -822,7 +836,7 @@ document.getElementById("calculateGrossSalary").addEventListener('click', functi
             const HR_Emp_ID = Number(document.getElementById("HR_Emp_ID").value);
 
             // debugger
-            if(HR_Emp_ID != 10101 && HR_Emp_ID != 10210 && HR_Emp_ID != 10216){
+            if(HR_Emp_ID != 10101 && HR_Emp_ID != 10210 && HR_Emp_ID != 10216 && year > 2020 || (year === 2020 && month > 9)){
                 // alert('after nov emp: ', HR_Emp_ID)
                 if (elementID === 1) {
                     $(this).find("td:eq(2) input").val(Math.round(basic_sal));
@@ -857,46 +871,47 @@ document.getElementById("calculateGrossSalary").addEventListener('click', functi
                     if (elementID === 5) {
                         $(this).find("td:eq(2) input").val(30000);
                     }
-                    if (elementID === 12) {
-                        $(this).find("td:eq(2) input").val(3000);
-                    }
-                }else{
-                    if (HR_Emp_ID == 10216){
-                        console.log('hr id 10210: ', HR_Emp_ID)
-                        let basic_sal_ = ((total_gross - 14683 ) / 100) * 90;
-                        let medical_sal_ = ((total_gross - 14683 ) / 100) * 10;
-                        if (elementID === 1) {
-                            $(this).find("td:eq(2) input").val(Math.round(basic_sal_));
-                        }
-                        if (elementID === 2) {
-                            // const medical_sal = (total_gross / 100) * 10;
-                            $(this).find("td:eq(2) input").val(Math.round(medical_sal_));
-                        }
-                        if (elementID === 5) {
-                            $(this).find("td:eq(2) input").val(12166);
-                        }
-                        if (elementID === 6) {
-                            $(this).find("td:eq(2) input").val(2517);
-                        }
-                    }
-                    if (HR_Emp_ID == 10210){
-                        let basic_sal_ = ((total_gross - 11019 ) / 100) * 90;
-                        let medical_sal_ = ((total_gross - 11019 ) / 100) * 10;
-                        if (elementID === 1) {
-                            $(this).find("td:eq(2) input").val(Math.round(basic_sal_));
-                        }
-                        if (elementID === 2) {
-                            // const medical_sal = (_amount / 100) * 10;
-                            $(this).find("td:eq(2) input").val(Math.round(medical_sal_));
-                        }
-                        if (elementID === 5) {
-                            $(this).find("td:eq(2) input").val(9130);
-                        }
-                        if (elementID === 6) {
-                            $(this).find("td:eq(2) input").val(1889);
-                        }
-                    }
+                    // if (elementID === 12) {
+                    //     $(this).find("td:eq(2) input").val(3000);
+                    // }
                 }
+                // else{
+                //     if (HR_Emp_ID == 10216){
+                //         console.log('hr id 10210: ', HR_Emp_ID)
+                //         let basic_sal_ = ((total_gross - 14683 ) / 100) * 90;
+                //         let medical_sal_ = ((total_gross - 14683 ) / 100) * 10;
+                //         if (elementID === 1) {
+                //             $(this).find("td:eq(2) input").val(Math.round(basic_sal_));
+                //         }
+                //         if (elementID === 2) {
+                //             // const medical_sal = (total_gross / 100) * 10;
+                //             $(this).find("td:eq(2) input").val(Math.round(medical_sal_));
+                //         }
+                //         if (elementID === 5) {
+                //             $(this).find("td:eq(2) input").val(12166);
+                //         }
+                //         if (elementID === 6) {
+                //             $(this).find("td:eq(2) input").val(2517);
+                //         }
+                //     }
+                //     if (HR_Emp_ID == 10210){
+                //         let basic_sal_ = ((total_gross - 11019 ) / 100) * 90;
+                //         let medical_sal_ = ((total_gross - 11019 ) / 100) * 10;
+                //         if (elementID === 1) {
+                //             $(this).find("td:eq(2) input").val(Math.round(basic_sal_));
+                //         }
+                //         if (elementID === 2) {
+                //             // const medical_sal = (_amount / 100) * 10;
+                //             $(this).find("td:eq(2) input").val(Math.round(medical_sal_));
+                //         }
+                //         if (elementID === 5) {
+                //             $(this).find("td:eq(2) input").val(9130);
+                //         }
+                //         if (elementID === 6) {
+                //             $(this).find("td:eq(2) input").val(1889);
+                //         }
+                //     }
+                // }
             }
         });
 
